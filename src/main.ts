@@ -57,7 +57,10 @@ function highlightNavLink() {
   });
 }
 
-window.addEventListener('scroll', highlightNavLink);
+// Only run scroll spy on home page
+if (window.location.pathname === '/' || window.location.pathname.endsWith('index.html')) {
+  window.addEventListener('scroll', highlightNavLink);
+}
 
 // ===================================
 // GALLERY
@@ -261,22 +264,7 @@ if (successModal) {
 // SMOOTH SCROLL
 // ===================================
 
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (this: HTMLAnchorElement, e) {
-    e.preventDefault();
-    const href = this.getAttribute('href');
-    if (!href) return;
 
-    const target = document.querySelector(href);
-
-    if (target) {
-      target.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-  });
-});
 
 // ===================================
 // INTERSECTION OBSERVER FOR ANIMATIONS
@@ -432,3 +420,35 @@ document.querySelectorAll('.gallery-item').forEach(item => {
 
 console.log('%c🎨 Welcome to it\'s ouR Studio! 📸', 'font-size: 20px; font-weight: bold; color: #bf6a39;');
 console.log('%cWebsite built with ❤️ using vanilla JavaScript', 'font-size: 12px; color: #8b5e3b;');
+
+// ===================================
+// SERVICES PAGE SIDE NAV
+// ===================================
+
+const sideNavDots = document.querySelectorAll('.side-nav-dot');
+const serviceSections = document.querySelectorAll('.service-fullscreen');
+
+function highlightSideNav() {
+  const scrollY = window.pageYOffset;
+
+  serviceSections.forEach(section => {
+    const sectionEl = section as HTMLElement;
+    const sectionHeight = sectionEl.offsetHeight;
+    const sectionTop = sectionEl.offsetTop - 300; // Offset for better triggering
+    const sectionId = section.getAttribute('id');
+
+    if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+      sideNavDots.forEach(dot => {
+        dot.classList.remove('active');
+        if (dot.getAttribute('href') === `#${sectionId}`) {
+          dot.classList.add('active');
+        }
+      });
+    }
+  });
+}
+
+if (sideNavDots.length > 0) {
+  window.addEventListener('scroll', highlightSideNav);
+  highlightSideNav(); // Initial check
+}
