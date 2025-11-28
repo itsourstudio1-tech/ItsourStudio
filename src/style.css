@@ -2443,3 +2443,235 @@ section {
   /* Compensate for border to keep content area 90svh */
   box-sizing: border-box;
 }
+/* ===================================
+   BOOKING FLOW ENHANCEMENTS
+   =================================== */
+
+.booking-grid {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: var(--spacing-lg);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .booking-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.booking-form-container {
+  background: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.form-step-title {
+  margin-bottom: var(--spacing-md);
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-cream);
+  padding-bottom: var(--spacing-xs);
+}
+
+.booking-summary-panel {
+  background: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  position: sticky;
+  top: 100px;
+  border: 1px solid var(--color-cream);
+}
+
+.booking-summary-panel h3 {
+  margin-bottom: var(--spacing-md);
+  font-size: 1.25rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-xs);
+  font-size: 0.95rem;
+  color: var(--color-text-light);
+}
+
+.summary-row span:last-child {
+  color: var(--color-dark);
+  font-weight: 500;
+}
+
+.booking-summary-panel hr {
+  border: none;
+  border-top: 1px solid var(--color-cream);
+  margin: var(--spacing-md) 0;
+}
+
+.summary-row.total {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-top: var(--spacing-sm);
+}
+
+.summary-row.total span:last-child {
+  color: var(--color-primary);
+}
+
+.downpayment-highlight {
+  background: var(--color-cream);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  margin-top: var(--spacing-md);
+  text-align: center;
+  border: 1px dashed var(--color-terracotta);
+}
+
+.downpayment-highlight span {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+  margin-bottom: 4px;
+}
+
+.downpayment-highlight strong {
+  display: block;
+  font-size: 1.5rem;
+  color: var(--color-terracotta);
+}
+
+.payment-instructions {
+  background: #f8f9fa;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+}
+
+.gcash-details {
+  background: white;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  margin: var(--spacing-md) 0;
+  border: 1px solid #e9ecef;
+}
+
+.gcash-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #007bff; /* GCash Blue-ish */
+  letter-spacing: 1px;
+}
+
+.gcash-name {
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+  font-weight: 600;
+}
+
+.instruction-note {
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+  font-style: italic;
+}
+
+.booking-success-container {
+  text-align: center;
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  background: #28a745;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  margin: 0 auto var(--spacing-md);
+}
+
+
+/* Time Slot Grid */
+.time-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.time-slot-btn {
+  padding: 0.5rem;
+  border: 1px solid var(--color-gray);
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--color-dark);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.time-slot-btn:hover:not(.disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-cream);
+}
+
+.time-slot-btn.selected {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(191, 106, 57, 0.3);
+}
+
+.time-slot-btn.disabled {
+  background: #f1f3f5;
+  color: #adb5bd;
+  border-color: #e9ecef;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.time-legend {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-sm);
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot.available {
+  background: white;
+  border: 1px solid var(--color-gray);
+}
+
+.dot.selected {
+  background: var(--color-primary);
+}
+
+.dot.booked {
+  background: #adb5bd;
+}
+
