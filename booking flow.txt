@@ -1,0 +1,40 @@
+Booking Flow
+1. Package Selection
+The system offers 7 packages 
+
+Solo - 15 mins, ₱299
+Basic - 25 mins, ₱399
+Just Transfer - 30 mins, ₱549
+Standard - 45 mins, ₱699
+Family - 50 mins, ₱1,249
+Barkada - 50 mins, ₱1,949
+Birthday - 45 mins, ₱599
+
+2. Booking Process
+User fills form 
+System validates data and checks availability
+Booking saved as "pending" status
+Payment proof uploaded (optional)
+Admin reviews and confirms/rejects booking
+
+3. Time Slot Management
+Weekday hours: 10:00 AM - 7:00 PM
+Weekend hours: 9:00 AM - 8:00 PM
+Prevents double bookings with conflict detection
+
+4. Email Notifications
+Sends confirmations to customers
+Notifies admins of new bookings
+Handles status change notifications
+
+5. Admin Management
+Secure login system with session management
+Dashboard shows booking statistics
+Can approve, reject, edit bookings
+View calendar and manage schedules
+
+6. Payment Integration
+GCash payment option configured
+Upload payment proof images
+Track downpayment and total amounts
+File size limited to 10MB for security

@@ -1,0 +1,159 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery - it's ouR Studio</title>
+  <meta name="description"
+    content="Professional self-photography studio offering stunning portrait sessions. Browse our gallery and book your session today.">
+
+  <!-- Favicons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/logo/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/logo/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/logo/favicon-16x16.png">
+  <link rel="manifest" href="/logo/site.webmanifest">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;500;600;700;800&family=Quicksand:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="/index.html" class="logo">
+        <img src="/logo/LOGO_var1.png" alt="it's ouR Studio Logo" class="logo-image">
+      </a>
+      <div class="nav-links">
+        <a href="/index.html" class="nav-link">Home</a>
+        <a href="/gallery.html" class="nav-link active">Gallery</a>
+        <a href="/index.html#services" class="nav-link">Services</a>
+        <a href="/index.html#about" class="nav-link">About</a>
+        <a href="/index.html#booking" class="btn btn-primary">Book Now</a>
+      </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <header class="page-header"
+    style="padding-top: 120px; padding-bottom: 40px; text-align: center; background: var(--color-primary); color: white;">
+    <div class="container">
+      <h1 class="section-title" style="color: white;">Our Gallery</h1>
+      <p>Explore our collection of authentic moments</p>
+    </div>
+  </header>
+
+  <!-- Gallery Section -->
+  <section id="gallery" class="gallery-section">
+    <div class="container">
+      <div class="gallery-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="portrait">Portraits</button>
+        <button class="filter-btn" data-filter="creative">Creative</button>
+        <button class="filter-btn" data-filter="professional">Professional</button>
+        <button class="filter-btn" data-filter="lifestyle">Lifestyle</button>
+      </div>
+
+      <div class="gallery-grid" id="galleryGrid">
+        <!-- Gallery items will be dynamically loaded -->
+      </div>
+    </div>
+  </section>
+
+  <h3>What to Expect</h3>
+  <ul>
+    <li>You'll receive a confirmation email within 24 hours</li>
+    <li>Arrive 10 minutes early for a studio orientation</li>
+    <li>Bring outfit changes if desired</li>
+    <li>Photos delivered within 3-5 business days</li>
+  </ul>
+  </div>
+  <div class="info-card">
+    <h3>Studio Location</h3>
+    <p>123 Creative Avenue<br>Downtown District<br>City, State 12345</p>
+    <p><strong>Hours:</strong><br>Mon-Fri: 9AM - 8PM<br>Sat-Sun: 10AM - 6PM</p>
+  </div>
+  <div class="info-card">
+    <h3>Contact Us</h3>
+    <p>📧 hello@studiolens.com<br>📱 (555) 123-4567</p>
+    <div class="social-links">
+      <a href="#" class="social-link">Instagram</a>
+      <a href="#" class="social-link">Facebook</a>
+      <a href="#" class="social-link">Pinterest</a>
+    </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="logo">
+            <img src="/logo/LOGO_var1.png" alt="it's ouR Studio Logo" class="logo-image">
+          </div>
+          <p>Empowering you to capture your authentic self</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-column">
+            <h4>Quick Links</h4>
+            <a href="#home">Home</a>
+            <a href="#gallery">Gallery</a>
+            <a href="#services">Services</a>
+            <a href="#about">About</a>
+          </div>
+          <div class="footer-column">
+            <h4>Services</h4>
+            <a href="#booking">Book Session</a>
+            <a href="#services">Pricing</a>
+            <a href="#">Gift Cards</a>
+            <a href="#">FAQ</a>
+          </div>
+          <div class="footer-column">
+            <h4>Connect</h4>
+            <a href="#">Instagram</a>
+            <a href="#">Facebook</a>
+            <a href="#">Pinterest</a>
+            <a href="mailto:hello@studiolens.com">Email Us</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 it's ouR Studio. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Lightbox Modal -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose">&times;</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev">‹</button>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext">›</button>
+    <img src="" alt="" id="lightboxImage">
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal" id="successModal">
+    <div class="modal-content">
+      <div class="modal-icon">✓</div>
+      <h3>Booking Submitted!</h3>
+      <p>Thank you for your booking request. We'll send you a confirmation email within 24 hours.</p>
+      <button class="btn btn-primary" id="closeModal">Close</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>

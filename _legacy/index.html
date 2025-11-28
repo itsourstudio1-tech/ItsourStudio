@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Lens - Self Photography Studio | Gallery & Bookings</title>
+    <meta name="description"
+        content="Professional self-photography studio offering stunning portrait sessions. Browse our gallery and book your session today.">
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="logo/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="logo/favicon-16x16.png">
+    <link rel="manifest" href="logo/site.webmanifest">
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;500;600;700;800&family=Quicksand:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="logo">
+                <img src="logo/LOGO_var1.png" alt="Studio Lens Logo" class="logo-image">
+            </a>
+            <div class="nav-links">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#gallery" class="nav-link">Gallery</a>
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#booking" class="nav-link">Book Now</a>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-background"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="hero-subtitle">Welcome to</span>
+                Studio Lens
+            </h1>
+            <p class="hero-description">Capture your authentic self in our premium self-photography studio</p>
+            <div class="hero-buttons">
+                <a href="#gallery" class="btn btn-primary">View Gallery</a>
+                <a href="#booking" class="btn btn-secondary">Book Session</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll to explore</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Gallery</h2>
+                <p class="section-subtitle">Explore stunning moments captured in our studio</p>
+            </div>
+
+            <div class="gallery-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="portrait">Portraits</button>
+                <button class="filter-btn" data-filter="creative">Creative</button>
+                <button class="filter-btn" data-filter="professional">Professional</button>
+                <button class="filter-btn" data-filter="lifestyle">Lifestyle</button>
+            </div>
+
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Gallery items will be dynamically loaded -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Services</h2>
+                <p class="section-subtitle">Choose the perfect package for your needs</p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">✨</div>
+                    <h3 class="service-title">Express Session</h3>
+                    <p class="service-duration">30 minutes</p>
+                    <p class="service-description">Perfect for quick professional headshots or social media content</p>
+                    <ul class="service-features">
+                        <li>30-minute studio access</li>
+                        <li>5 edited photos</li>
+                        <li>Digital delivery</li>
+                        <li>Basic props included</li>
+                    </ul>
+                    <div class="service-price">$79</div>
+                    <a href="#booking" class="btn btn-outline">Book Now</a>
+                </div>
+
+                <div class="service-card featured">
+                    <div class="featured-badge">Most Popular</div>
+                    <div class="service-icon">🌟</div>
+                    <h3 class="service-title">Premium Session</h3>
+                    <p class="service-duration">60 minutes</p>
+                    <p class="service-description">Our most popular package with plenty of time for creativity</p>
+                    <ul class="service-features">
+                        <li>60-minute studio access</li>
+                        <li>15 edited photos</li>
+                        <li>Multiple backdrop options</li>
+                        <li>Props & accessories</li>
+                        <li>Professional retouching</li>
+                    </ul>
+                    <div class="service-price">$149</div>
+                    <a href="#booking" class="btn btn-primary">Book Now</a>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">💎</div>
+                    <h3 class="service-title">Luxury Experience</h3>
+                    <p class="service-duration">90 minutes</p>
+                    <p class="service-description">The ultimate photography experience with unlimited possibilities</p>
+                    <ul class="service-features">
+                        <li>90-minute studio access</li>
+                        <li>30 edited photos</li>
+                        <li>All backdrops & props</li>
+                        <li>Wardrobe changes</li>
+                        <li>Premium retouching</li>
+                        <li>Same-day preview</li>
+                    </ul>
+                    <div class="service-price">$249</div>
+                    <a href="#booking" class="btn btn-outline">Book Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-image">
+                    <div class="about-image-wrapper">
+                        <img src="about-studio.jpg" alt="Studio Lens Photography Studio" id="aboutImage">
+                    </div>
+                </div>
+                <div class="about-text">
+                    <h2 class="section-title">About Studio Lens</h2>
+                    <p class="about-description">
+                        Welcome to Studio Lens, where you're in complete control of your photography experience.
+                        Our state-of-the-art self-photography studio is designed to empower you to capture your
+                        authentic self in a comfortable, private environment.
+                    </p>
+                    <p class="about-description">
+                        Equipped with professional lighting, multiple backdrops, and an intuitive remote control
+                        system, our studio makes it easy for anyone to create stunning, professional-quality photos.
+                        Whether you need headshots for your career, content for social media, or simply want to
+                        celebrate yourself, we provide the perfect space and tools.
+                    </p>
+                    <div class="about-features">
+                        <div class="about-feature">
+                            <div class="feature-icon">📷</div>
+                            <div class="feature-text">
+                                <h4>Professional Equipment</h4>
+                                <p>High-end cameras and lighting setup</p>
+                            </div>
+                        </div>
+                        <div class="about-feature">
+                            <div class="feature-icon">🎨</div>
+                            <div class="feature-text">
+                                <h4>Creative Freedom</h4>
+                                <p>Multiple backdrops and props available</p>
+                            </div>
+                        </div>
+                        <div class="about-feature">
+                            <div class="feature-icon">🔒</div>
+                            <div class="feature-text">
+                                <h4>Private Sessions</h4>
+                                <p>Completely private studio time</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section id="booking" class="booking-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Book Your Session</h2>
+                <p class="section-subtitle">Reserve your studio time in just a few clicks</p>
+            </div>
+
+            <div class="booking-container">
+                <form class="booking-form" id="bookingForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fullName">Full Name *</label>
+                            <input type="text" id="fullName" name="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="package">Select Package *</label>
+                            <select id="package" name="package" required>
+                                <option value="">Choose a package</option>
+                                <option value="express">Express Session - $79</option>
+                                <option value="premium">Premium Session - $149</option>
+                                <option value="luxury">Luxury Experience - $249</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date">Preferred Date *</label>
+                            <input type="date" id="date" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="time">Preferred Time *</label>
+                            <select id="time" name="time" required>
+                                <option value="">Select time</option>
+                                <option value="09:00">9:00 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="12:00">12:00 PM</option>
+                                <option value="13:00">1:00 PM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                                <option value="17:00">5:00 PM</option>
+                                <option value="18:00">6:00 PM</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Special Requests or Notes</label>
+                        <textarea id="notes" name="notes" rows="4"
+                            placeholder="Tell us about your vision, any specific requirements, or questions you have..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-large">
+                            <span>Confirm Booking</span>
+                            <span class="btn-icon">→</span>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="booking-info">
+                    <div class="info-card">
+                        <h3>What to Expect</h3>
+                        <ul>
+                            <li>You'll receive a confirmation email within 24 hours</li>
+                            <li>Arrive 10 minutes early for a studio orientation</li>
+                            <li>Bring outfit changes if desired</li>
+                            <li>Photos delivered within 3-5 business days</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <h3>Studio Location</h3>
+                        <p>123 Creative Avenue<br>Downtown District<br>City, State 12345</p>
+                        <p><strong>Hours:</strong><br>Mon-Fri: 9AM - 8PM<br>Sat-Sun: 10AM - 6PM</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Contact Us</h3>
+                        <p>📧 hello@studiolens.com<br>📱 (555) 123-4567</p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">Facebook</a>
+                            <a href="#" class="social-link">Pinterest</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <a href="#services">Services</a>
+    <a href="#about">About</a>
+    </div>
+    <div class="footer-column">
+        <h4>Services</h4>
+        <a href="#booking">Book Session</a>
+        <a href="#services">Pricing</a>
+        <a href="#">Gift Cards</a>
+        <a href="#">FAQ</a>
+    </div>
+    <div class="footer-column">
+        <h4>Connect</h4>
+        <a href="#">Instagram</a>
+        <a href="#">Facebook</a>
+        <a href="#">Pinterest</a>
+        <a href="mailto:hello@studiolens.com">Email Us</a>
+    </div>
+    </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 Studio Lens. All rights reserved.</p>
+    </div>
+    </div>
+    </footer>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose">&times;</button>
+        <button class="lightbox-nav lightbox-prev" id="lightboxPrev">‹</button>
+        <button class="lightbox-nav lightbox-next" id="lightboxNext">›</button>
+        <img src="" alt="" id="lightboxImage">
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-icon">✓</div>
+            <h3>Booking Submitted!</h3>
+            <p>Thank you for your booking request. We'll send you a confirmation email within 24 hours.</p>
+            <button class="btn btn-primary" id="closeModal">Close</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
