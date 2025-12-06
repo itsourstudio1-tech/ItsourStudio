@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Admin.css';
 
@@ -7,7 +7,7 @@ const AdminLogin = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = (e: FormEvent) => {
         e.preventDefault();
         // TODO: Replace with secure auth
         if (password === 'admin123' || password === 'studio2024') {
