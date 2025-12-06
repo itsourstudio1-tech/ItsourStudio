@@ -284,10 +284,10 @@ const Services = () => {
                         </div>
 
                         <div className="service-showcase">
-                            <div className="showcase-main">
-                                <img src={service.imageMain} alt={`${service.title} main`} loading="lazy" />
-                            </div>
                             <div className="showcase-grid">
+                                <div className="showcase-item main">
+                                    <img src={service.imageMain} alt={`${service.title} main`} loading="lazy" />
+                                </div>
                                 <div className="showcase-item">
                                     <img src={service.imageDetail} alt={`${service.title} detail`} loading="lazy" />
                                 </div>
