@@ -964,15 +964,15 @@ const AdminDashboard = () => {
                                         return (
                                             <div
                                                 key={day}
-                                                onClick={() => !isPast && handleDayClick(day)}
+                                                onClick={() => handleDayClick(day)}
                                                 style={{
                                                     minHeight: '100px', // Increased height to fit bookings
                                                     padding: '0.5rem',
-                                                    background: isUnavailable ? '#fee2e2' : '#ffffff',
+                                                    background: isUnavailable ? '#fee2e2' : (isPast ? '#f8fafc' : '#ffffff'), // Different bg for past
                                                     border: '1px solid #e2e8f0',
                                                     borderRadius: '8px',
-                                                    cursor: isPast ? 'default' : 'pointer',
-                                                    opacity: isPast ? 0.5 : 1,
+                                                    cursor: 'pointer',
+                                                    opacity: isPast ? 0.8 : 1,
                                                     transition: 'all 0.2s',
                                                     position: 'relative',
                                                     display: 'flex',

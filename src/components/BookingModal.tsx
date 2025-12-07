@@ -70,6 +70,9 @@ const BookingModal = () => {
                 }
             });
             setUnavailableDates(blocks);
+        }, (error) => {
+            console.error("Error fetching unavailable dates:", error);
+            // Verify if error is permissions-related and handle gracefully (e.g. stop listening or ignore)
         });
 
         fetchPromo();
@@ -641,7 +644,7 @@ const BookingModal = () => {
     if (!isBookingOpen) return null;
 
     return (
-        <div className="modal-overlay" onClick={closeBooking}>
+        <div className="modal-overlay active" onClick={closeBooking}>
             {/* Toast Notification */}
             {toast.visible && (
                 <div className="toast-container">
