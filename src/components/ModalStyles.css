@@ -1824,3 +1824,32 @@ textarea:focus {
     font-weight: 700;
     font-size: 1.1rem;
 }
+
+/* Calendar Blocked Date Indicator */
+.calendar-block-dot {
+    position: absolute;
+    bottom: 6px;
+    width: 6px;
+    height: 6px;
+    background-color: #ef4444;
+    /* Red for unavailability */
+    border-radius: 50%;
+    transform: translateX(-50%);
+    left: 50%;
+}
+
+/* Ensure disabled state is clear */
+.calendar-day.disabled {
+    cursor: not-allowed;
+    background: #f8fafc;
+    color: #94a3b8;
+    position: relative;
+    opacity: 0.7;
+}
+
+.calendar-day.disabled:hover {
+    background: #f8fafc;
+    border-color: transparent;
+    transform: none;
+    box-shadow: none;
+}

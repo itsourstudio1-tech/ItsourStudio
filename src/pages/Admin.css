@@ -42,55 +42,29 @@
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2.5rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
 
 .stat-card {
     background: #ffffff;
-    padding: 1.5rem;
-    border-radius: var(--radius-md);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     display: flex;
     align-items: center;
-    gap: 1.25rem;
-    transition: all 0.2s ease;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    gap: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(226, 232, 240, 0.8);
     position: relative;
     overflow: hidden;
 }
 
-.stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: var(--color-primary);
-    border-radius: 4px 0 0 4px;
-}
-
-.stat-card:nth-child(2)::before {
-    background: #3b82f6;
-    /* Blue */
-}
-
-.stat-card:nth-child(3)::before {
-    background: #10b981;
-    /* Green */
-}
-
-.stat-card:nth-child(4)::before {
-    background: #8b5cf6;
-    /* Purple */
-}
-
 .stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.05);
 }
 
 .stat-icon {
@@ -100,24 +74,69 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(var(--color-primary-rgb), 0.1);
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* Card Specific Colors (Based on nth-child or additional classes) */
+/* 1. Total Bookings - Primary (Brown/Orange) */
+.stat-card:nth-child(1) .stat-icon {
+    background: rgba(191, 106, 57, 0.1);
     color: var(--color-primary);
 }
 
+/* 2. Pending Requests - Amber/Orange */
+.stat-card:nth-child(2) .stat-icon {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+/* 3. Confirmed Sessions - Emerald/Green */
+.stat-card:nth-child(3) .stat-icon {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+/* 4. Revenue - Blue/Purple */
+.stat-card:nth-child(4) .stat-icon {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+
+.stat-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    /* Prevent overflow text truncation issues */
+}
+
 .stat-info h4 {
-    color: #6c757d;
-    font-size: 0.9rem;
+    color: #64748b;
+    font-size: 0.7rem;
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.1rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .stat-value {
-    font-size: 1.85rem;
-    font-weight: 800;
-    color: var(--color-dark);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
     letter-spacing: -0.5px;
+    line-height: 1.2;
+    font-family: var(--font-display);
 }
 
 .bookings-section {
@@ -777,12 +796,79 @@ input:checked+.slider:before {
     transform: translateX(26px);
 }
 
+/* Slider Round */
 .slider.round {
     border-radius: 34px;
 }
 
 .slider.round:before {
     border-radius: 50%;
+}
+
+/* Button Styles */
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+    background-color: #a05a2c;
+    /* Darker shade of primary */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(191, 106, 57, 0.2);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border-color: #e2e8f0;
+    color: #475569;
+}
+
+.btn-outline:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background-color: #fffcf8;
+}
+
+/* Admin Calendar */
+.custom-calendar-admin {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
+}
+
+.calendar-day-admin {
+    transition: all 0.2s ease;
+}
+
+.calendar-day-admin:hover:not(.unavailable) {
+    border-color: var(--color-primary) !important;
+    background-color: #fffcf8 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+}
+
+.calendar-day-admin.unavailable:hover {
+    background-color: #fca5a5 !important;
+    border-color: #ef4444 !important;
 }
 
 

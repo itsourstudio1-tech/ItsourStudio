@@ -1,0 +1,116 @@
+/* Analytics Widgets */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+}
+
+.analytics-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.analytics-header {
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.analytics-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    font-family: var(--font-display);
+}
+
+/* Progress Bars */
+.progress-item {
+    margin-bottom: 1rem;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.progress-track {
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease-out;
+}
+
+/* Package List */
+.package-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.2s;
+}
+
+.package-item:last-child {
+    border-bottom: none;
+}
+
+.package-item:hover {
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.package-rank {
+    width: 28px;
+    height: 28px;
+    background: #f1f5f9;
+    color: #64748b;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 1rem;
+}
+
+.package-item:nth-child(1) .package-rank {
+    background: #fff7ed;
+    color: var(--color-primary);
+}
+
+.package-info {
+    flex: 1;
+}
+
+.package-name {
+    font-weight: 600;
+    color: var(--color-dark);
+    font-size: 0.9rem;
+    display: block;
+    text-transform: capitalize;
+}
+
+.package-count {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.package-trend {
+    font-weight: 700;
+    color: var(--color-dark);
+    font-size: 0.9rem;
+}

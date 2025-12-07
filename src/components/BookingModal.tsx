@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import paymentQr from '../assets/payment_qr.png';
 import './ModalStyles.css';
 import { useBooking } from '../context/BookingContext';
@@ -44,6 +44,7 @@ const BookingModal = () => {
     const [paymentFile, setPaymentFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [bookedRanges, setBookedRanges] = useState<BookedSlot[]>([]);
+    const [unavailableDates, setUnavailableDates] = useState<Record<string, string>>({});
     const [seasonalPromo, setSeasonalPromo] = useState<any>(null); // State for seasonal promo data
 
     // Fetch Seasonal Promo Data
@@ -58,7 +59,21 @@ const BookingModal = () => {
                 console.error("Error fetching seasonal promo for booking:", err);
             }
         };
+
+        // Fetch Administrative Blocks
+        const unsubscribe = onSnapshot(collection(db, 'unavailableDates'), (snapshot) => {
+            const blocks: Record<string, string> = {};
+            snapshot.docs.forEach(doc => {
+                const data = doc.data();
+                if (data.date) {
+                    blocks[data.date] = data.reason || 'Unavailable';
+                }
+            });
+            setUnavailableDates(blocks);
+        });
+
         fetchPromo();
+        return () => unsubscribe();
     }, []);
 
     // QOL States
@@ -294,6 +309,14 @@ const BookingModal = () => {
 
     const isDateDisabled = (day: number) => {
         const dateToCheck = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+        const year = dateToCheck.getFullYear();
+        const month = String(dateToCheck.getMonth() + 1).padStart(2, '0');
+        const dateDay = String(dateToCheck.getDate()).padStart(2, '0');
+        const dateString = `${year}-${month}-${dateDay}`;
+
+        // Check if blocked by admin
+        if (unavailableDates[dateString]) return true;
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         return dateToCheck < today;
@@ -331,14 +354,17 @@ const BookingModal = () => {
 
             const isSelected = formData.date === dateString;
             const isDisabled = isDateDisabled(day);
+            const blockReason = unavailableDates[dateString];
 
             days.push(
                 <div
                     key={day}
                     className={`calendar-day ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
                     onClick={() => handleDateClick(day)}
+                    title={blockReason ? `Unavailable: ${blockReason}` : ''}
                 >
                     {day}
+                    {blockReason && <span className="calendar-block-dot"></span>}
                 </div>
             );
         }
