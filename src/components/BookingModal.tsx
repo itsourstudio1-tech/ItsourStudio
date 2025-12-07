@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import paymentQr from '../assets/payment_qr.png';
 import './ModalStyles.css';
 import { useBooking } from '../context/BookingContext';
@@ -44,6 +44,22 @@ const BookingModal = () => {
     const [paymentFile, setPaymentFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [bookedRanges, setBookedRanges] = useState<BookedSlot[]>([]);
+    const [seasonalPromo, setSeasonalPromo] = useState<any>(null); // State for seasonal promo data
+
+    // Fetch Seasonal Promo Data
+    useEffect(() => {
+        const fetchPromo = async () => {
+            try {
+                const docSnap = await getDoc(doc(db, 'siteContent', 'seasonalPromo'));
+                if (docSnap.exists()) {
+                    setSeasonalPromo(docSnap.data());
+                }
+            } catch (err) {
+                console.error("Error fetching seasonal promo for booking:", err);
+            }
+        };
+        fetchPromo();
+    }, []);
 
     // QOL States
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -374,7 +390,18 @@ const BookingModal = () => {
         return `${formattedHour}:${minute} ${ampm}`;
     };
 
-    const selectedPackage = PACKAGES.find(p => p.id === formData.package);
+    // Dynamic Package List including Seasonal Promo
+    const allPackages = [
+        ...(seasonalPromo && seasonalPromo.isActive ? [{
+            id: 'seasonal-promo',
+            name: seasonalPromo.title,
+            price: parseInt(seasonalPromo.price.replace(/\D/g, '')) || 999,
+            duration: 45 // Default duration for promo
+        }] : []),
+        ...PACKAGES
+    ];
+
+    const selectedPackage = allPackages.find(p => p.id === formData.package);
     const basePrice = selectedPackage ? selectedPackage.price : 0;
     const extensionPrice = EXTENSION_RATES[formData.extensionDuration as keyof typeof EXTENSION_RATES] || 0;
     const totalPrice = basePrice + extensionPrice;
@@ -667,7 +694,7 @@ const BookingModal = () => {
                                     </div>
 
                                     <div className="packages-grid">
-                                        {PACKAGES.map(pkg => (
+                                        {allPackages.map(pkg => (
                                             <div
                                                 key={pkg.id}
                                                 className={`package-card ${formData.package === pkg.id ? 'selected' : ''}`}

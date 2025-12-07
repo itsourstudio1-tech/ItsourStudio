@@ -4,6 +4,7 @@ import { useBooking } from '../context/BookingContext';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot, orderBy, limit, doc, getDoc } from 'firebase/firestore';
 import FeedbackModal from '../components/FeedbackModal';
+import PromoSection from '../components/PromoSection';
 
 interface Feedback {
     id: string;
@@ -158,6 +159,8 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+
+            <PromoSection />
 
             {/* Services Preview Section */}
             <section id="services" className="services-section">

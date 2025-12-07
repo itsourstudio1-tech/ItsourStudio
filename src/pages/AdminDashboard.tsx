@@ -42,6 +42,21 @@ interface SiteContent {
         instagram: string;
         pinterest: string;
     };
+    promoBanner: {
+        isVisible: boolean;
+        text: string;
+        promoCode: string;
+    };
+    seasonalPromo: {
+        isActive: boolean;
+        title: string;
+        description: string;
+        price: string;
+        originalPrice: string;
+        imageUrl: string;
+        features: string[];
+        tag: string;
+    };
 }
 
 interface User {
@@ -100,6 +115,21 @@ const AdminDashboard = () => {
             facebook: "#",
             instagram: "#",
             pinterest: "#"
+        },
+        promoBanner: {
+            isVisible: false,
+            text: "Holiday Special! Get 20% OFF",
+            promoCode: "HOLIDAY20"
+        },
+        seasonalPromo: {
+            isActive: false,
+            title: "Holiday Special Session",
+            description: "Celebrate the season with our exclusive holiday package.",
+            price: "₱999",
+            originalPrice: "₱1,499",
+            imageUrl: "/gallery/duo4.webp",
+            features: ["45 Mins Session", "Unlimited Soft Copies", "Holiday Themed Props"],
+            tag: "Limited Time Offer"
         }
     });
 
@@ -248,6 +278,16 @@ const AdminDashboard = () => {
                 if (footerDoc.exists()) {
                     setContent(prev => ({ ...prev, footer: footerDoc.data() as any }));
                 }
+
+                const promoDoc = await getDoc(doc(db, 'siteContent', 'promoBanner'));
+                if (promoDoc.exists()) {
+                    setContent(prev => ({ ...prev, promoBanner: promoDoc.data() as any }));
+                }
+
+                const seasonalDoc = await getDoc(doc(db, 'siteContent', 'seasonalPromo'));
+                if (seasonalDoc.exists()) {
+                    setContent(prev => ({ ...prev, seasonalPromo: seasonalDoc.data() as any }));
+                }
             } catch (err) {
                 console.log("No content found, using defaults");
             }
@@ -255,7 +295,25 @@ const AdminDashboard = () => {
         fetchContent();
     }, []);
 
-    // Processing Bookings (Search, Filter, Sort)
+    // Safety Patch: Ensure seasonalPromo exists in state (for HMR/updates)
+    useEffect(() => {
+        if (!content.seasonalPromo) {
+            setContent(prev => ({
+                ...prev,
+                seasonalPromo: {
+                    isActive: false,
+                    title: "Holiday Special Session",
+                    description: "Celebrate the season with our exclusive holiday package.",
+                    price: "₱999",
+                    originalPrice: "₱1,499",
+                    imageUrl: "/gallery/duo4.webp",
+                    features: ["45 Mins Session", "Unlimited Soft Copies", "Holiday Themed Props"],
+                    tag: "Limited Time Offer"
+                }
+            }));
+        }
+    }, [content.seasonalPromo]);
+
     const processedBookings = bookings.filter(booking => {
         const term = searchTerm.toLowerCase();
         const matchesSearch = booking.fullName.toLowerCase().includes(term) ||
@@ -387,7 +445,7 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleSaveContent = async (section: 'about' | 'footer') => {
+    const handleSaveContent = async (section: 'about' | 'footer' | 'promoBanner' | 'seasonalPromo') => {
         try {
             await setDoc(doc(db, 'siteContent', section), content[section]);
             showToast('success', 'Saved', `${section.charAt(0).toUpperCase() + section.slice(1)} content updated successfully.`);
@@ -397,7 +455,7 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleContentChange = (section: 'about' | 'footer', field: string, value: string) => {
+    const handleContentChange = (section: 'about' | 'footer' | 'promoBanner' | 'seasonalPromo', field: string, value: any) => {
         setContent(prev => ({
             ...prev,
             [section]: {
@@ -882,6 +940,147 @@ const AdminDashboard = () => {
                             <h3>Content Management</h3>
                         </div>
                         <div style={{ padding: '2rem' }}>
+                            {/* Promo Banner Edit */}
+                            <div className="content-group" style={{ marginBottom: '3rem' }}>
+                                <h4 style={{ marginBottom: '1.5rem', borderBottom: '2px solid #eee', paddingBottom: '0.5rem' }}>Promotional Banner</h4>
+                                <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
+                                        <label className="switch">
+                                            <input
+                                                type="checkbox"
+                                                checked={content.promoBanner.isVisible}
+                                                onChange={(e) => handleContentChange('promoBanner', 'isVisible', e.target.checked)}
+                                            />
+                                            <span className="slider round"></span>
+                                        </label>
+                                        <span style={{ fontWeight: 500 }}>
+                                            {content.promoBanner.isVisible ? 'Active' : 'Inactive'}
+                                        </span>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
+                                        <div>
+                                            <label className="form-label">Banner Text</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                placeholder="e.g. Holiday Special! Get 20% OFF"
+                                                value={content.promoBanner.text}
+                                                onChange={(e) => handleContentChange('promoBanner', 'text', e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="form-label">Promo Code (Optional)</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                placeholder="e.g. HOLIDAY20"
+                                                value={content.promoBanner.promoCode}
+                                                onChange={(e) => handleContentChange('promoBanner', 'promoCode', e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <button
+                                        className="btn btn-primary"
+                                        style={{ width: 'fit-content' }}
+                                        onClick={() => handleSaveContent('promoBanner')}
+                                    >
+                                        Save Banner Settings
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Seasonal Promo Edit */}
+                            <div className="content-group" style={{ marginBottom: '3rem' }}>
+                                <h4 style={{ marginBottom: '1.5rem', borderBottom: '2px solid #eee', paddingBottom: '0.5rem' }}>Seasonal / Limited Time Section</h4>
+                                <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
+                                        <label className="switch">
+                                            <input
+                                                type="checkbox"
+                                                checked={content.seasonalPromo.isActive}
+                                                onChange={(e) => handleContentChange('seasonalPromo', 'isActive', e.target.checked)}
+                                            />
+                                            <span className="slider round"></span>
+                                        </label>
+                                        <span style={{ fontWeight: 500 }}>
+                                            {content.seasonalPromo.isActive ? 'Section Visible' : 'Section Hidden'}
+                                        </span>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                                        <div>
+                                            <label className="form-label">Title</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={content.seasonalPromo.title}
+                                                onChange={(e) => handleContentChange('seasonalPromo', 'title', e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="form-label">Tag (Badge)</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={content.seasonalPromo.tag}
+                                                onChange={(e) => handleContentChange('seasonalPromo', 'tag', e.target.value)}
+                                            />
+                                        </div>
+                                        <div style={{ gridColumn: '1 / -1' }}>
+                                            <label className="form-label">Description</label>
+                                            <textarea
+                                                className="form-input"
+                                                rows={3}
+                                                value={content.seasonalPromo.description}
+                                                onChange={(e) => handleContentChange('seasonalPromo', 'description', e.target.value)}
+                                            ></textarea>
+                                        </div>
+                                        <div>
+                                            <label className="form-label">Price</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={content.seasonalPromo.price}
+                                                onChange={(e) => handleContentChange('seasonalPromo', 'price', e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="form-label">Original Price (Strike-through)</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={content.seasonalPromo.originalPrice}
+                                                onChange={(e) => handleContentChange('seasonalPromo', 'originalPrice', e.target.value)}
+                                            />
+                                        </div>
+                                        <div style={{ gridColumn: '1 / -1' }}>
+                                            <label className="form-label">Image URL</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={content.seasonalPromo.imageUrl}
+                                                onChange={(e) => handleContentChange('seasonalPromo', 'imageUrl', e.target.value)}
+                                            />
+                                        </div>
+                                        <div style={{ gridColumn: '1 / -1' }}>
+                                            <label className="form-label">Features (Comma separated)</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={content.seasonalPromo.features.join(', ')}
+                                                onChange={(e) => handleContentChange('seasonalPromo', 'features', e.target.value.split(',').map(s => s.trim()))}
+                                            />
+                                        </div>
+                                    </div>
+                                    <button
+                                        className="btn btn-primary"
+                                        style={{ width: 'fit-content' }}
+                                        onClick={() => handleSaveContent('seasonalPromo')}
+                                    >
+                                        Save Seasonal Section
+                                    </button>
+                                </div>
+                            </div>
+
                             {/* About Section Edit */}
                             <div className="content-group" style={{ marginBottom: '3rem' }}>
                                 <h4 style={{ marginBottom: '1.5rem', borderBottom: '2px solid #eee', paddingBottom: '0.5rem' }}>About Section</h4>

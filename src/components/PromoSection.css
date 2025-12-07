@@ -1,0 +1,131 @@
+/* Promo Section Styles */
+.promo-section {
+    padding: var(--spacing-2xl) 0;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #fff5f5, #fff);
+}
+
+.promo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.promo-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    display: flex;
+    overflow: hidden;
+    max-width: 1000px;
+    width: 100%;
+    position: relative;
+    border: 1px solid rgba(191, 106, 57, 0.2);
+}
+
+.promo-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: #d31027;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    z-index: 10;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 10px rgba(211, 16, 39, 0.3);
+}
+
+.promo-image {
+    flex: 1;
+    min-height: 400px;
+    position: relative;
+}
+
+.promo-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.promo-content {
+    flex: 1;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+}
+
+.promo-title {
+    font-size: 2.5rem;
+    color: var(--color-dark);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.promo-description {
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.promo-features {
+    list-style: none;
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.promo-features li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #555;
+    font-weight: 500;
+}
+
+.promo-features li::before {
+    content: '✓';
+    color: var(--color-primary);
+    font-weight: bold;
+}
+
+.promo-price-tag {
+    font-size: 2rem;
+    color: var(--color-primary);
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.promo-original-price {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+    font-weight: 400;
+}
+
+@media (max-width: 900px) {
+    .promo-card {
+        flex-direction: column;
+    }
+
+    .promo-image {
+        min-height: 250px;
+        max-height: 300px;
+    }
+
+    .promo-content {
+        padding: 2rem;
+    }
+
+    .promo-title {
+        font-size: 2rem;
+    }
+}
