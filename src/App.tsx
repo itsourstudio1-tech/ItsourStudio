@@ -1,5 +1,5 @@
 import { type ReactElement } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -17,30 +17,39 @@ const ProtectedRoute = ({ children }: { children: ReactElement }) => {
     return isAdmin ? children : <Navigate to="/admin/login" replace />;
 };
 
+const AppContent = () => {
+    const location = useLocation();
+    const isAdminRoute = location.pathname.startsWith('/admin');
+
+    return (
+        <div className="app-container">
+            {!isAdminRoute && <Navbar />}
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/gallery" element={<Gallery />} />
+                <Route path="/email-test" element={<EmailTest />} />
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route
+                    path="/admin"
+                    element={
+                        <ProtectedRoute>
+                            <AdminDashboard />
+                        </ProtectedRoute>
+                    }
+                />
+            </Routes>
+            {!isAdminRoute && <Footer />}
+            <BookingModal />
+        </div>
+    );
+};
+
 function App() {
     return (
         <BookingProvider>
             <Router>
-                <div className="app-container">
-                    <Navbar />
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/services" element={<Services />} />
-                        <Route path="/gallery" element={<Gallery />} />
-                        <Route path="/email-test" element={<EmailTest />} />
-                        <Route path="/admin/login" element={<AdminLogin />} />
-                        <Route
-                            path="/admin"
-                            element={
-                                <ProtectedRoute>
-                                    <AdminDashboard />
-                                </ProtectedRoute>
-                            }
-                        />
-                    </Routes>
-                    <Footer />
-                    <BookingModal />
-                </div>
+                <AppContent />
             </Router>
         </BookingProvider>
     );

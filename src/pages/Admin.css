@@ -57,6 +57,34 @@
     gap: 1.25rem;
     transition: all 0.2s ease;
     border: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: 4px 0 0 4px;
+}
+
+.stat-card:nth-child(2)::before {
+    background: #3b82f6;
+    /* Blue */
+}
+
+.stat-card:nth-child(3)::before {
+    background: #10b981;
+    /* Green */
+}
+
+.stat-card:nth-child(4)::before {
+    background: #8b5cf6;
+    /* Purple */
 }
 
 .stat-card:hover {
@@ -133,14 +161,14 @@
 }
 
 .bookings-table th {
-    background-color: #f8f9fa;
-    color: #495057;
+    background-color: #f8fafc;
+    color: #475569;
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 1px solid #dee2e6;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #e2e8f0;
 }
 
 .bookings-table tr:hover td {
@@ -700,6 +728,7 @@
         opacity: 1;
     }
 }
+
 /* Switch Toggle */
 .switch {
     position: relative;
@@ -736,15 +765,15 @@
     transition: .4s;
 }
 
-input:checked + .slider {
+input:checked+.slider {
     background-color: var(--color-primary);
 }
 
-input:focus + .slider {
+input:focus+.slider {
     box-shadow: 0 0 1px var(--color-primary);
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
     transform: translateX(26px);
 }
 
@@ -756,3 +785,190 @@ input:checked + .slider:before {
     border-radius: 50%;
 }
 
+
+/* =========================================
+   New Admin Sidebar Layout (Premium UI)
+   ========================================= */
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    /* Light gray background for the whole page */
+    padding-top: 0;
+}
+
+/* Sidebar Styles */
+.admin-sidebar {
+    width: 280px;
+    background: #1e293b;
+    /* Dark Slate Blue */
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+    color: #e2e8f0;
+}
+
+.sidebar-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #9ca3af;
+    font-weight: 700;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1.25rem;
+    border-radius: 8px;
+    color: #94a3b8;
+    /* Lighter text for dark mode */
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #f8fafc;
+}
+
+.nav-item.active {
+    background-color: var(--color-primary);
+    /* Brand color background */
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(191, 106, 57, 0.3);
+}
+
+.nav-item.active::before {
+    display: none;
+    /* Remove the vertical bar for this style */
+}
+
+/* Override svg colors */
+.nav-item svg {
+    stroke: currentColor;
+}
+
+.logout-btn:hover {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+}
+
+/* Main Content Area */
+.admin-main {
+    flex: 1;
+    margin-left: 280px;
+    /* Offset for sidebar */
+    padding: 2rem;
+    width: calc(100% - 280px);
+}
+
+/* Enhancing Cards for Premium Feel */
+.bookings-section,
+.content-group,
+.admin-header,
+.stat-card {
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    border-radius: 16px;
+    /* Smooth corners */
+}
+
+.admin-header {
+    background: #ffffff;
+    margin-bottom: 2rem;
+}
+
+/* Responsive Sidebar (Mobile) */
+@media (max-width: 1024px) {
+    .admin-sidebar {
+        width: 80px;
+        /* Collapsed width */
+        padding: 2rem 0.75rem;
+        align-items: center;
+    }
+
+    .nav-item {
+        padding: 1rem;
+        justify-content: center;
+    }
+
+    .nav-label {
+        display: none;
+        /* Hide text on tablet */
+    }
+
+    .sidebar-header {
+        display: none;
+    }
+
+    .admin-main {
+        margin-left: 80px;
+        width: calc(100% - 80px);
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-layout {
+        flex-direction: column;
+    }
+
+    .admin-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        top: 0;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 1rem;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+    }
+
+    .nav-item {
+        padding: 0.75rem 1rem;
+        white-space: nowrap;
+    }
+
+    .nav-label {
+        display: block;
+        /* Show text again for horizontal scroll */
+    }
+
+    .admin-main {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+    }
+}

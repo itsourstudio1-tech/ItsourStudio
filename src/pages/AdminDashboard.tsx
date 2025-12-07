@@ -624,52 +624,61 @@ const AdminDashboard = () => {
     }
 
     return (
-        <div className="admin-dashboard">
-            <div className="admin-container">
+        <div className="admin-layout">
+            <aside className="admin-sidebar">
+                <div className="sidebar-header">
+                    <h1 className="sidebar-brand" style={{ fontSize: '1.5rem', fontFamily: 'var(--font-display)', color: 'var(--color-primary)', margin: 0 }}>ItsourStudio.</h1>
+                    <p className="sidebar-role" style={{ fontSize: '0.75rem', color: '#9ca3af', fontWeight: 600, marginTop: '0.25rem', letterSpacing: '1px' }}>ADMIN WORKSPACE</p>
+                </div>
+                <nav className="sidebar-nav">
+                    <button className={`nav-item ${activeTab === 'bookings' ? 'active' : ''}`} onClick={() => setActiveTab('bookings')}>
+                        <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        <span className="nav-label">Bookings</span>
+                    </button>
+                    {(sessionStorage.getItem('userRole') === 'admin' || !sessionStorage.getItem('userRole')) && (
+                        <button className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => setActiveTab('calendar')}>
+                            <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            <span className="nav-label">Calendar</span>
+                        </button>
+                    )}
+                    {(sessionStorage.getItem('userRole') === 'admin' || !sessionStorage.getItem('userRole')) && (
+                        <button className={`nav-item ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>
+                            <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            <span className="nav-label">Users</span>
+                        </button>
+                    )}
+                    <button className={`nav-item ${activeTab === 'gallery' ? 'active' : ''}`} onClick={() => setActiveTab('gallery')}>
+                        <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        <span className="nav-label">Gallery</span>
+                    </button>
+                    <button className={`nav-item ${activeTab === 'feedbacks' ? 'active' : ''}`} onClick={() => setActiveTab('feedbacks')}>
+                        <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <span className="nav-label">Feedbacks</span>
+                    </button>
+                    <button className={`nav-item ${activeTab === 'content' ? 'active' : ''}`} onClick={() => setActiveTab('content')}>
+                        <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        <span className="nav-label">Content</span>
+                    </button>
+                </nav>
+
+                <div className="sidebar-footer" style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #f0f0f0' }}>
+                    <button className="nav-item logout-btn" onClick={() => {
+                        if (window.confirm('Are you sure you want to logout?')) {
+                            sessionStorage.clear();
+                            window.location.href = '/';
+                        }
+                    }} style={{ color: '#ef4444', width: '100%' }}>
+                        <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span className="nav-label">Sign Out</span>
+                    </button>
+                </div>
+            </aside>
+
+            <main className="admin-main">
                 <header className="admin-header">
                     <div>
                         <h1 className="admin-title">Admin Dashboard</h1>
-                        <p className="admin-subtitle">Manage bookings and studio schedule</p>
-                    </div>
-                    <div style={{ display: 'flex', gap: '1rem' }}>
-                        <button
-                            className={`btn ${activeTab === 'bookings' ? 'btn-primary' : 'btn-outline'}`}
-                            onClick={() => setActiveTab('bookings')}
-                        >
-                            Bookings
-                        </button>
-                        <button
-                            className={`btn ${activeTab === 'feedbacks' ? 'btn-primary' : 'btn-outline'}`}
-                            onClick={() => setActiveTab('feedbacks')}
-                        >
-                            Feedbacks
-                        </button>
-                        <button
-                            className={`btn ${activeTab === 'content' ? 'btn-primary' : 'btn-outline'}`}
-                            onClick={() => setActiveTab('content')}
-                        >
-                            Content
-                        </button>
-                        {(sessionStorage.getItem('userRole') === 'admin' || !sessionStorage.getItem('userRole')) && (
-                            <button
-                                className={`btn ${activeTab === 'users' ? 'btn-primary' : 'btn-outline'}`}
-                                onClick={() => setActiveTab('users')}
-                            >
-                                Users
-                            </button>
-                        )}
-                        <button
-                            className={`btn ${activeTab === 'gallery' ? 'btn-primary' : 'btn-outline'}`}
-                            onClick={() => setActiveTab('gallery')}
-                        >
-                            Gallery
-                        </button>
-                        <button
-                            className={`btn ${activeTab === 'calendar' ? 'btn-primary' : 'btn-outline'}`}
-                            onClick={() => setActiveTab('calendar')}
-                        >
-                            Calendar
-                        </button>
+                        <p className="admin-subtitle">Manage bookings, gallery, and site content</p>
                     </div>
                 </header>
 
@@ -1272,78 +1281,7 @@ const AdminDashboard = () => {
                     </div>
                 )}
 
-                {activeTab === 'calendar' && (
-                    <div className="bookings-section">
-                        <div className="bookings-header">
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                <button className="btn btn-outline" onClick={handlePrevMonth}>&lt;</button>
-                                <h3 style={{ minWidth: '200px', textAlign: 'center' }}>
-                                    {calendarMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
-                                </h3>
-                                <button className="btn btn-outline" onClick={handleNextMonth}>&gt;</button>
-                            </div>
-                            <div style={{ display: 'flex', gap: '1rem', fontSize: '0.9rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                    <span style={{ width: '12px', height: '12px', background: '#d1e7dd', border: '1px solid #badbcc', borderRadius: '50%' }}></span>
-                                    Confirmed
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                    <span style={{ width: '12px', height: '12px', background: '#fff3cd', border: '1px solid #ffecb5', borderRadius: '50%' }}></span>
-                                    Pending
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                    <span style={{ width: '12px', height: '12px', background: '#f8d7da', border: '1px solid #f5c6cb', borderRadius: '50%' }}></span>
-                                    Rejected
-                                </div>
-                            </div>
-                        </div>
 
-                        <div className="calendar-container" style={{ padding: '2rem' }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px', background: '#ddd', border: '1px solid #ddd' }}>
-                                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                                    <div key={day} style={{ background: '#f8f9fa', padding: '1rem', textAlign: 'center', fontWeight: 'bold' }}>{day}</div>
-                                ))}
-
-                                {Array.from({ length: getFirstDayOfMonth(calendarMonth) }).map((_, i) => (
-                                    <div key={`empty-${i}`} style={{ background: '#fff', minHeight: '120px' }}></div>
-                                ))}
-
-                                {Array.from({ length: getDaysInMonth(calendarMonth) }).map((_, i) => {
-                                    const day = i + 1;
-                                    const dateStr = `${calendarMonth.getFullYear()}-${String(calendarMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                                    const dayBookings = bookings.filter(b => b.date === dateStr);
-
-                                    return (
-                                        <div key={day} style={{ background: '#fff', minHeight: '120px', padding: '0.5rem', borderTop: '1px solid #eee' }}>
-                                            <div style={{ textAlign: 'right', marginBottom: '0.5rem', color: '#999', fontSize: '0.9rem' }}>{day}</div>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                                                {dayBookings.map(b => (
-                                                    <div
-                                                        key={b.id}
-                                                        style={{
-                                                            fontSize: '0.75rem',
-                                                            padding: '2px 6px',
-                                                            borderRadius: '4px',
-                                                            background: b.status === 'confirmed' ? '#d1e7dd' : b.status === 'pending' ? '#fff3cd' : '#f8d7da',
-                                                            color: b.status === 'confirmed' ? '#0f5132' : b.status === 'pending' ? '#664d03' : '#842029',
-                                                            whiteSpace: 'nowrap',
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                            cursor: 'pointer'
-                                                        }}
-                                                        title={`${b.time} - ${b.fullName} (${b.package})`}
-                                                    >
-                                                        {b.time} {b.fullName.split(' ')[0]}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    </div>
-                )}
                 {activeTab === 'gallery' && (
                     <div className="bookings-section">
                         <div className="bookings-header">
@@ -1416,175 +1354,263 @@ const AdminDashboard = () => {
                         </div>
                     </div>
                 )}
-            </div>
 
-            {/* Gallery Upload Modal */}
-            <div className={`modal-overlay ${showGalleryModal ? 'active' : ''}`} onClick={() => setShowGalleryModal(false)}>
-                <div className="modal-card" onClick={e => e.stopPropagation()}>
-                    <div className="modal-header">
-                        <h3 className="modal-title">Upload to Gallery</h3>
-                        <button className="btn-close" onClick={() => setShowGalleryModal(false)}>&times;</button>
+                {activeTab === 'calendar' && (
+                    <div className="bookings-section">
+                        <div className="bookings-header">
+                            <h3>Studio Schedule</h3>
+                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                <button className="btn btn-outline" onClick={handlePrevMonth}>&lt;</button>
+                                <span style={{ fontWeight: 'bold', fontSize: '1.1rem', minWidth: '150px', textAlign: 'center' }}>
+                                    {calendarMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                                </span>
+                                <button className="btn btn-outline" onClick={handleNextMonth}>&gt;</button>
+                            </div>
+                        </div>
+                        <div style={{ padding: '2rem' }}>
+                            <div className="custom-calendar" style={{ border: 'none', maxWidth: '100%' }}>
+                                <div className="calendar-grid" style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(7, 1fr)',
+                                    gap: '1px',
+                                    background: '#eee',
+                                    border: '1px solid #eee'
+                                }}>
+                                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                                        <div key={day} style={{
+                                            background: '#f8f9fa',
+                                            padding: '1rem',
+                                            textAlign: 'center',
+                                            fontWeight: '600',
+                                            color: '#666'
+                                        }}>{day}</div>
+                                    ))}
+
+                                    {Array.from({ length: getFirstDayOfMonth(calendarMonth) }).map((_, i) => (
+                                        <div key={`empty-${i}`} style={{ background: '#fff' }}></div>
+                                    ))}
+
+                                    {Array.from({ length: getDaysInMonth(calendarMonth) }).map((_, i) => {
+                                        const day = i + 1;
+                                        const year = calendarMonth.getFullYear();
+                                        const month = String(calendarMonth.getMonth() + 1).padStart(2, '0');
+                                        const dateStr = `${year}-${month}-${String(day).padStart(2, '0')}`;
+
+                                        const dayBookings = bookings.filter(b => b.date === dateStr && b.status !== 'rejected');
+
+                                        return (
+                                            <div key={day} style={{
+                                                minHeight: '120px',
+                                                background: '#fff',
+                                                padding: '0.5rem',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                gap: '0.25rem'
+                                            }}>
+                                                <div style={{
+                                                    width: '100%',
+                                                    marginBottom: '0.5rem',
+                                                    fontWeight: 'bold',
+                                                    color: dayBookings.length > 0 ? '#333' : '#ccc'
+                                                }}>{day}</div>
+                                                {dayBookings.map(booking => (
+                                                    <div key={booking.id}
+                                                        style={{
+                                                            width: '100%',
+                                                            padding: '4px 8px',
+                                                            borderRadius: '4px',
+                                                            background: booking.status === 'confirmed' ? '#e8f5e9' : '#fff8e1',
+                                                            color: booking.status === 'confirmed' ? '#2e7d32' : '#f57c00',
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: '600',
+                                                            borderLeft: `3px solid ${booking.status === 'confirmed' ? '#2e7d32' : '#f57c00'}`,
+                                                            whiteSpace: 'nowrap',
+                                                            overflow: 'hidden',
+                                                            textOverflow: 'ellipsis',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                        title={`${booking.time} - ${booking.package} (${booking.fullName})`}
+                                                    >
+                                                        {booking.time} - {booking.fullName.split(' ')[0]}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <form onSubmit={handleSaveGalleryItem}>
-                        <div style={{ display: 'grid', gap: '1.5rem' }}>
-                            <div style={{
-                                border: '2px dashed #ddd',
-                                borderRadius: '8px',
-                                padding: '2rem',
-                                textAlign: 'center',
-                                cursor: 'pointer',
-                                position: 'relative',
-                                background: '#fafafa'
-                            }} onClick={() => document.getElementById('gallery-upload')?.click()}>
-                                {galleryPreview ? (
-                                    <img src={galleryPreview} alt="Preview" style={{ maxHeight: '200px', maxWidth: '100%', borderRadius: '4px' }} />
-                                ) : (
+                )}
+
+                {/* Gallery Upload Modal */}
+                <div className={`modal-overlay ${showGalleryModal ? 'active' : ''}`} onClick={() => setShowGalleryModal(false)}>
+                    <div className="modal-card" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3 className="modal-title">Upload to Gallery</h3>
+                            <button className="btn-close" onClick={() => setShowGalleryModal(false)}>&times;</button>
+                        </div>
+                        <form onSubmit={handleSaveGalleryItem}>
+                            <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                <div style={{
+                                    border: '2px dashed #ddd',
+                                    borderRadius: '8px',
+                                    padding: '2rem',
+                                    textAlign: 'center',
+                                    cursor: 'pointer',
+                                    position: 'relative',
+                                    background: '#fafafa'
+                                }} onClick={() => document.getElementById('gallery-upload')?.click()}>
+                                    {galleryPreview ? (
+                                        <img src={galleryPreview} alt="Preview" style={{ maxHeight: '200px', maxWidth: '100%', borderRadius: '4px' }} />
+                                    ) : (
+                                        <div>
+                                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                                            <p style={{ marginTop: '0.5rem', color: '#666' }}>Click to upload image (Max 15MB)</p>
+                                        </div>
+                                    )}
+                                    <input
+                                        id="gallery-upload"
+                                        type="file"
+                                        accept="image/*"
+                                        style={{ display: 'none' }}
+                                        onChange={handleGalleryFileChange}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="form-label">Category</label>
+                                    <select
+                                        className="form-input"
+                                        value={galleryForm.category}
+                                        onChange={e => setGalleryForm({ ...galleryForm, category: e.target.value as any })}
+                                    >
+                                        <option value="solo">Solo</option>
+                                        <option value="duo">Duo</option>
+                                        <option value="group">Group</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="form-label">Title / Caption</label>
+                                    <input
+                                        type="text"
+                                        className="form-input"
+                                        placeholder="e.g. Summer Photoshoot"
+                                        value={galleryForm.alt}
+                                        onChange={e => setGalleryForm({ ...galleryForm, alt: e.target.value })}
+                                    />
+                                </div>
+
+                                <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
+                                    Upload and Save
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                {/* User Modal */}
+                <div className={`modal-overlay ${showUserModal ? 'active' : ''}`} onClick={resetUserForm}>
+                    <div className="modal-card" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3 className="modal-title">{editingUser ? 'Edit User' : 'Add New User'}</h3>
+                            <button className="btn-close" onClick={resetUserForm}>&times;</button>
+                        </div>
+                        <form onSubmit={handleSaveUser}>
+                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                <div>
+                                    <label className="form-label">Full Name</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        className="form-input"
+                                        value={userForm.fullName}
+                                        onChange={e => setUserForm({ ...userForm, fullName: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="form-label">Email</label>
+                                    <input
+                                        type="email"
+                                        required
+                                        className="form-input"
+                                        value={userForm.email}
+                                        onChange={e => setUserForm({ ...userForm, email: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="form-label">Password</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        className="form-input"
+                                        placeholder={editingUser ? "Leave same or enter new" : "Enter password"}
+                                        value={userForm.password}
+                                        onChange={e => setUserForm({ ...userForm, password: e.target.value })}
+                                    />
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                     <div>
-                                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                                        <p style={{ marginTop: '0.5rem', color: '#666' }}>Click to upload image (Max 15MB)</p>
+                                        <label className="form-label">Role</label>
+                                        <select
+                                            className="form-input"
+                                            value={userForm.role}
+                                            onChange={e => setUserForm({ ...userForm, role: e.target.value })}
+                                        >
+                                            <option value="viewer">Viewer</option>
+                                            <option value="editor">Editor</option>
+                                            <option value="admin">Admin</option>
+                                        </select>
                                     </div>
+                                    <div>
+                                        <label className="form-label">Status</label>
+                                        <select
+                                            className="form-input"
+                                            value={userForm.status}
+                                            onChange={e => setUserForm({ ...userForm, status: e.target.value })}
+                                        >
+                                            <option value="active">Active</option>
+                                            <option value="inactive">Inactive</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem', width: '100%' }}>
+                                    {editingUser ? 'Update User' : 'Create User'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                {/* Image Preview Modal */}
+                <div className={`image-modal-overlay ${selectedImage ? 'active' : ''}`} onClick={() => setSelectedImage(null)}>
+                    <div className="image-modal-content" onClick={e => e.stopPropagation()}>
+                        <button className="close-modal-btn" onClick={() => setSelectedImage(null)}>&times;</button>
+                        {selectedImage && <img src={selectedImage} alt="Payment Proof" />}
+                    </div>
+                </div>
+
+                {/* Toast Notifications */}
+                <div className="toast-container">
+                    {toasts.map(toast => (
+                        <div key={toast.id} className={`toast toast-${toast.type}`} onClick={() => removeToast(toast.id)}>
+                            <div className="toast-icon">
+                                {toast.type === 'success' ? (
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                ) : (
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c62828" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                 )}
-                                <input
-                                    id="gallery-upload"
-                                    type="file"
-                                    accept="image/*"
-                                    style={{ display: 'none' }}
-                                    onChange={handleGalleryFileChange}
-                                />
                             </div>
-
-                            <div>
-                                <label className="form-label">Category</label>
-                                <select
-                                    className="form-input"
-                                    value={galleryForm.category}
-                                    onChange={e => setGalleryForm({ ...galleryForm, category: e.target.value as any })}
-                                >
-                                    <option value="solo">Solo</option>
-                                    <option value="duo">Duo</option>
-                                    <option value="group">Group</option>
-                                </select>
+                            <div className="toast-content">
+                                <span className="toast-title">{toast.title}</span>
+                                <span className="toast-message">{toast.message}</span>
                             </div>
-
-                            <div>
-                                <label className="form-label">Title / Caption</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    placeholder="e.g. Summer Photoshoot"
-                                    value={galleryForm.alt}
-                                    onChange={e => setGalleryForm({ ...galleryForm, alt: e.target.value })}
-                                />
-                            </div>
-
-                            <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-                                Upload and Save
-                            </button>
+                            <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#999' }}>&times;</button>
                         </div>
-                    </form>
+                    ))}
                 </div>
-            </div>
-
-            {/* User Modal */}
-            <div className={`modal-overlay ${showUserModal ? 'active' : ''}`} onClick={resetUserForm}>
-                <div className="modal-card" onClick={e => e.stopPropagation()}>
-                    <div className="modal-header">
-                        <h3 className="modal-title">{editingUser ? 'Edit User' : 'Add New User'}</h3>
-                        <button className="btn-close" onClick={resetUserForm}>&times;</button>
-                    </div>
-                    <form onSubmit={handleSaveUser}>
-                        <div style={{ display: 'grid', gap: '1rem' }}>
-                            <div>
-                                <label className="form-label">Full Name</label>
-                                <input
-                                    type="text"
-                                    required
-                                    className="form-input"
-                                    value={userForm.fullName}
-                                    onChange={e => setUserForm({ ...userForm, fullName: e.target.value })}
-                                />
-                            </div>
-                            <div>
-                                <label className="form-label">Email</label>
-                                <input
-                                    type="email"
-                                    required
-                                    className="form-input"
-                                    value={userForm.email}
-                                    onChange={e => setUserForm({ ...userForm, email: e.target.value })}
-                                />
-                            </div>
-                            <div>
-                                <label className="form-label">Password</label>
-                                <input
-                                    type="text"
-                                    required
-                                    className="form-input"
-                                    placeholder={editingUser ? "Leave same or enter new" : "Enter password"}
-                                    value={userForm.password}
-                                    onChange={e => setUserForm({ ...userForm, password: e.target.value })}
-                                />
-                            </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                <div>
-                                    <label className="form-label">Role</label>
-                                    <select
-                                        className="form-input"
-                                        value={userForm.role}
-                                        onChange={e => setUserForm({ ...userForm, role: e.target.value })}
-                                    >
-                                        <option value="viewer">Viewer</option>
-                                        <option value="editor">Editor</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="form-label">Status</label>
-                                    <select
-                                        className="form-input"
-                                        value={userForm.status}
-                                        onChange={e => setUserForm({ ...userForm, status: e.target.value })}
-                                    >
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem', width: '100%' }}>
-                                {editingUser ? 'Update User' : 'Create User'}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            {/* Image Preview Modal */}
-            <div className={`image-modal-overlay ${selectedImage ? 'active' : ''}`} onClick={() => setSelectedImage(null)}>
-                <div className="image-modal-content" onClick={e => e.stopPropagation()}>
-                    <button className="close-modal-btn" onClick={() => setSelectedImage(null)}>&times;</button>
-                    {selectedImage && <img src={selectedImage} alt="Payment Proof" />}
-                </div>
-            </div>
-
-            {/* Toast Notifications */}
-            <div className="toast-container">
-                {toasts.map(toast => (
-                    <div key={toast.id} className={`toast toast-${toast.type}`} onClick={() => removeToast(toast.id)}>
-                        <div className="toast-icon">
-                            {toast.type === 'success' ? (
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                            ) : (
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c62828" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                            )}
-                        </div>
-                        <div className="toast-content">
-                            <span className="toast-title">{toast.title}</span>
-                            <span className="toast-message">{toast.message}</span>
-                        </div>
-                        <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#999' }}>&times;</button>
-                    </div>
-                ))}
-            </div>
+            </main >
         </div >
     );
 };
