@@ -2468,10 +2468,7 @@ section {
 
 /* Featured Badge Animation */
 .featured-badge {
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  transform: translateX(-50%);
+  display: inline-block;
   background: var(--color-dark);
   color: white;
   padding: 0.5rem 1.5rem;
@@ -2480,6 +2477,7 @@ section {
   font-weight: 600;
   letter-spacing: 1px;
   text-transform: uppercase;
+  margin-bottom: var(--spacing-sm);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   animation: badgeBounce 2s ease-in-out infinite;
 }
@@ -2488,11 +2486,11 @@ section {
 
   0%,
   100% {
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
   }
 
   50% {
-    transform: translateX(-50%) translateY(-5px);
+    transform: translateY(-5px);
   }
 }
 
@@ -3723,4 +3721,159 @@ section {
     width: 50px;
     height: 50px;
   }
+}
+
+/* ===================================
+   CTA SECTION
+   =================================== */
+
+.cta-section {
+  position: relative;
+  padding: var(--spacing-2xl) 0;
+  color: white;
+  text-align: center;
+  overflow: hidden;
+  margin-top: 0;
+}
+
+/* Flat CTA Section */
+.cta-section::before,
+.cta-section::after {
+  display: none;
+}
+
+@keyframes filmScroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-20px);
+  }
+}
+
+.cta-section::before {
+  top: 6px;
+}
+
+.cta-section::after {
+  bottom: 6px;
+}
+
+
+
+/* Aurora Blobs (Re-implemented as separate elements or gradients on container to mix with dust) */
+/* Actually, let's keep the content cleaner. We will use a dedicated container for the aurora if we can, 
+   but since we are constrained to CSS edits, we'll append the Aurora effects to the .cta-content wrapper or leave them as is if they were working.
+   Wait, the previous Aurora edit failed/was partial. Let's re-apply the Aurora + Dust combo robustly here.
+*/
+
+/* Reset background for Aurora */
+.cta-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--color-terracotta);
+  /* Flat solid color */
+  z-index: 0;
+}
+
+/* Remove Aurora Animations */
+.cta-Aurora-1,
+.cta-Aurora-2 {
+  display: none;
+}
+
+/* End of Aurora/Dust Animations */
+
+@keyframes dustFloat {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-50px);
+  }
+}
+
+@keyframes auroraMove {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(10%, 10%) scale(1.1);
+  }
+
+  100% {
+    transform: translate(-5%, -5%) scale(1);
+  }
+}
+
+.cta-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.cta-title {
+  color: white;
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: var(--spacing-md);
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  /* Entrance Animation */
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+  animation-timeline: view();
+  animation-range: entry 20% cover 30%;
+}
+
+.cta-subtitle {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.15rem;
+  margin-bottom: var(--spacing-lg);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  font-weight: 300;
+  /* Entrance Animation */
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out 0.2s forwards;
+  animation-timeline: view();
+  animation-range: entry 20% cover 30%;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  flex-wrap: wrap;
+  /* Entrance Animation */
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out 0.4s forwards;
+  animation-timeline: view();
+  animation-range: entry 20% cover 30%;
+}
+
+.btn-outline-light {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(5px);
+  padding: 1.125rem 2.5rem;
+  font-size: 1.125rem;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+  background: white;
+  color: var(--color-terracotta);
+  border-color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }

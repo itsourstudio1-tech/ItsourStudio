@@ -17,12 +17,17 @@ const ProtectedRoute = ({ children }: { children: ReactElement }) => {
     return isAdmin ? children : <Navigate to="/admin/login" replace />;
 };
 
+import ScrollToTop from './components/ScrollToTop';
+import BackToTop from './components/BackToTop';
+
 const AppContent = () => {
     const location = useLocation();
     const isAdminRoute = location.pathname.startsWith('/admin');
 
     return (
         <div className="app-container">
+            <ScrollToTop />
+            <BackToTop />
             {!isAdminRoute && <Navbar />}
             <Routes>
                 <Route path="/" element={<Home />} />

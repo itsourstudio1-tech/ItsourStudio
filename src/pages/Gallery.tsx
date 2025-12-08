@@ -111,8 +111,49 @@ const Gallery = () => {
                     {/* Gallery Grid - Masonry Layout */}
                     <div className="gallery-masonry">
                         {filteredImages.length === 0 ? (
-                            <div style={{ padding: '2rem', textAlign: 'center', width: '100%', color: '#888' }}>
-                                <p>No photos found in this category yet.</p>
+                            <div style={{
+                                padding: '4rem 2rem',
+                                textAlign: 'center',
+                                width: '100%',
+                                gridColumn: '1 / -1',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                gap: '1rem'
+                            }}>
+                                <div style={{
+                                    fontSize: '3rem',
+                                    marginBottom: '1rem',
+                                    padding: '1.5rem',
+                                    background: 'var(--color-cream)',
+                                    borderRadius: '50%',
+                                    width: '100px',
+                                    height: '100px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: 'var(--color-terracotta)'
+                                }}>
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                        <circle cx="12" cy="13" r="4"></circle>
+                                    </svg>
+                                </div>
+                                <h3 style={{
+                                    color: 'var(--color-dark)',
+                                    fontSize: '1.5rem',
+                                    fontWeight: '600'
+                                }}>
+                                    No photos here yet
+                                </h3>
+                                <p style={{
+                                    color: 'var(--color-text-light)',
+                                    maxWidth: '400px',
+                                    lineHeight: '1.6'
+                                }}>
+                                    We haven't uploaded any {filter !== 'all' ? filter : ''} photos yet.
+                                    Check back soon or book your session to be the first!
+                                </p>
                             </div>
                         ) : (
                             filteredImages.map((image, index) => (

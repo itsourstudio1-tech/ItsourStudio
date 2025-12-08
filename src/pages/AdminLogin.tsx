@@ -61,12 +61,16 @@ const AdminLogin = () => {
         }
     };
 
+
     return (
-        <div className="admin-dashboard" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', paddingTop: 0 }}>
+        <div className="admin-login-wrapper">
             <div className="admin-login-card">
-                <h2 className="admin-title" style={{ fontSize: '2rem' }}>Studio Access</h2>
-                <p className="admin-subtitle" style={{ marginBottom: '1.5rem' }}>Login to manage operations</p>
-                <form onSubmit={handleLogin} className="login-form" style={{ marginTop: '1rem' }}>
+                <div className="admin-login-header">
+                    <h2 className="admin-title">Studio Access</h2>
+                    <p className="admin-subtitle">Login to manage operations</p>
+                </div>
+
+                <form onSubmit={handleLogin} className="login-form">
                     <div className="form-group">
                         <label className="form-label">Email / Username</label>
                         <input
@@ -89,11 +93,12 @@ const AdminLogin = () => {
                             required
                         />
                     </div>
-                    {error && <div style={{ color: '#c62828', fontSize: '0.9rem', textAlign: 'left', padding: '0.5rem', background: '#ffebee', borderRadius: '4px' }}>{error}</div>}
+
+                    {error && <div className="error-message">{error}</div>}
+
                     <button
                         type="submit"
                         className="btn btn-primary"
-                        style={{ width: '100%', padding: '1rem', fontSize: '1.1rem' }}
                         disabled={isLoading}
                     >
                         {isLoading ? 'Verifying...' : 'Login to Dashboard'}
@@ -102,6 +107,8 @@ const AdminLogin = () => {
             </div>
         </div>
     );
+
+
 };
 
 export default AdminLogin;

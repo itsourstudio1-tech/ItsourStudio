@@ -46,27 +46,9 @@ const Home = () => {
         description2: "Equipped with professional lighting, multiple backdrops, and an intuitive remote control system, our studio makes it easy for anyone to create stunning, professional-quality photos. Whether you need headshots for your career, content for social media, or simply want to celebrate yourself, we provide the perfect space and tools.",
         imageUrl: "/about-studio.jpg"
     });
-    const [showBackToTop, setShowBackToTop] = useState(false);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 300) {
-                setShowBackToTop(true);
-            } else {
-                setShowBackToTop(false);
-            }
-        };
 
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
 
-    const scrollToTop = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    };
 
     useEffect(() => {
         const fetchAbout = async () => {
@@ -344,7 +326,9 @@ const Home = () => {
                     <div className="services-grid">
                         {/* Solo Package */}
                         <div className="service-card">
-                            <div className="service-icon">👤</div>
+                            <div className="service-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </div>
                             <h3 className="service-title">Solo</h3>
                             <p className="service-duration">15 Minutes</p>
                             <div className="service-price">₱299</div>
@@ -362,7 +346,9 @@ const Home = () => {
                         {/* Basic Package (Best Selling) */}
                         <div className="service-card featured">
                             <div className="featured-badge">Best Selling</div>
-                            <div className="service-icon">✨</div>
+                            <div className="service-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg>
+                            </div>
                             <h3 className="service-title">Basic</h3>
                             <p className="service-duration">25 Minutes</p>
                             <div className="service-price">₱399</div>
@@ -380,7 +366,9 @@ const Home = () => {
 
                         {/* Barkada Package */}
                         <div className="service-card">
-                            <div className="service-icon">🎉</div>
+                            <div className="service-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
                             <h3 className="service-title">Barkada</h3>
                             <p className="service-duration">50 Minutes</p>
                             <div className="service-price">₱1,949</div>
@@ -469,21 +457,27 @@ const Home = () => {
                                 <div className="film-holes top"></div>
                                 <div className="about-features film-strip">
                                     <div className="about-feature frame">
-                                        <div className="feature-icon">📷</div>
+                                        <div className="feature-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                        </div>
                                         <div className="feature-text">
                                             <h4>Pro Gear</h4>
                                             <p>Top-tier equipment</p>
                                         </div>
                                     </div>
                                     <div className="about-feature frame">
-                                        <div className="feature-icon">🎨</div>
+                                        <div className="feature-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>
+                                        </div>
                                         <div className="feature-text">
                                             <h4>Creative</h4>
                                             <p>Limitless freedom</p>
                                         </div>
                                     </div>
                                     <div className="about-feature frame">
-                                        <div className="feature-icon">🔒</div>
+                                        <div className="feature-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                        </div>
                                         <div className="feature-text">
                                             <h4>Private</h4>
                                             <p>Your own space</p>
@@ -492,6 +486,24 @@ const Home = () => {
                                 </div>
                                 <div className="film-holes bottom"></div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Ready to Shoot CTA Section */}
+            <section className="cta-section">
+                <div className="cta-background">
+                    <div className="cta-Aurora-1"></div>
+                    <div className="cta-Aurora-2"></div>
+                </div>
+                <div className="container">
+                    <div className="cta-content">
+                        <h2 className="cta-title">Ready to Capture Your Story?</h2>
+                        <p className="cta-subtitle">Book your session today and create timeless memories with us.</p>
+                        <div className="cta-buttons">
+                            <button className="btn btn-secondary btn-large" onClick={() => openBooking()}>Book Now</button>
+                            <Link to="/services" className="btn btn-outline-light btn-large">View Packages</Link>
                         </div>
                     </div>
                 </div>
@@ -528,19 +540,27 @@ const Home = () => {
                             <div className="info-card">
                                 <h3>Studio Location</h3>
                                 <div className="info-item">
-                                    <span className="info-icon">📍</span>
+                                    <span className="info-icon">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                    </span>
                                     <p>123 Creative Avenue, Art District<br />Makati City, Philippines</p>
                                 </div>
                                 <div className="info-item">
-                                    <span className="info-icon">📞</span>
+                                    <span className="info-icon">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                    </span>
                                     <p>+63 912 345 6789</p>
                                 </div>
                                 <div className="info-item">
-                                    <span className="info-icon">✉️</span>
+                                    <span className="info-icon">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    </span>
                                     <p>hello@itsourstudio.com</p>
                                 </div>
                                 <div className="info-item">
-                                    <span className="info-icon">⏰</span>
+                                    <span className="info-icon">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    </span>
                                     <p>Mon - Sun: 10:00 AM - 9:00 PM</p>
                                 </div>
 
@@ -557,15 +577,7 @@ const Home = () => {
                     </div>
                 </div>
             </section>
-            <button
-                className={`back-to-top ${showBackToTop ? 'visible' : ''}`}
-                onClick={scrollToTop}
-                aria-label="Back to Top"
-            >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 19V5M12 5L5 12M12 5L19 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-            </button>
+
         </>
     );
 };
