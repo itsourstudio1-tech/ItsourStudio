@@ -1,0 +1,18 @@
+directories:
+  output: release
+  buildResources: build
+appId: com.itsourstudio.admin
+productName: Its Our Studio Admin
+files:
+  - filter:
+      - dist/**/*
+      - electron/**/*
+      - package.json
+win:
+  target: nsis
+  icon: public/logo/icon.ico
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+electronVersion: 39.2.6
