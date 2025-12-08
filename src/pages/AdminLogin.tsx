@@ -62,43 +62,89 @@ const AdminLogin = () => {
     };
 
     return (
-        <div className="admin-dashboard">
-            <div className="admin-login-card">
-                <h2 className="admin-title" style={{ fontSize: '2rem' }}>Studio Access</h2>
-                <p className="admin-subtitle" style={{ marginBottom: '1.5rem' }}>Login to manage operations</p>
-                <form onSubmit={handleLogin} className="login-form">
-                    <div className="form-group">
-                        <label className="form-label">Email / Username</label>
-                        <input
-                            type="text"
-                            className="form-input"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter email or 'admin'"
-                            required
-                        />
+        <div className="admin-login-page">
+            <div className="admin-login-overlay"></div>
+            <div className="admin-login-container">
+                <div className="login-card-glass">
+                    <div className="login-brand">
+                        <div className="brand-logo-circle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                                <circle cx="12" cy="13" r="3" />
+                            </svg>
+                        </div>
+                        <h1 className="brand-title">Studio Admin</h1>
+                        <p className="brand-subtitle">Enter your credentials to access the dashboard</p>
                     </div>
-                    <div className="form-group">
-                        <label className="form-label">Password</label>
-                        <input
-                            type="password"
-                            className="form-input"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter password"
-                            required
-                        />
+
+                    <form onSubmit={handleLogin} className="login-form-premium">
+                        <div className="input-group-premium">
+                            <label className="input-label-premium">Email / Username</label>
+                            <div className="input-wrapper">
+                                <span className="input-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                        <circle cx="12" cy="7" r="4" />
+                                    </svg>
+                                </span>
+                                <input
+                                    type="text"
+                                    className="input-field-premium"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="admin@studio.com"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="input-group-premium">
+                            <label className="input-label-premium">Password</label>
+                            <div className="input-wrapper">
+                                <span className="input-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                    </svg>
+                                </span>
+                                <input
+                                    type="password"
+                                    className="input-field-premium"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        {error && (
+                            <div className="login-error-message">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                                <span>{error}</span>
+                            </div>
+                        )}
+
+                        <button
+                            type="submit"
+                            className="btn-login-premium"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <span className="loading-spinner"></span>
+                            ) : (
+                                <>
+                                    <span>Sign In</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="login-footer">
+                        <p>© 2024 Itsour Studio. Secure Admin Portal.</p>
                     </div>
-                    {error && <div style={{ color: '#c62828', fontSize: '0.9rem', textAlign: 'left', padding: '0.5rem', background: '#ffebee', borderRadius: '4px' }}>{error}</div>}
-                    <button
-                        type="submit"
-                        className="btn btn-primary"
-                        style={{ width: '100%', padding: '1rem', fontSize: '1.1rem' }}
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Verifying...' : 'Login to Dashboard'}
-                    </button>
-                </form>
+                </div>
             </div>
         </div>
     );
