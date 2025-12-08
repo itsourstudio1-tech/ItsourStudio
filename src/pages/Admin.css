@@ -389,7 +389,7 @@
 }
 
 /* Generic Modal */
-.modal-overlay {
+.admin-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -406,12 +406,12 @@
     transition: opacity 0.3s;
 }
 
-.modal-overlay.active {
+.admin-modal-overlay.active {
     opacity: 1;
     pointer-events: auto;
 }
 
-.modal-card {
+.admin-modal-card {
     background: #ffffff;
     width: 100%;
     max-width: 500px;
@@ -425,7 +425,7 @@
     overflow-y: auto;
 }
 
-.modal-overlay.active .modal-card {
+.admin-modal-overlay.active .admin-modal-card {
     transform: translateY(0);
 }
 
@@ -785,6 +785,59 @@
     opacity: 0.7;
     cursor: not-allowed;
     transform: none;
+}
+
+/* Remember Me Checkbox */
+.login-options {
+    display: flex;
+    justify-content: flex-start;
+    padding: 0 0.5rem;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #4b5563;
+    user-select: none;
+}
+
+.remember-me input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.5);
+    margin: 0;
+    /* Reset default margin */
+    padding: 0;
+    box-shadow: none;
+    /* Reset generic input shadow */
+}
+
+.remember-me input[type="checkbox"]:checked {
+    background-color: var(--color-primary, #bf6a39);
+    border-color: var(--color-primary, #bf6a39);
+}
+
+.remember-me input[type="checkbox"]:checked::after {
+    content: '✓';
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.remember-me:hover input[type="checkbox"] {
+    border-color: var(--color-primary, #bf6a39);
 }
 
 .loading-spinner {

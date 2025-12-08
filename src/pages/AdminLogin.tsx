@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -9,18 +9,32 @@ const AdminLogin = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
     const navigate = useNavigate();
+
+    // Auto-redirect if already logged in
+
+    useEffect(() => {
+        const isSessionAdmin = sessionStorage.getItem('isAdmin') === 'true';
+        const isLocalAdmin = localStorage.getItem('isAdmin') === 'true';
+
+        if (isSessionAdmin || isLocalAdmin) {
+            navigate('/admin', { replace: true });
+        }
+    }, [navigate]);
 
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
 
+        const storage = rememberMe ? localStorage : sessionStorage;
+
         try {
             // 1. Check Hardcoded Super Admin (Backdoor/Legacy)
             if ((password === 'admin123' || password === 'studio2024') && (!email || email === 'admin')) {
-                sessionStorage.setItem('isAdmin', 'true');
-                sessionStorage.setItem('userRole', 'admin');
+                storage.setItem('isAdmin', 'true');
+                storage.setItem('userRole', 'admin');
                 navigate('/admin');
                 return;
             }
@@ -46,9 +60,9 @@ const AdminLogin = () => {
                     return;
                 }
 
-                sessionStorage.setItem('isAdmin', 'true');
-                sessionStorage.setItem('userRole', userData.role);
-                sessionStorage.setItem('userId', userDoc.id);
+                storage.setItem('isAdmin', 'true');
+                storage.setItem('userRole', userData.role);
+                storage.setItem('userId', userDoc.id);
                 navigate('/admin');
             } else {
                 setError('Invalid credentials');
@@ -116,6 +130,17 @@ const AdminLogin = () => {
                                     required
                                 />
                             </div>
+                        </div>
+
+                        <div className="login-options">
+                            <label className="remember-me">
+                                <input
+                                    type="checkbox"
+                                    checked={rememberMe}
+                                    onChange={(e) => setRememberMe(e.target.checked)}
+                                />
+                                <span>Keep me logged in</span>
+                            </label>
                         </div>
 
                         {error && (

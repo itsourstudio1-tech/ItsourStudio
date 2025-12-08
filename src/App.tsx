@@ -1,5 +1,5 @@
 import { type ReactElement } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -13,7 +13,7 @@ import { BookingProvider } from './context/BookingContext';
 import BookingModal from './components/BookingModal';
 
 const ProtectedRoute = ({ children }: { children: ReactElement }) => {
-    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+    const isAdmin = sessionStorage.getItem('isAdmin') === 'true' || localStorage.getItem('isAdmin') === 'true';
     return isAdmin ? children : <Navigate to="/admin/login" replace />;
 };
 
