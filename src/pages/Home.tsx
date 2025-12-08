@@ -408,36 +408,108 @@ const Home = () => {
                         <div className="about-image">
                             <div className="about-image-wrapper">
                                 <img src={aboutContent.imageUrl} alt="it's ouR Studio Photography Studio" id="aboutImage" />
+                                <div className="developing-badge">Developing Stories since 2024</div>
                             </div>
                         </div>
                         <div className="about-text">
                             <h2 className="section-title">{aboutContent.title}</h2>
+
+                            <div className="about-signature">
+                                "Capturing raw emotion in every frame."
+                            </div>
+
                             <p className="about-description">
                                 {aboutContent.description1}
                             </p>
                             <p className="about-description">
                                 {aboutContent.description2}
                             </p>
-                            <div className="about-features">
-                                <div className="about-feature">
-                                    <div className="feature-icon">📷</div>
-                                    <div className="feature-text">
-                                        <h4>Professional Equipment</h4>
-                                        <p>High-end cameras and lighting setup</p>
+
+                            <div className="film-strip-container">
+                                <div className="film-holes top"></div>
+                                <div className="about-features film-strip">
+                                    <div className="about-feature frame">
+                                        <div className="feature-icon">📷</div>
+                                        <div className="feature-text">
+                                            <h4>Pro Gear</h4>
+                                            <p>Top-tier equipment</p>
+                                        </div>
+                                    </div>
+                                    <div className="about-feature frame">
+                                        <div className="feature-icon">🎨</div>
+                                        <div className="feature-text">
+                                            <h4>Creative</h4>
+                                            <p>Limitless freedom</p>
+                                        </div>
+                                    </div>
+                                    <div className="about-feature frame">
+                                        <div className="feature-icon">🔒</div>
+                                        <div className="feature-text">
+                                            <h4>Private</h4>
+                                            <p>Your own space</p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="about-feature">
-                                    <div className="feature-icon">🎨</div>
-                                    <div className="feature-text">
-                                        <h4>Creative Freedom</h4>
-                                        <p>Multiple backdrops and props available</p>
-                                    </div>
+                                <div className="film-holes bottom"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Contact Section */}
+            <section id="contact" className="contact-section">
+                <div className="container">
+                    <div className="section-header">
+                        <h2 className="section-title">Get in Touch</h2>
+                        <p className="section-subtitle">We'd love to hear from you</p>
+                    </div>
+
+                    <div className="contact-container">
+                        <div className="contact-form-wrapper">
+                            <form className="contact-form">
+                                <div className="form-group">
+                                    <label htmlFor="contactName">Name</label>
+                                    <input type="text" id="contactName" placeholder="Your Name" />
                                 </div>
-                                <div className="about-feature">
-                                    <div className="feature-icon">🔒</div>
-                                    <div className="feature-text">
-                                        <h4>Private Sessions</h4>
-                                        <p>Completely private studio time</p>
+                                <div className="form-group">
+                                    <label htmlFor="contactEmail">Email</label>
+                                    <input type="email" id="contactEmail" placeholder="your@email.com" />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="contactMessage">Message</label>
+                                    <textarea id="contactMessage" rows={5} placeholder="How can we help you?"></textarea>
+                                </div>
+                                <button type="button" className="btn btn-primary">Send Message</button>
+                            </form>
+                        </div>
+
+                        <div className="contact-info-wrapper">
+                            <div className="info-card">
+                                <h3>Studio Location</h3>
+                                <div className="info-item">
+                                    <span className="info-icon">📍</span>
+                                    <p>123 Creative Avenue, Art District<br />Makati City, Philippines</p>
+                                </div>
+                                <div className="info-item">
+                                    <span className="info-icon">📞</span>
+                                    <p>+63 912 345 6789</p>
+                                </div>
+                                <div className="info-item">
+                                    <span className="info-icon">✉️</span>
+                                    <p>hello@itsourstudio.com</p>
+                                </div>
+                                <div className="info-item">
+                                    <span className="info-icon">⏰</span>
+                                    <p>Mon - Sun: 10:00 AM - 9:00 PM</p>
+                                </div>
+
+                                <div className="social-links-container">
+                                    <h4>Follow Us</h4>
+                                    <div className="social-links">
+                                        <a href="#" className="social-link">Facebook</a>
+                                        <a href="#" className="social-link">Instagram</a>
+                                        <a href="#" className="social-link">TikTok</a>
                                     </div>
                                 </div>
                             </div>

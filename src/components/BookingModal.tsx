@@ -103,14 +103,21 @@ const BookingModal = () => {
         }
     };
 
+    // Scroll to top only on step change
     useEffect(() => {
         const content = document.querySelector('.booking-content');
         if (content) {
             content.scrollTop = 0;
-            // Short delay to allow rendering to complete
+        }
+    }, [step]);
+
+    // Check scroll indicators on updates
+    useEffect(() => {
+        const content = document.querySelector('.booking-content');
+        if (content) {
             setTimeout(() => checkScroll(content), 100);
         }
-    }, [step, formData]); // Check on step change and form data change (e.g. extension options expansion)
+    }, [step, formData]);
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         checkScroll(e.currentTarget);

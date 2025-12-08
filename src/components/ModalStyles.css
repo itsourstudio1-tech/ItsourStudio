@@ -420,24 +420,37 @@
 }
 
 /* Form Inputs Generic */
+/* Form Inputs Generic */
 input[type="text"],
 input[type="email"],
 input[type="tel"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
 textarea {
     width: 100%;
-    padding: 1rem;
-    border: 2px solid #e2e8f0;
+    padding: 1rem 1.25rem;
+    border: 1px solid #e2e8f0;
     border-radius: 12px;
     font-size: 1rem;
     color: var(--color-dark);
-    transition: all 0.2s;
-    background: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #f8fafc;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 input:focus,
 textarea:focus {
+    background: #ffffff;
     border-color: var(--color-terracotta);
-    box-shadow: 0 0 0 4px rgba(191, 106, 57, 0.1);
+    box-shadow: 0 0 0 4px rgba(191, 106, 57, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
 }
 
 .form-row {
@@ -642,8 +655,8 @@ textarea:focus {
 }
 
 .form-group {
-    background: #f1f5f9;
-    margin: 2rem 0;
+    background: transparent;
+    margin-bottom: 2rem;
 }
 
 .date-time-container {
@@ -655,12 +668,12 @@ textarea:focus {
 
 .form-group label {
     display: block;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: var(--color-dark);
-    margin-bottom: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+    text-transform: none;
+    letter-spacing: normal;
 }
 
 .date-input-wrapper {
@@ -1466,11 +1479,12 @@ textarea:focus {
 
 /* Custom Calendar */
 .custom-calendar {
-    border: 2px solid #e2e8f0;
+    border: 1px solid #e2e8f0;
     border-radius: 12px;
-    background: white;
-    padding: 1rem;
+    background: #ffffff;
+    padding: 1.25rem;
     user-select: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 .calendar-header {
@@ -1613,12 +1627,13 @@ textarea:focus {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.75rem 1rem;
+    padding: 1rem 1.25rem;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    background: white;
+    background: #ffffff;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .extension-card:hover {

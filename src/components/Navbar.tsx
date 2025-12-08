@@ -63,6 +63,7 @@ const Navbar = () => {
                         </>
                     )}
                     <a href="/#about" className="nav-link" onClick={() => setMobileMenuOpen(false)}>About</a>
+                    <a href={location.pathname === '/' ? '#contact' : '/#contact'} className="nav-link" onClick={() => setMobileMenuOpen(false)}>Contact</a>
                     <button className="btn btn-primary" onClick={() => { openBooking(); setMobileMenuOpen(false); }}>Book Now</button>
                 </div>
                 <button className={`mobile-menu-btn ${mobileMenuOpen ? 'active' : ''}`} id="mobileMenuBtn" onClick={toggleMobileMenu}>
