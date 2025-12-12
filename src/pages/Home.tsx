@@ -103,6 +103,33 @@ const Home = () => {
         return () => unsubscribe();
     }, []);
 
+    // Fetch Dynamic Gallery Items
+    const [dynamicGalleryItems, setDynamicGalleryItems] = useState(galleryItems);
+
+    useEffect(() => {
+        const fetchGallery = async () => {
+            const q = query(collection(db, 'gallery'), orderBy('createdAt', 'desc'), limit(12));
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                const fetchedItems = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    return {
+                        src: data.src,
+                        category: data.category === 'solo' ? 'Portrait' : data.category === 'duo' ? 'Couple' : 'Group', // map to display names
+                        title: data.alt || 'Studio Session'
+                    };
+                });
+                // If we have dynamic items, use them. Otherwise fallback or merge.
+                // Strategy: Put dynamic items first, then static items if needed to fill space, or just use dynamic if enough.
+                // For now, let's prepend them to static items.
+                if (fetchedItems.length > 0) {
+                    setDynamicGalleryItems([...fetchedItems, ...galleryItems]);
+                }
+            });
+            return () => unsubscribe();
+        };
+        fetchGallery();
+    }, []);
+
     // Hero Interaction Logic
     const heroRef = useRef<HTMLElement>(null);
     const rafRef = useRef<number | null>(null);
@@ -310,7 +337,7 @@ const Home = () => {
                             }}
                         >
                             {/* Render items twice for infinite scroll effect */}
-                            {[...galleryItems, ...galleryItems].map((item, index) => (
+                            {[...dynamicGalleryItems, ...dynamicGalleryItems].map((item, index) => (
                                 <div className="gallery-card" key={index}>
                                     <div className="gallery-card-inner">
                                         <img src={item.src} alt={item.title} loading="lazy" draggable={false} />

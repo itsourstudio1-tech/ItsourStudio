@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, getDoc, setDoc, addDoc, serverTimestamp, where, getDocs } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { compressImage } from '../utils/compressImage';
 import './Admin.css';
 import './AdminAnalytics.css';
 
@@ -593,6 +595,8 @@ const AdminDashboard = () => {
         }
     };
 
+
+
     const handleSaveGalleryItem = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -602,19 +606,14 @@ const AdminDashboard = () => {
         }
 
         try {
-            // 1. Upload Image
-            const formData = new FormData();
-            formData.append('galleryImage', galleryFile);
+            // Optimize image before upload to save space (Free Tier friendly)
+            showToast('success', 'Optimizing', 'Compressing image...');
+            const compressedBlob = await compressImage(galleryFile);
 
-            const response = await fetch('http://localhost:3001/upload/gallery', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) throw new Error('Upload failed');
-
-            const data = await response.json();
-            const imageUrl = data.path;
+            // 1. Upload Image to Firebase Storage
+            const storageRef = ref(storage, `gallery/${Date.now()}_${galleryFile.name}`);
+            await uploadBytes(storageRef, compressedBlob);
+            const imageUrl = await getDownloadURL(storageRef);
 
             // 2. Save to Firestore
             await addDoc(collection(db, 'gallery'), {
