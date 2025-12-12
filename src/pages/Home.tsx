@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useBooking } from '../context/BookingContext';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot, orderBy, limit, doc, getDoc } from 'firebase/firestore';
 import FeedbackModal from '../components/FeedbackModal';
 import PromoSection from '../components/PromoSection';
+
 
 interface Feedback {
     id: string;
@@ -38,6 +39,24 @@ const galleryItems = [
 
 const Home = () => {
     const { openBooking } = useBooking();
+    const location = useLocation();
+
+    useEffect(() => {
+        // Scroll to top on mount if no specific scroll intent
+        if (!location.state?.scrollTo && !window.location.hash) {
+            window.scrollTo(0, 0);
+        }
+
+        // Handle state-based scrolling (from other pages)
+        if (location.state?.scrollTo) {
+            const element = document.getElementById(location.state.scrollTo);
+            if (element) {
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+    }, [location]);
     const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
     const [aboutContent, setAboutContent] = useState<AboutContent>({

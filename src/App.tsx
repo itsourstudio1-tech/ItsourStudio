@@ -35,6 +35,11 @@ const AppContent = () => {
                 <Route path="/gallery" element={<Gallery />} />
                 <Route path="/email-test" element={<EmailTest />} />
                 <Route path="/admin/login" element={<AdminLogin />} />
+
+                {/* Redirects for hash links that might be interpreted as routes */}
+                <Route path="/about" element={<Navigate to="/" replace state={{ scrollTo: 'about' }} />} />
+                <Route path="/contact" element={<Navigate to="/" replace state={{ scrollTo: 'contact' }} />} />
+
                 <Route
                     path="/admin"
                     element={
@@ -43,6 +48,9 @@ const AppContent = () => {
                         </ProtectedRoute>
                     }
                 />
+
+                {/* Catch all - redirects to home */}
+                <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             {!isAdminRoute && <Footer />}
             <BookingModal />

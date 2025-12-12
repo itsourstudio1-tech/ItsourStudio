@@ -116,9 +116,8 @@ body::before {
 }
 
 section {
-  animation: fadeInUp 0.8s ease-out forwards;
-  animation-timeline: view();
-  animation-range: entry 10% cover 20%;
+  /* Removed global scroll animation to prevent visibility issues */
+  opacity: 1;
 }
 
 .app-container {
@@ -442,6 +441,39 @@ p {
   transition: var(--transition-base);
 }
 
+.nav-link-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 0;
+  font: inherit;
+  cursor: pointer;
+  color: var(--color-dark);
+  transition: var(--transition-base);
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+}
+
+.nav-link-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transition: width var(--transition-base);
+}
+
+.nav-link-btn:hover::after {
+  width: 100%;
+}
+
+.navbar .nav-link-btn {
+  color: white;
+}
+
+
 /* ===================================
    HERO SECTION
    =================================== */
@@ -458,6 +490,10 @@ p {
   --mouse-x: 0.5;
   --mouse-y: 0.5;
   cursor: crosshair;
+  /* Ensure hero is always visible and not controlled by scroll entry */
+  animation: none;
+  animation-timeline: auto;
+  opacity: 1;
 }
 
 .hero-background {
