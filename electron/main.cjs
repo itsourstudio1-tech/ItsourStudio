@@ -16,13 +16,13 @@ function createWindow() {
 
     mainWindow.maximize();
 
+    const liveUrl = 'https://itsour-studio.vercel.app/admin/login';
+
     if (isDev) {
-        mainWindow.loadURL('http://localhost:5173/admin/login');
+        mainWindow.loadURL(liveUrl);
         mainWindow.webContents.openDevTools();
     } else {
-        // In production, load the built index.html
-        // We append the hash to navigate directly to admin login
-        mainWindow.loadFile(path.join(__dirname, '../dist/index.html'), { hash: '/admin/login' });
+        mainWindow.loadURL(liveUrl);
     }
 }
 

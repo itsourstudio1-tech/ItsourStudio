@@ -1,7 +1,7 @@
 {
-  "name": "temp_vite",
+  "name": "its-our-studio-admin",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "electron/main.cjs",
   "type": "module",
   "scripts": {
@@ -14,6 +14,7 @@
     "electron:build": "npm run build && electron-builder"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2.9.6",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
