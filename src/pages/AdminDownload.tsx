@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Admin.css'; // Reusing some admin styles for consistency
 
