@@ -5,6 +5,7 @@ import { db } from '../firebase';
 import { collection, query, where, onSnapshot, orderBy, limit, doc, getDoc } from 'firebase/firestore';
 import FeedbackModal from '../components/FeedbackModal';
 import PromoSection from '../components/PromoSection';
+import BackdropVisualizer from '../components/BackdropVisualizer';
 
 
 interface Feedback {
@@ -547,6 +548,8 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+
+            <BackdropVisualizer />
 
             {/* Ready to Shoot CTA Section */}
             <section className="cta-section">

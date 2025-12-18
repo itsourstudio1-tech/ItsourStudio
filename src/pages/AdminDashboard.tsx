@@ -218,7 +218,7 @@ const AdminDashboard = () => {
     const [seasonalImageFile, setSeasonalImageFile] = useState<File | null>(null);
     const [seasonalImagePreview, setSeasonalImagePreview] = useState<string>('');
     const [contentUploading, setContentUploading] = useState<'about' | 'seasonal' | null>(null);
-    const [activeContentTab, setActiveContentTab] = useState<'promoBanner' | 'seasonalPromo' | 'about' | 'footer'>('promoBanner');
+    const [activeContentTab, setActiveContentTab] = useState<'promoBanner' | 'seasonalPromo' | 'about' | 'footer' | 'backdrops'>('promoBanner');
     const [replacingImage, setReplacingImage] = useState<{ about: boolean; seasonal: boolean }>({ about: false, seasonal: false });
 
     // Calendar State
@@ -231,6 +231,28 @@ const AdminDashboard = () => {
     const [statusFilter, setStatusFilter] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' }>({ key: 'date', direction: 'desc' });
+
+    // Backdrop Management State
+    interface BackdropColor {
+        id: string;
+        name: string;
+        hex: string;
+        textColor: string;
+        accentColor: string;
+        description: string;
+        order: number;
+    }
+    const [backdrops, setBackdrops] = useState<BackdropColor[]>([]);
+    const [backdropForm, setBackdropForm] = useState<BackdropColor>({
+        id: '',
+        name: '',
+        hex: '#ffffff',
+        textColor: '#000000',
+        accentColor: '#888888',
+        description: '',
+        order: 0
+    });
+    const [editingBackdropId, setEditingBackdropId] = useState<string | null>(null);
 
     // Toast Helper
     const showToast = (type: 'success' | 'error', title: string, message: string) => {
@@ -328,6 +350,22 @@ const AdminDashboard = () => {
             showToast('error', 'Error', 'Failed to fetch gallery items');
         });
 
+        return () => unsubscribe();
+    }, []);
+
+    // Fetch Backdrops Real-time
+    useEffect(() => {
+        const q = query(collection(db, 'backdrops'), orderBy('order', 'asc'));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const backdropsData = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })) as BackdropColor[];
+            setBackdrops(backdropsData);
+        }, (error) => {
+            console.error("Error fetching backdrops:", error);
+            showToast('error', 'Error', 'Failed to fetch backdrops');
+        });
         return () => unsubscribe();
     }, []);
 
@@ -810,6 +848,72 @@ const AdminDashboard = () => {
             } catch (error) {
                 console.error("Error deleting gallery item:", error);
                 showToast('error', 'Error', 'Failed to delete image');
+            }
+        }
+    };
+
+    // Backdrop Management Functions
+    const handleEditBackdrop = (backdrop: BackdropColor) => {
+        setEditingBackdropId(backdrop.id);
+        setBackdropForm(backdrop);
+    };
+
+    const handleCancelBackdropEdit = () => {
+        setEditingBackdropId(null);
+        setBackdropForm({
+            id: '',
+            name: '',
+            hex: '#ffffff',
+            textColor: '#000000',
+            accentColor: '#888888',
+            description: '',
+            order: backdrops.length + 1
+        });
+    };
+
+    const handleSaveBackdrop = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        try {
+            if (editingBackdropId) {
+                // Update
+                const docRef = doc(db, 'backdrops', editingBackdropId);
+                await setDoc(docRef, { ...backdropForm, id: editingBackdropId }, { merge: true });
+                showToast('success', 'Updated', 'Backdrop updated successfully');
+            } else {
+                // Create
+                // Use name as ID (slugified) or auto-gen. Let's use name-based ID for consistency with "white", "black" etc if simple. 
+                // However, user might type anything. Let's use Date.now() or auto-id if name isn't simple. 
+                // But current ID schema is 'white', 'beige'. 
+                // Let's generate a slug from name.
+                let newId = backdropForm.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                if (!newId) newId = `backdrop-${Date.now()}`;
+
+                // Check if exists
+                const existing = backdrops.find(b => b.id === newId);
+                if (existing) {
+                    showToast('error', 'Duplicate', 'A backdrop with this name/ID already exists.');
+                    return;
+                }
+
+                await setDoc(doc(db, 'backdrops', newId), { ...backdropForm, id: newId });
+                showToast('success', 'Created', 'Backdrop created successfully');
+            }
+            handleCancelBackdropEdit();
+        } catch (error) {
+            console.error("Error saving backdrop:", error);
+            showToast('error', 'Error', 'Failed to save backdrop');
+        }
+    };
+
+    const handleDeleteBackdrop = async (id: string) => {
+        if (window.confirm("Delete this backdrop? This will remove it from the visualizer.")) {
+            try {
+                await deleteDoc(doc(db, 'backdrops', id));
+                showToast('success', 'Deleted', 'Backdrop deleted');
+            } catch (error) {
+                console.error("Error deleting backdrop:", error);
+                showToast('error', 'Error', 'Failed to delete backdrop');
             }
         }
     };
@@ -1488,6 +1592,18 @@ const AdminDashboard = () => {
                                     </div>
                                     <div className="nav-arrow">›</div>
                                 </button>
+
+                                <button
+                                    className={`content-nav-btn ${activeContentTab === 'backdrops' ? 'active' : ''}`}
+                                    onClick={() => setActiveContentTab('backdrops')}
+                                >
+                                    <div className="nav-icon">🎨</div>
+                                    <div className="nav-label">
+                                        <span>Backdrops</span>
+                                        <small>Colors & descriptions</small>
+                                    </div>
+                                    <div className="nav-arrow">›</div>
+                                </button>
                             </div>
 
                             {/* Content Main Area */}
@@ -1934,6 +2050,187 @@ const AdminDashboard = () => {
                                                     Save Changes
                                                 </button>
                                             </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Backdrop Management */}
+                                {activeContentTab === 'backdrops' && (
+                                    <div className="content-card">
+                                        <div className="card-header">
+                                            <h4>Backdrop Colors</h4>
+                                            <p>Manage the colors available in the "Select Your Vibe" visualizer.</p>
+                                        </div>
+                                        <div className="card-body">
+
+                                            {/* Add/Edit Form */}
+                                            <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '8px', marginBottom: '2rem', border: '1px solid #e2e8f0' }}>
+                                                <h5 style={{ margin: '0 0 1rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    {editingBackdropId ? 'Edit Backdrop' : 'Add New Backdrop'}
+                                                    {editingBackdropId && (
+                                                        <button
+                                                            className="btn btn-outline"
+                                                            onClick={handleCancelBackdropEdit}
+                                                            style={{ fontSize: '0.8rem', padding: '0.2rem 0.6rem' }}
+                                                        >
+                                                            Cancel Edit
+                                                        </button>
+                                                    )}
+                                                </h5>
+                                                <form onSubmit={handleSaveBackdrop}>
+                                                    <div className="form-grid two-col">
+                                                        <div>
+                                                            <label className="form-label">Display Name</label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-input"
+                                                                placeholder="e.g. Midnight Black"
+                                                                value={backdropForm.name}
+                                                                onChange={e => setBackdropForm({ ...backdropForm, name: e.target.value })}
+                                                                required
+                                                            />
+                                                        </div>
+                                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem' }}>
+                                                            <div>
+                                                                <label className="form-label">Hex Color</label>
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                                    <input
+                                                                        type="color"
+                                                                        value={backdropForm.hex}
+                                                                        onChange={e => setBackdropForm({ ...backdropForm, hex: e.target.value })}
+                                                                        style={{ width: '40px', height: '40px', padding: 0, border: 'none', cursor: 'pointer' }}
+                                                                    />
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-input"
+                                                                        value={backdropForm.hex}
+                                                                        onChange={e => setBackdropForm({ ...backdropForm, hex: e.target.value })}
+                                                                        style={{ fontSize: '0.8rem' }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <label className="form-label">Text Color</label>
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                                    <input
+                                                                        type="color"
+                                                                        value={backdropForm.textColor}
+                                                                        onChange={e => setBackdropForm({ ...backdropForm, textColor: e.target.value })}
+                                                                        style={{ width: '40px', height: '40px', padding: 0, border: 'none', cursor: 'pointer' }}
+                                                                    />
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-input"
+                                                                        value={backdropForm.textColor}
+                                                                        onChange={e => setBackdropForm({ ...backdropForm, textColor: e.target.value })}
+                                                                        style={{ fontSize: '0.8rem' }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <label className="form-label">Accent</label>
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                                    <input
+                                                                        type="color"
+                                                                        value={backdropForm.accentColor}
+                                                                        onChange={e => setBackdropForm({ ...backdropForm, accentColor: e.target.value })}
+                                                                        style={{ width: '40px', height: '40px', padding: 0, border: 'none', cursor: 'pointer' }}
+                                                                    />
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-input"
+                                                                        value={backdropForm.accentColor}
+                                                                        onChange={e => setBackdropForm({ ...backdropForm, accentColor: e.target.value })}
+                                                                        style={{ fontSize: '0.8rem' }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="full-width">
+                                                            <label className="form-label">Description (for Visualizer)</label>
+                                                            <textarea
+                                                                className="form-input"
+                                                                rows={2}
+                                                                placeholder="Short, elegant description of the vibe..."
+                                                                value={backdropForm.description}
+                                                                onChange={e => setBackdropForm({ ...backdropForm, description: e.target.value })}
+                                                                required
+                                                            ></textarea>
+                                                        </div>
+                                                        <div>
+                                                            <label className="form-label">Sort Order</label>
+                                                            <input
+                                                                type="number"
+                                                                className="form-input"
+                                                                value={backdropForm.order}
+                                                                onChange={e => setBackdropForm({ ...backdropForm, order: parseInt(e.target.value) || 0 })}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+                                                        <button type="submit" className="btn btn-primary">
+                                                            {editingBackdropId ? 'Update Backdrop' : 'Add Backdrop'}
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+
+                                            {/* List of Backdrops */}
+                                            <h5 style={{ marginBottom: '1rem' }}>Current Backdrops ({backdrops.length})</h5>
+                                            <div style={{ display: 'grid', gap: '0.75rem' }}>
+                                                {backdrops.map((bd) => (
+                                                    <div key={bd.id} style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        background: '#fff',
+                                                        border: '1px solid #eee',
+                                                        padding: '0.75rem 1rem',
+                                                        borderRadius: '6px',
+                                                        gap: '1rem'
+                                                    }}>
+                                                        <div style={{
+                                                            width: '32px',
+                                                            height: '32px',
+                                                            borderRadius: '50%',
+                                                            backgroundColor: bd.hex,
+                                                            border: '1px solid #ddd',
+                                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                                        }}></div>
+
+                                                        <div style={{ flex: 1 }}>
+                                                            <div style={{ fontWeight: 600 }}>{bd.name}</div>
+                                                            <div style={{ fontSize: '0.85rem', color: '#666' }}>{bd.description}</div>
+                                                        </div>
+
+                                                        <div style={{ textAlign: 'right', fontSize: '0.8rem', color: '#888', marginRight: '1rem' }}>
+                                                            Order: {bd.order}
+                                                        </div>
+
+                                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                            <button
+                                                                className="action-btn"
+                                                                title="Edit"
+                                                                onClick={() => handleEditBackdrop(bd)}
+                                                            >
+                                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                                            </button>
+                                                            <button
+                                                                className="action-btn"
+                                                                title="Delete"
+                                                                onClick={() => handleDeleteBackdrop(bd.id)}
+                                                            >
+                                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                                {backdrops.length === 0 && (
+                                                    <div style={{ textAlign: 'center', padding: '2rem', color: '#999', fontStyle: 'italic' }}>
+                                                        No backdrops found. Add one above.
+                                                    </div>
+                                                )}
+                                            </div>
+
                                         </div>
                                     </div>
                                 )}
