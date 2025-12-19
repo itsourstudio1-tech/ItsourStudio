@@ -3101,6 +3101,100 @@ section {
 .services-page {
   position: relative;
   overflow-x: hidden;
+  background-color: #fcf9f6;
+}
+
+/* Background Texture Pattern for Services Page */
+.services-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(var(--color-terracotta) 2.5px, transparent 2.5px),
+    radial-gradient(var(--color-terracotta) 2.5px, transparent 2.5px);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+  opacity: 0.15;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Decorative Gradient Orbs */
+.services-page::after {
+  content: '';
+  position: fixed;
+  top: -15%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%);
+  opacity: 0.1;
+  filter: blur(80px);
+  z-index: 0;
+  pointer-events: none;
+  animation: floatOrb 20s ease-in-out infinite alternate;
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(30px, 30px) scale(1.1);
+  }
+}
+
+/* Decorative Floating Orbs */
+.services-orb {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(100px);
+}
+
+.services-orb-1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--color-terracotta) 0%, transparent 70%);
+  top: 10%;
+  right: -10%;
+  opacity: 0.12;
+  animation: orbDrift1 25s ease-in-out infinite alternate;
+}
+
+.services-orb-2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--color-brown) 0%, transparent 70%);
+  bottom: 10%;
+  left: -5%;
+  opacity: 0.1;
+  animation: orbDrift2 30s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes orbDrift1 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(-40px, 40px) scale(1.15);
+  }
+}
+
+@keyframes orbDrift2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
 }
 
 .service-fullscreen {
@@ -3111,10 +3205,15 @@ section {
   justify-content: center;
   position: relative;
   overflow: hidden;
+  z-index: 1;
+  background: transparent;
 }
 
 .service-fullscreen.alt-bg {
-  background: linear-gradient(135deg, var(--color-cream) 0%, #ffffff 100%);
+  background: rgba(255, 244, 230, 0.4);
+  backdrop-filter: blur(2px);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .service-split {

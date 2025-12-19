@@ -240,6 +240,10 @@ const Services = () => {
 
     return (
         <div className="services-page">
+            {/* Decorative Elements */}
+            <div className="services-orb services-orb-1"></div>
+            <div className="services-orb services-orb-2"></div>
+
             {/* Side Navigation - Minimalist Slider */}
             <nav className="side-nav">
                 <div
