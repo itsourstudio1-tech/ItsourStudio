@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ItsOurStudioAdmin</string>
+    <string name="title_activity_main">ItsOurStudioAdmin</string>
+    <string name="package_name">com.itsourstudio.admin</string>
+    <string name="custom_url_scheme">com.itsourstudio.admin</string>
+</resources>

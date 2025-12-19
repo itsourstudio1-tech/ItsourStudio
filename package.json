@@ -13,7 +13,9 @@
     "electron:dev": "concurrently -k \"cross-env BROWSER=none npm run dev\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
     "electron:build": "npm run build && electron-builder",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:build": "tauri build",
+    "mobile:sync": "npm run build && npx cap sync",
+    "mobile:open": "npx cap open android"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.9.6",
@@ -30,6 +32,9 @@
     "wait-on": "^9.0.3"
   },
   "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/cli": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
