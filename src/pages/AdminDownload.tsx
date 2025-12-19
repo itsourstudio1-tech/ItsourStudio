@@ -12,14 +12,14 @@ const AdminDownload = () => {
                 <div className="download-card stagger-in">
                     <div className="download-card-header">
                         <div className="app-icon-wrapper float-animation">
-                            <img src="/logo/android-chrome-192x192.png" alt="App Icon" className="app-icon" />
+                            <img src="/logo/android-chrome-512x512.png" alt="App Icon" className="app-icon" />
                             <div className="icon-glow"></div>
                         </div>
                         <div className="header-text">
-                            <h1>It's ouR Studio <span className="highlight">Admin</span></h1>
+                            <h1>IoS <span className="highlight">Admin</span></h1>
                             <div className="version-badge">
                                 <span className="pulse-dot"></span>
-                                v1.0.0 Stable
+                                v1.1.0 Stable
                             </div>
                         </div>
                     </div>
@@ -27,11 +27,11 @@ const AdminDownload = () => {
                     <div className="features-grid">
                         <div className="feature-item fade-slide-up" style={{ animationDelay: '0.1s' }}>
                             <div className="feature-icon-box">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
                             </div>
                             <div className="feature-content">
-                                <h3>Fast</h3>
-                                <p>Instant startup</p>
+                                <h3>Multi-Platform</h3>
+                                <p>Desktop & Mobile</p>
                             </div>
                         </div>
                         <div className="feature-item fade-slide-up" style={{ animationDelay: '0.2s' }}>
@@ -40,31 +40,48 @@ const AdminDownload = () => {
                             </div>
                             <div className="feature-content">
                                 <h3>Secure</h3>
-                                <p>Safe ecosystem</p>
+                                <p>Encrypted Data</p>
                             </div>
                         </div>
                         <div className="feature-item fade-slide-up" style={{ animationDelay: '0.3s' }}>
                             <div className="feature-icon-box">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                             </div>
                             <div className="feature-content">
-                                <h3>Tools</h3>
-                                <p>All-in-one suite</p>
+                                <h3>Native</h3>
+                                <p>Optimized Build</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="action-area fade-slide-up" style={{ animationDelay: '0.4s' }}>
-                        <a href="/downloads/Its_Our_Studio_Admin_Setup.exe" className="download-button" download>
-                            <div className="btn-shine"></div>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="dl-icon">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
-                            </svg>
-                            <span className="btn-text">Download App</span>
-                            <span className="btn-meta">Windows (x64) • 4.5MB</span>
-                        </a>
+                        <div className="download-options-column">
+                            <a href="/downloads/Its_Our_Studio_Admin_Setup.exe" className="download-button windows" download>
+                                <div className="btn-shine"></div>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="dl-icon">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <div className="btn-label-group">
+                                    <span className="btn-text">Download for Windows</span>
+                                    <span className="btn-meta">v1.1.0 • 4.5MB</span>
+                                </div>
+                            </a>
+
+                            <a href="/downloads/IoS_Admin.apk" className="download-button android" download>
+                                <div className="btn-shine"></div>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="dl-icon">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <div className="btn-label-group">
+                                    <span className="btn-text">Download for Android</span>
+                                    <span className="btn-meta">APK • 7.1MB</span>
+                                </div>
+                            </a>
+                        </div>
 
                         <button onClick={() => navigate('/admin/login')} className="web-link">
                             <span>Continue to Web Version</span>
@@ -76,9 +93,10 @@ const AdminDownload = () => {
 
             <style>{`
                 .admin-download-container {
-                    height: 100vh;
+                    min-height: 100vh;
                     width: 100vw;
-                    overflow: hidden;
+                    overflow-x: hidden;
+                    overflow-y: auto;
                     background: #050505;
                     display: flex;
                     align-items: center;
@@ -86,6 +104,7 @@ const AdminDownload = () => {
                     color: #fff;
                     font-family: 'League Spartan', sans-serif;
                     position: relative;
+                    padding: 40px 0;
                 }
 
                 .animated-bg {
@@ -266,38 +285,54 @@ const AdminDownload = () => {
                     text-overflow: ellipsis;
                 }
 
-                /* Action Area */
                 .action-area {
                     display: flex;
                     flex-direction: column;
                     gap: 14px;
                 }
 
+                .download-options-column {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                }
+
                 .download-button {
                     position: relative;
-                    background: #bf6a39;
+                    background: rgba(255, 255, 255, 0.03);
                     color: #fff;
                     text-decoration: none;
-                    padding: 14px;
-                    border-radius: 16px;
+                    padding: 16px;
+                    border-radius: 18px;
                     display: flex;
                     flex-direction: row;
                     align-items: center;
-                    justify-content: center;
-                    gap: 10px;
+                    justify-content: flex-start;
+                    gap: 16px;
                     overflow: hidden;
-                    transition: all 0.3s ease;
-                    border: 1px solid rgba(255,255,255,0.1);
+                    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+                    border: 1px solid rgba(255,255,255,0.08);
+                }
+
+                .download-button.windows {
+                    background: linear-gradient(135deg, #bf6a39, #8e4d29);
+                }
+
+                .download-button.android {
+                    background: linear-gradient(135deg, #34495e, #2c3e50);
                 }
 
                 .download-button:hover {
-                    background: #d47e4b;
-                    transform: scale(1.02);
-                    box-shadow: 0 10px 30px rgba(191, 106, 57, 0.3);
+                    transform: translateY(-2px);
+                    box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+                    border-color: rgba(255,255,255,0.2);
                 }
 
-                .download-button:active {
-                    transform: scale(0.98);
+                .btn-label-group {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    text-align: left;
                 }
 
                 .btn-shine {
