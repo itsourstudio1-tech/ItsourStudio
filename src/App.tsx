@@ -1,5 +1,6 @@
 import { type ReactElement, useState, useEffect, useCallback, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -41,7 +42,7 @@ const AppContent = ({ onRouteChange }: { onRouteChange: () => void }) => {
             <BackToTop />
             {!isAdminRoute && <Navbar />}
             <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={Capacitor.isNativePlatform() ? <Navigate to="/admin" replace /> : <Home />} />
                 <Route path="/services" element={<Services />} />
                 <Route path="/gallery" element={<Gallery />} />
                 <Route path="/email-test" element={<EmailTest />} />
@@ -61,8 +62,8 @@ const AppContent = ({ onRouteChange }: { onRouteChange: () => void }) => {
                     }
                 />
 
-                {/* Catch all - redirects to home */}
-                <Route path="*" element={<Navigate to="/" replace />} />
+                {/* Catch all - redirects to home or admin if native */}
+                <Route path="*" element={<Navigate to={Capacitor.isNativePlatform() ? "/admin" : "/"} replace />} />
             </Routes>
             {!isAdminRoute && <Footer />}
             <BookingModal />
