@@ -147,6 +147,9 @@ const Home = () => {
     const rafRef = useRef<number | null>(null);
 
     const handleHeroMouseMove = useCallback((e: React.MouseEvent) => {
+        // Disable parallax on mobile (640px or less)
+        if (window.innerWidth <= 640) return;
+
         if (!heroRef.current || rafRef.current) return;
 
         const { clientX, clientY } = e;
