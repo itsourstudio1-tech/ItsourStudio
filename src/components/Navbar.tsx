@@ -51,8 +51,12 @@ const Navbar = () => {
     const isServicesPage = location.pathname === '/services';
     const isHomePage = location.pathname === '/';
 
+    // Only Home and Services pages handle transparent nav (initially)
+    // All other pages (Gallery, 404, Privacy, etc.) should have opaque nav
+    const shouldForceOpaque = !isHomePage && !isServicesPage;
+
     return (
-        <nav className={`navbar ${scrolled ? 'scrolled' : ''} ${isServicesPage ? 'services-page-nav' : ''} ${mobileMenuOpen ? 'menu-open' : ''}`} id="navbar">
+        <nav className={`navbar ${scrolled || shouldForceOpaque ? 'scrolled' : ''} ${isServicesPage ? 'services-page-nav' : ''} ${mobileMenuOpen ? 'menu-open' : ''}`} id="navbar">
             {showBanner && isHomePage && <PromoBanner onClose={handleCloseBanner} />}
             <div className="nav-container">
                 <Link to="/" className="logo">

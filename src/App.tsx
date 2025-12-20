@@ -13,6 +13,7 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDownload from './pages/AdminDownload';
 import CookieConsent from './components/CookieConsent';
 import FAQ from './pages/FAQ';
+import NotFound from './pages/NotFound';
 
 import { BookingProvider } from './context/BookingContext';
 import BookingModal from './components/BookingModal';
@@ -82,8 +83,8 @@ const AppContent = ({ onRouteChange }: { onRouteChange: () => void }) => {
                     }
                 />
 
-                {/* Catch all - redirects to home or admin if native */}
-                <Route path="*" element={<Navigate to={Capacitor.isNativePlatform() ? "/admin" : "/"} replace />} />
+                {/* Catch all - renders 404 page */}
+                <Route path="*" element={<NotFound />} />
             </Routes>
             {!isAdminRoute && <Footer />}
             {!isAdminRoute && <CookieConsent />}
