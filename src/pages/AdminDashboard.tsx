@@ -258,7 +258,7 @@ const AdminDashboard = () => {
         if (!emailType) return;
 
         try {
-            await fetch('http://localhost:3001/send-email', {
+            await fetch('/api/send-email', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

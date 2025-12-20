@@ -105,7 +105,7 @@ const Home = () => {
         }
 
         try {
-            await fetch('http://localhost:3001/send-email', {
+            const response = await fetch('/api/send-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -117,6 +117,10 @@ const Home = () => {
                     }
                 })
             });
+
+            if (!response.ok) {
+                throw new Error('Failed to send');
+            }
 
             setContactSuccess(true);
             setContactForm({ name: '', email: '', message: '' });

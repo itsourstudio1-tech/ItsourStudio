@@ -578,21 +578,14 @@ const BookingModal = () => {
         try {
             let paymentProofUrl = '';
             if (paymentFile) {
-                const formDataUpload = new FormData();
-                formDataUpload.append('paymentProof', paymentFile);
+                // Upload directly to Firebase Storage
+                const { storage } = await import('../firebase');
+                const { ref, uploadBytes, getDownloadURL } = await import('firebase/storage');
 
-                const response = await fetch('http://localhost:3001/upload', {
-                    method: 'POST',
-                    body: formDataUpload
-                });
-
-                if (!response.ok) {
-                    throw new Error('Upload failed');
-                }
-
-                const data = await response.json();
-                paymentProofUrl = data.path;
-                console.log(`File uploaded to: ${paymentProofUrl}`);
+                const storageRef = ref(storage, `payment-proofs/${Date.now()}_${paymentFile.name}`);
+                await uploadBytes(storageRef, paymentFile);
+                paymentProofUrl = await getDownloadURL(storageRef);
+                console.log(`File uploaded to Firebase Storage: ${paymentProofUrl}`);
             }
 
             // Sanitize all user inputs before storing
@@ -635,7 +628,7 @@ const BookingModal = () => {
 
             // Send Email Notification
             try {
-                await fetch('http://localhost:3001/send-email', {
+                await fetch('/api/send-email', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
