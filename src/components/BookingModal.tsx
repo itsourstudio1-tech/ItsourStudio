@@ -552,6 +552,11 @@ const BookingModal = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!privacyConsent) {
+            showToast("Please accept the Privacy Policy to proceed with your booking.", 'error');
+            return;
+        }
+
         if (!paymentFile) {
             showToast("Please upload your payment proof.", 'error');
             return;

@@ -5,7 +5,7 @@ const PrivacyPolicy = () => {
         <div className="privacy-policy-page">
             <div className="privacy-container">
                 <h1>Privacy Policy</h1>
-                <p className="last-updated">Last Updated: December 20, 2024</p>
+                <p className="last-updated">Last Updated: December 20, 2025</p>
 
                 <section>
                     <h2>1. Introduction</h2>
