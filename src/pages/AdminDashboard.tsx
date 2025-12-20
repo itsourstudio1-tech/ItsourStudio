@@ -12,6 +12,7 @@ import ContentManagement from '../components/admin/ContentManagement';
 
 interface Booking {
     id: string;
+    referenceNumber?: string;
     fullName: string;
     email: string;
     phone: string;
@@ -266,6 +267,7 @@ const AdminDashboard = () => {
                 body: JSON.stringify({
                     type: emailType,
                     booking: {
+                        referenceNumber: booking.referenceNumber,
                         name: booking.fullName,
                         email: booking.email,
                         package: booking.package,
@@ -987,6 +989,9 @@ const AdminDashboard = () => {
                                             <tr key={booking.id}>
                                                 <td data-label="Client">
                                                     <div style={{ fontWeight: 500 }}>{booking.fullName}</div>
+                                                    {booking.referenceNumber && (
+                                                        <div style={{ fontSize: '0.75rem', color: '#bf6a39', fontWeight: 600, fontFamily: 'monospace' }}>{booking.referenceNumber}</div>
+                                                    )}
                                                     <div style={{ fontSize: '0.8rem', color: '#888' }}>{booking.email}</div>
                                                     <div style={{ fontSize: '0.8rem', color: '#888' }}>{booking.phone}</div>
                                                 </td>

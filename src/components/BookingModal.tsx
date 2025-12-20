@@ -2,6 +2,7 @@
 import { db } from '../firebase';
 import { collection, addDoc, setDoc, serverTimestamp, query, where, getDocs, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { sanitizeName, sanitizeEmail, sanitizePhoneNumber, sanitizeText } from '../utils/sanitize';
+import { generateBookingReference } from '../utils/generateReference';
 import paymentQr from '../assets/payment_qr.png';
 import './ModalStyles.css';
 import { useBooking } from '../context/BookingContext';
@@ -600,7 +601,11 @@ const BookingModal = () => {
                 return;
             }
 
+            // Generate unique booking reference
+            const bookingReference = generateBookingReference();
+
             const docRef = await addDoc(collection(db, 'bookings'), {
+                referenceNumber: bookingReference,
                 fullName: sanitizedFullName,
                 email: sanitizedEmail,
                 phone: sanitizedPhone,
@@ -636,6 +641,7 @@ const BookingModal = () => {
                     body: JSON.stringify({
                         type: 'received',
                         booking: {
+                            referenceNumber: bookingReference,
                             name: formData.fullName,
                             email: formData.email,
                             package: selectedPackage?.name || formData.package,
