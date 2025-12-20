@@ -1,8 +1,11 @@
 const fs = require('fs');
-const pngToIco = require('png-to-ico');
+const pngToIcoModule = require('png-to-ico');
 const path = require('path');
 
-const inputFile = path.join(__dirname, '../public/logo/android-chrome-512x512.png');
+// Handle both default and named exports
+const pngToIco = pngToIcoModule.default || pngToIcoModule;
+
+const inputFile = path.join(__dirname, '../assets/icon.png');
 const outputFile = path.join(__dirname, '../public/logo/icon.ico');
 
 console.log(`Generating .ico from ${inputFile}...`);
