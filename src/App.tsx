@@ -14,6 +14,7 @@ import AdminDownload from './pages/AdminDownload';
 import CookieConsent from './components/CookieConsent';
 import FAQ from './pages/FAQ';
 import NotFound from './pages/NotFound';
+import StructuredData from './components/StructuredData';
 
 import { BookingProvider } from './context/BookingContext';
 import BookingModal from './components/BookingModal';
@@ -57,6 +58,7 @@ const AppContent = ({ onRouteChange }: { onRouteChange: () => void }) => {
 
     return (
         <div className="app-container">
+            <StructuredData />
             <ScrollToTop />
             <BackToTop />
             {!isAdminRoute && <Navbar />}

@@ -40,8 +40,27 @@ const FAQ = () => {
         setOpenIndex(openIndex === index ? null : index);
     };
 
+    // SEO: Generate FAQ Schema
+    const faqSchema = faqs.length > 0 ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqs.map(faq => ({
+            "@type": "Question",
+            "name": faq.question,
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.answer
+            }
+        }))
+    } : null;
+
     return (
         <div className="faq-page">
+            {faqSchema && (
+                <script type="application/ld+json">
+                    {JSON.stringify(faqSchema)}
+                </script>
+            )}
             <div className="faq-container">
                 <div className="faq-header">
                     <h1>Frequently Asked Questions</h1>
