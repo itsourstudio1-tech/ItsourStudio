@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { db, storage, auth } from '../firebase';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, where, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, where, getDocs, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { compressImage } from '../utils/compressImage';
 import './Admin.css';
@@ -298,6 +298,14 @@ const AdminDashboard = () => {
                 rejectionReason: reason || null
             });
 
+            // Sync status to booked_slots (ignore error if not exists)
+            try {
+                const slotRef = doc(db, 'booked_slots', id);
+                await updateDoc(slotRef, { status: newStatus });
+            } catch (err) {
+                console.log("Slot doc not found, skipping sync");
+            }
+
             showToast('success', 'Status Updated', `Booking marked as ${newStatus}`);
 
             // Find the booking object to send email
@@ -316,6 +324,9 @@ const AdminDashboard = () => {
         if (window.confirm("Are you sure you want to delete this booking? This action cannot be undone.")) {
             try {
                 await deleteDoc(doc(db, 'bookings', id));
+                // Sync delete to booked_slots
+                await deleteDoc(doc(db, 'booked_slots', id));
+
                 showToast('success', 'Deleted', 'Booking deleted successfully');
             } catch (error) {
                 console.error("Error deleting booking:", error);
@@ -331,6 +342,33 @@ const AdminDashboard = () => {
 
 
 
+
+    const handleSyncSlots = async () => {
+        if (!window.confirm("This will re-sync all bookings to the public availability slots. Continue?")) return;
+
+        try {
+            const bookingsSnapshot = await getDocs(collection(db, 'bookings'));
+            let count = 0;
+
+            for (const docSnap of bookingsSnapshot.docs) {
+                const data = docSnap.data();
+                if (data.status === 'rejected' || data.status === 'cancelled') continue;
+
+                await setDoc(doc(db, 'booked_slots', docSnap.id), {
+                    date: data.date,
+                    time: data.time,
+                    durationTotal: data.durationTotal,
+                    status: data.status,
+                    syncedAt: serverTimestamp()
+                });
+                count++;
+            }
+            showToast('success', 'Sync Complete', `Synced ${count} bookings to availability slots.`);
+        } catch (error) {
+            console.error("Sync failed:", error);
+            showToast('error', 'Sync Failed', 'Could not sync slots.');
+        }
+    };
 
     // Gallery Functions
     const handleGalleryFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -570,6 +608,10 @@ const AdminDashboard = () => {
                 </nav>
 
                 <div className="sidebar-footer" style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #f0f0f0' }}>
+                    <button className="nav-item" onClick={handleSyncSlots} style={{ marginBottom: '0.5rem', color: '#666' }}>
+                        <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.38V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h5"></path><polyline points="16 12 21 17 16 22"></polyline><line x1="21" y1="17" x2="9" y2="17"></line></svg>
+                        <span className="nav-label">Sync Slots</span>
+                    </button>
                     <button className="nav-item logout-btn" onClick={async () => {
                         if (window.confirm('Are you sure you want to logout?')) {
                             try {

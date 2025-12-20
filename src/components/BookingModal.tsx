@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp, query, where, getDocs, doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, setDoc, serverTimestamp, query, where, getDocs, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import paymentQr from '../assets/payment_qr.png';
 import './ModalStyles.css';
 import { useBooking } from '../context/BookingContext';
@@ -187,7 +187,7 @@ const BookingModal = () => {
             if (!formData.date) return;
 
             const q = query(
-                collection(db, 'bookings'),
+                collection(db, 'booked_slots'),
                 where('date', '==', formData.date)
             );
 
@@ -523,7 +523,7 @@ const BookingModal = () => {
     const checkAvailability = async () => {
         // Fresh fetch to ensure no race conditions
         const q = query(
-            collection(db, 'bookings'),
+            collection(db, 'booked_slots'),
             where('date', '==', formData.date) // Fetch all for the day
         );
         const snapshot = await getDocs(q);
@@ -594,12 +594,21 @@ const BookingModal = () => {
                 console.log(`File uploaded to: ${paymentProofUrl}`);
             }
 
-            await addDoc(collection(db, 'bookings'), {
+            const docRef = await addDoc(collection(db, 'bookings'), {
                 ...formData,
                 totalPrice,
                 downpayment,
                 durationTotal,
                 paymentProofUrl,
+                status: 'pending',
+                createdAt: serverTimestamp()
+            });
+
+            // Sync to public booked_slots for availability checking
+            await setDoc(doc(db, 'booked_slots', docRef.id), {
+                date: formData.date,
+                time: formData.time,
+                durationTotal: durationTotal,
                 status: 'pending',
                 createdAt: serverTimestamp()
             });

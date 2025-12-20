@@ -24,6 +24,13 @@ service cloud.firestore {
       allow read, update, delete: if request.auth != null;
     }
     
+    // Public Booked Slots (No PII) - Public read/create
+    match /booked_slots/{slotId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if request.auth != null;
+    }
+    
     // Feedback/Testimonials - Public create/read, Auth for admin
     match /feedbacks/{feedbackId} {
       allow create: if true;
