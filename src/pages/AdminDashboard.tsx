@@ -608,10 +608,6 @@ const AdminDashboard = () => {
                 </nav>
 
                 <div className="sidebar-footer" style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #f0f0f0' }}>
-                    <button className="nav-item" onClick={handleSyncSlots} style={{ marginBottom: '0.5rem', color: '#666' }}>
-                        <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.38V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h5"></path><polyline points="16 12 21 17 16 22"></polyline><line x1="21" y1="17" x2="9" y2="17"></line></svg>
-                        <span className="nav-label">Sync Slots</span>
-                    </button>
                     <button className="nav-item logout-btn" onClick={async () => {
                         if (window.confirm('Are you sure you want to logout?')) {
                             try {
