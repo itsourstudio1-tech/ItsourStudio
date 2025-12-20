@@ -2,6 +2,7 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
+import bcrypt from 'bcryptjs';
 import './Admin.css';
 
 const AdminLogin = () => {
@@ -31,15 +32,7 @@ const AdminLogin = () => {
         const storage = rememberMe ? localStorage : sessionStorage;
 
         try {
-            // 1. Check Hardcoded Super Admin (Backdoor/Legacy)
-            if ((password === 'admin123' || password === 'studio2024') && (!email || email === 'admin')) {
-                storage.setItem('isAdmin', 'true');
-                storage.setItem('userRole', 'admin');
-                navigate('/admin');
-                return;
-            }
-
-            // 2. Check Firestore Users
+            // Check Firestore Users for authentication
             const q = query(collection(db, 'users'), where('email', '==', email));
             const querySnapshot = await getDocs(q);
 
@@ -52,8 +45,21 @@ const AdminLogin = () => {
             const userDoc = querySnapshot.docs[0];
             const userData = userDoc.data();
 
-            // Simple password check (In production, use hashing or Firebase Auth)
-            if (userData.password === password) {
+            // Check password - supports both bcrypt hashed and legacy plaintext
+            let isValidPassword = false;
+
+            // Check if password is bcrypt hashed (starts with $2a$ or $2b$)
+            if (userData.password && userData.password.startsWith('$2')) {
+                isValidPassword = await bcrypt.compare(password, userData.password);
+            } else {
+                // Legacy plaintext comparison (for migration period)
+                isValidPassword = userData.password === password;
+                if (isValidPassword) {
+                    console.warn('⚠️ User has plaintext password. Please migrate to bcrypt hash.');
+                }
+            }
+
+            if (isValidPassword) {
                 if (userData.status !== 'active') {
                     setError('Account is inactive');
                     setIsLoading(false);

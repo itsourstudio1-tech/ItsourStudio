@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // =============================================
+    // It's ouR Studio - Firestore Security Rules
+    // =============================================
+    // 
+    // These rules protect your data from unauthorized access.
+    // Deploy with: firebase deploy --only firestore:rules
+    //
+    // IMPORTANT: Admin operations should use Firebase Admin SDK
+    // on a secure backend, not client-side with these rules.
+    // =============================================
+
+    // Users collection - Sensitive, server-side only
+    // Contains passwords and admin credentials
+    match /users/{userId} {
+      allow read, write: if false;
+    }
+    
+    // Bookings - Public can create, but only server can read/modify
+    match /bookings/{bookingId} {
+      // Allow anyone to create a booking (from the booking form)
+      allow create: if request.resource.data.keys().hasAll(['fullName', 'email', 'phone', 'package', 'date', 'time'])
+                    && request.resource.data.fullName is string
+                    && request.resource.data.email is string
+                    && request.resource.data.status == 'pending';
+      // Block all other operations from client
+      allow read, update, delete: if false;
+    }
+    
+    // Feedback/Testimonials - Public create, read approved only
+    match /feedbacks/{feedbackId} {
+      // Allow anyone to submit feedback
+      allow create: if request.resource.data.keys().hasAll(['name', 'rating', 'message'])
+                    && request.resource.data.rating >= 1
+                    && request.resource.data.rating <= 5
+                    && request.resource.data.showInTestimonials == false;
+      // Only show public testimonials
+      allow read: if resource.data.showInTestimonials == true;
+      // Block modifications
+      allow update, delete: if false;
+    }
+    
+    // Gallery - Public read, server-side write
+    match /gallery/{imageId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    
+    // Site Content - Public read (about, footer, promo, etc.)
+    match /siteContent/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    
+    // Unavailable Dates - Public read for booking calendar
+    match /unavailableDates/{dateId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

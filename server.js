@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import rateLimit from 'express-rate-limit';
 
 dotenv.config();
 
@@ -16,9 +17,40 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = 3001;
 
-// Enable CORS for frontend
-app.use(cors());
+// CORS Configuration - Restrict to allowed origins
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173').split(',');
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (mobile apps, Postman, curl, etc.)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.warn(`CORS blocked request from: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}));
 app.use(express.json()); // Enable JSON body parsing
+
+// Rate Limiting Configuration
+const uploadLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // 10 uploads per window per IP
+    message: { error: 'Too many uploads. Please try again later.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+const emailLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 20, // 20 emails per window per IP
+    message: { error: 'Too many email requests. Please try again later.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
 
 // Ensure upload directory exists
 const uploadDir = path.join(__dirname, 'public', 'POP');
@@ -242,8 +274,8 @@ const getRejectedEmail = (booking) => `
 </body>
 </html>`;
 
-// Upload Endpoint
-app.post('/upload', upload.single('paymentProof'), (req, res) => {
+// Upload Endpoint (Rate Limited)
+app.post('/upload', uploadLimiter, upload.single('paymentProof'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
     }
@@ -278,8 +310,8 @@ const galleryUpload = multer({
     limits: { fileSize: 15 * 1024 * 1024 } // 15MB limit for higher quality
 });
 
-// Gallery Upload Endpoint
-app.post('/upload/gallery', galleryUpload.single('galleryImage'), (req, res) => {
+// Gallery Upload Endpoint (Rate Limited)
+app.post('/upload/gallery', uploadLimiter, galleryUpload.single('galleryImage'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
     }
@@ -294,8 +326,8 @@ app.post('/upload/gallery', galleryUpload.single('galleryImage'), (req, res) => 
     });
 });
 
-// Email Endpoint
-app.post('/send-email', async (req, res) => {
+// Email Endpoint (Rate Limited)
+app.post('/send-email', emailLimiter, async (req, res) => {
     const { type, booking } = req.body;
 
     if (!type || !booking || !booking.email) {
