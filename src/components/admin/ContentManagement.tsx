@@ -1180,7 +1180,61 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
                                     ))}
                                     {faqs.length === 0 && (
                                         <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '3rem', color: '#888', background: '#f9f9f9', borderRadius: '8px' }}>
-                                            No FAQs added yet. Click "Add Question" to start.
+                                            <p style={{ marginBottom: '1rem' }}>No FAQs added yet.</p>
+                                            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                                                <button className="btn btn-primary" onClick={() => {
+                                                    setFaqForm({ id: '', question: '', answer: '', order: faqs.length + 1 });
+                                                    setIsFaqModalOpen(true);
+                                                }}>
+                                                    Add Your First Question
+                                                </button>
+                                                <button className="btn btn-outline" onClick={async () => {
+                                                    if (!window.confirm("Load default studio FAQs?")) return;
+                                                    const defaultFaqs: FAQItem[] = [
+                                                        {
+                                                            id: 'faq-1',
+                                                            question: 'Do I need to book in advance?',
+                                                            answer: 'Yes, we highly recommend booking your slot in advance to ensure availability. Walk-ins are subject to time slot openings.',
+                                                            order: 1
+                                                        },
+                                                        {
+                                                            id: 'faq-2',
+                                                            question: 'Can I bring my pet?',
+                                                            answer: 'Absolutely! We are a pet-friendly studio. We love capturing moments with your furry friends. Just make sure they are potty trained or wearing diapers.',
+                                                            order: 2
+                                                        },
+                                                        {
+                                                            id: 'faq-3',
+                                                            question: 'What happens if I am late?',
+                                                            answer: 'Your session time starts promptly at your booked time. If you arrive late, it will consume part of your session time as we need to respect the bookings of clients after you.',
+                                                            order: 3
+                                                        },
+                                                        {
+                                                            id: 'faq-4',
+                                                            question: 'How do I receive my photos?',
+                                                            answer: 'All soft copies will be sent to your provided email address via a Google Drive link within 24 hours after your session.',
+                                                            order: 4
+                                                        },
+                                                        {
+                                                            id: 'faq-5',
+                                                            question: 'Can we bring props or outfits?',
+                                                            answer: 'Yes! We encourage you to bring your own props, outfits, and accessories to make your shoot unique. We also have a selection of basic props available.',
+                                                            order: 5
+                                                        },
+                                                        {
+                                                            id: 'faq-6',
+                                                            question: 'What is your cancellation policy?',
+                                                            answer: 'Rescheduling is allowed up to 24 hours before your session. Cancellations made less than 24 hours prior may forfeit the reservation fee.',
+                                                            order: 6
+                                                        }
+                                                    ];
+                                                    setFaqs(defaultFaqs);
+                                                    await setDoc(doc(db, 'siteContent', 'faq'), { items: defaultFaqs });
+                                                    showToast('success', 'Loaded Defaults', 'Default FAQs have been added.');
+                                                }}>
+                                                    Load Default Questions
+                                                </button>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
