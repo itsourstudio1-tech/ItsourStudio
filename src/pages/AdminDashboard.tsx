@@ -343,33 +343,6 @@ const AdminDashboard = () => {
 
 
 
-    const handleSyncSlots = async () => {
-        if (!window.confirm("This will re-sync all bookings to the public availability slots. Continue?")) return;
-
-        try {
-            const bookingsSnapshot = await getDocs(collection(db, 'bookings'));
-            let count = 0;
-
-            for (const docSnap of bookingsSnapshot.docs) {
-                const data = docSnap.data();
-                if (data.status === 'rejected' || data.status === 'cancelled') continue;
-
-                await setDoc(doc(db, 'booked_slots', docSnap.id), {
-                    date: data.date,
-                    time: data.time,
-                    durationTotal: data.durationTotal,
-                    status: data.status,
-                    syncedAt: serverTimestamp()
-                });
-                count++;
-            }
-            showToast('success', 'Sync Complete', `Synced ${count} bookings to availability slots.`);
-        } catch (error) {
-            console.error("Sync failed:", error);
-            showToast('error', 'Sync Failed', 'Could not sync slots.');
-        }
-    };
-
     // Gallery Functions
     const handleGalleryFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
