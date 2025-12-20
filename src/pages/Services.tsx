@@ -139,7 +139,13 @@ const ServiceShowcase = ({ service }: { service: typeof services[0] }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [isPaused, setIsPaused] = useState(false);
 
+    // Check if device is touch-enabled (disable auto-scroll for performance)
+    const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
     useEffect(() => {
+        // Skip auto-scroll on mobile/touch devices for performance
+        if (isTouchDevice) return;
+
         const scrollContainer = scrollRef.current;
         if (!scrollContainer) return;
 
@@ -165,7 +171,7 @@ const ServiceShowcase = ({ service }: { service: typeof services[0] }) => {
         startAutoScroll();
 
         return () => clearInterval(intervalId);
-    }, [isPaused]);
+    }, [isPaused, isTouchDevice]);
 
     return (
         <div className="service-showcase">
@@ -200,26 +206,35 @@ const Services = () => {
     const sliderRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const handleScroll = () => {
-            const windowHeight = window.innerHeight;
+        let scrollTimeout: ReturnType<typeof setTimeout>;
 
-            // Find the section that is currently most visible
-            services.forEach((service, index) => {
-                const element = document.getElementById(service.id);
-                if (element) {
-                    const rect = element.getBoundingClientRect();
-                    // If the top of the section is within the viewport
-                    if (rect.top >= -windowHeight / 2 && rect.top < windowHeight / 2) {
-                        if (!isDragging) {
-                            setSliderValue((index / (services.length - 1)) * 100);
+        const handleScroll = () => {
+            // Debounce scroll handler for performance
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const windowHeight = window.innerHeight;
+
+                // Find the section that is currently most visible
+                services.forEach((service, index) => {
+                    const element = document.getElementById(service.id);
+                    if (element) {
+                        const rect = element.getBoundingClientRect();
+                        // If the top of the section is within the viewport
+                        if (rect.top >= -windowHeight / 2 && rect.top < windowHeight / 2) {
+                            if (!isDragging) {
+                                setSliderValue((index / (services.length - 1)) * 100);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }, 100); // 100ms debounce
         };
 
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => {
+            clearTimeout(scrollTimeout);
+            window.removeEventListener('scroll', handleScroll);
+        };
     }, [isDragging]);
 
     const scrollToSection = (id: string) => {

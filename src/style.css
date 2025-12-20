@@ -5404,6 +5404,22 @@ section {
   .hero-overlay {
     background: rgba(59, 44, 40, 0.5) !important;
   }
+
+  /* Services page optimizations */
+  html {
+    scroll-snap-type: none !important;
+  }
+
+  .service-fullscreen {
+    scroll-snap-align: none !important;
+    scroll-snap-stop: normal !important;
+    height: auto !important;
+    min-height: 100svh;
+  }
+
+  .showcase-grid {
+    scroll-behavior: auto !important;
+  }
 }
 
 /* For users who prefer reduced motion (accessibility + performance) */
