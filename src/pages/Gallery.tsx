@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
+import LazyImage from '../components/LazyImage';
 
 interface GalleryImage {
     id: string;
@@ -163,7 +164,7 @@ const Gallery = () => {
                                     onClick={() => openLightbox(index)}
                                     style={{ animationDelay: `${index * 0.05}s` }}
                                 >
-                                    <img src={image.src} alt={image.alt} loading="lazy" />
+                                    <LazyImage src={image.src} alt={image.alt} />
                                     <div className="gallery-overlay">
                                         <div className="gallery-overlay-content">
                                             <svg className="view-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

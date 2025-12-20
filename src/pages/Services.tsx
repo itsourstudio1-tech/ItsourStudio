@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import LazyImage from '../components/LazyImage';
 
 
 const services = [
@@ -179,7 +180,7 @@ const ServiceShowcase = ({ service }: { service: typeof services[0] }) => {
         return (
             <div className="service-showcase">
                 <div className="showcase-single">
-                    <img src={service.imageMain} alt={`${service.title}`} loading="lazy" />
+                    <LazyImage src={service.imageMain} alt={`${service.title}`} />
                 </div>
             </div>
         );
@@ -196,13 +197,13 @@ const ServiceShowcase = ({ service }: { service: typeof services[0] }) => {
                 onTouchEnd={() => setIsPaused(false)}
             >
                 <div className="showcase-item main">
-                    <img src={service.imageMain} alt={`${service.title} main`} loading="lazy" />
+                    <LazyImage src={service.imageMain} alt={`${service.title} main`} />
                 </div>
                 <div className="showcase-item">
-                    <img src={service.imageDetail} alt={`${service.title} detail`} loading="lazy" />
+                    <LazyImage src={service.imageDetail} alt={`${service.title} detail`} />
                 </div>
                 <div className="showcase-item">
-                    <img src={service.imageAction} alt={`${service.title} action`} loading="lazy" />
+                    <LazyImage src={service.imageAction} alt={`${service.title} action`} />
                 </div>
             </div>
         </div>

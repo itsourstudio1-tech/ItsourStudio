@@ -893,11 +893,12 @@ p {
   overflow: hidden;
 }
 
-.gallery-card img {
+.gallery-card img,
+.gallery-card .lazy-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s ease;
+  transition: transform 0.6s ease, opacity 0.5s ease;
 }
 
 /* Hover effect for the card */
@@ -908,7 +909,8 @@ p {
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
 }
 
-.gallery-card:hover img {
+.gallery-card:hover img,
+.gallery-card:hover .lazy-image {
   transform: scale(1.1);
 }
 
@@ -1309,7 +1311,8 @@ p {
   perspective: 1000px;
 }
 
-.about-image-wrapper img {
+.about-image-wrapper img,
+.about-image-wrapper .lazy-image {
   width: 100%;
   height: 480px;
   object-fit: cover;
@@ -1321,7 +1324,8 @@ p {
 }
 
 /* Hover Reveal Effect */
-.about-image-wrapper:hover img {
+.about-image-wrapper:hover img,
+.about-image-wrapper:hover .lazy-image {
   transform: rotateY(-2deg) scale(1.02);
   filter: sepia(0%) contrast(1.1);
   /* Full color reveal */
@@ -3041,7 +3045,8 @@ section {
   transition: transform var(--transition-slow);
 }
 
-.showcase-item:hover img {
+.showcase-item:hover img,
+.showcase-item:hover .lazy-image {
   transform: scale(1.05);
 }
 
@@ -3459,7 +3464,8 @@ section {
   grid-row: span 2;
 }
 
-.showcase-item img {
+.showcase-item img,
+.showcase-item .lazy-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -3767,7 +3773,8 @@ section {
     transform: none;
   }
 
-  .services-page .showcase-item img {
+  .services-page .showcase-item img,
+  .services-page .showcase-item .lazy-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -3948,7 +3955,8 @@ section {
   }
 }
 
-.gallery-item img {
+.gallery-item img,
+.gallery-item .lazy-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -3962,7 +3970,8 @@ section {
   z-index: 10;
 }
 
-.gallery-item:hover img {
+.gallery-item:hover img,
+.gallery-item:hover .lazy-image {
   transform: scale(1.1);
 }
 
@@ -5444,11 +5453,13 @@ section {
   }
 
   /* Simplify showcase images */
-  .showcase-item img {
+  .showcase-item img,
+  .showcase-item .lazy-image {
     transition: none !important;
   }
 
-  .showcase-item:hover img {
+  .showcase-item:hover img,
+  .showcase-item:hover .lazy-image {
     transform: none !important;
   }
 }

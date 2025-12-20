@@ -6,6 +6,7 @@ import { collection, query, where, onSnapshot, orderBy, limit, doc, getDoc } fro
 import FeedbackModal from '../components/FeedbackModal';
 import PromoSection from '../components/PromoSection';
 import BackdropVisualizer from '../components/BackdropVisualizer';
+import LazyImage from '../components/LazyImage';
 
 
 interface Feedback {
@@ -356,7 +357,7 @@ const Home = () => {
                             {[...dynamicGalleryItems, ...dynamicGalleryItems].map((item, index) => (
                                 <div className="gallery-card" key={index}>
                                     <div className="gallery-card-inner">
-                                        <img src={item.src} alt={item.title} loading="lazy" draggable={false} />
+                                        <LazyImage src={item.src} alt={item.title} wrapperClassName="gallery-card-image" />
                                         <div className="gallery-overlay">
                                             <div className="gallery-info">
                                                 <div className="gallery-category">{item.category}</div>
@@ -497,7 +498,7 @@ const Home = () => {
                     <div className="about-content">
                         <div className="about-image">
                             <div className="about-image-wrapper">
-                                <img src={aboutContent.imageUrl} alt="it's ouR Studio Photography Studio" id="aboutImage" />
+                                <LazyImage src={aboutContent.imageUrl} alt="it's ouR Studio Photography Studio" className="about-image-element" />
                                 <div className="developing-badge">Developing Stories since 2024</div>
                             </div>
                         </div>
