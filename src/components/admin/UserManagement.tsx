@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { db } from '../../firebase';
+import { db, auth } from '../../firebase';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, serverTimestamp } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import './UserManagement.css'; // We will create this
 
 interface User {
@@ -9,7 +10,7 @@ interface User {
     email: string;
     role: 'admin' | 'editor' | 'viewer';
     status: 'active' | 'inactive';
-    password?: string;
+    authUid?: string;
     createdAt?: any;
     lastLogin?: any;
 }
@@ -22,6 +23,7 @@ const UserManagement = ({ showToast }: UserManagementProps) => {
     const [users, setUsers] = useState<User[]>([]);
     const [showUserModal, setShowUserModal] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
+    const [isCreating, setIsCreating] = useState(false);
     const [userForm, setUserForm] = useState({
         fullName: '',
         email: '',
@@ -64,7 +66,7 @@ const UserManagement = ({ showToast }: UserManagementProps) => {
         setUserForm({
             fullName: user.fullName,
             email: user.email,
-            password: user.password || '',
+            password: '',
             role: user.role, // @ts-ignore
             status: user.status
         });
@@ -73,26 +75,58 @@ const UserManagement = ({ showToast }: UserManagementProps) => {
 
     const handleSaveUser = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsCreating(true);
+
         try {
             if (editingUser) {
                 const userRef = doc(db, 'users', editingUser.id);
                 // @ts-ignore
                 await updateDoc(userRef, {
-                    ...userForm,
+                    fullName: userForm.fullName,
+                    email: userForm.email,
+                    role: userForm.role,
+                    status: userForm.status,
                     updatedAt: serverTimestamp()
                 });
                 showToast('success', 'Updated', 'User updated successfully');
             } else {
+                // Create new user in Firebase Auth first
+                if (!userForm.password || userForm.password.length < 6) {
+                    showToast('error', 'Validation', 'Password must be at least 6 characters');
+                    setIsCreating(false);
+                    return;
+                }
+
+                const userCredential = await createUserWithEmailAndPassword(
+                    auth,
+                    userForm.email,
+                    userForm.password
+                );
+
+                // Then create user profile in Firestore
                 await addDoc(collection(db, 'users'), {
-                    ...userForm,
+                    fullName: userForm.fullName,
+                    email: userForm.email,
+                    role: userForm.role,
+                    status: userForm.status,
+                    authUid: userCredential.user.uid,
                     createdAt: serverTimestamp()
                 });
-                showToast('success', 'Created', 'User created successfully');
+
+                showToast('success', 'Created', 'User created with Firebase Auth');
             }
             resetUserForm();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error saving user:", error);
-            showToast('error', 'Error', 'Failed to save user');
+            if (error.code === 'auth/email-already-in-use') {
+                showToast('error', 'Error', 'This email is already registered');
+            } else if (error.code === 'auth/weak-password') {
+                showToast('error', 'Error', 'Password is too weak');
+            } else {
+                showToast('error', 'Error', error.message || 'Failed to save user');
+            }
+        } finally {
+            setIsCreating(false);
         }
     };
 
@@ -118,6 +152,22 @@ const UserManagement = ({ showToast }: UserManagementProps) => {
         } catch (error) {
             console.error(`Error updating user ${field}:`, error);
             showToast('error', 'Error', `Failed to update user ${field}`);
+        }
+    };
+
+    const handleSendPasswordReset = async (email: string) => {
+        if (!window.confirm(`Send password reset email to ${email}?`)) return;
+
+        try {
+            await sendPasswordResetEmail(auth, email);
+            showToast('success', 'Email Sent', `Password reset email sent to ${email}`);
+        } catch (error: any) {
+            console.error("Error sending password reset:", error);
+            if (error.code === 'auth/user-not-found') {
+                showToast('error', 'Error', 'User not found in Firebase Auth');
+            } else {
+                showToast('error', 'Error', 'Failed to send password reset email');
+            }
         }
     };
 
@@ -193,6 +243,13 @@ const UserManagement = ({ showToast }: UserManagementProps) => {
                                         </button>
                                         <button
                                             className="action-btn"
+                                            title="Send Password Reset"
+                                            onClick={() => handleSendPasswordReset(user.email)}
+                                        >
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                        </button>
+                                        <button
+                                            className="action-btn"
                                             title="Delete User"
                                             onClick={() => handleDeleteUser(user.id)}
                                         >
@@ -228,6 +285,13 @@ const UserManagement = ({ showToast }: UserManagementProps) => {
                                     onClick={() => handleEditUser(user)}
                                 >
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </button>
+                                <button
+                                    className="action-btn"
+                                    title="Send Password Reset"
+                                    onClick={() => handleSendPasswordReset(user.email)}
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                                 </button>
                                 <button
                                     className="action-btn"
@@ -314,17 +378,25 @@ const UserManagement = ({ showToast }: UserManagementProps) => {
                                     onChange={e => setUserForm({ ...userForm, email: e.target.value })}
                                 />
                             </div>
-                            <div>
-                                <label className="form-label">Password</label>
-                                <input
-                                    type="text"
-                                    required={!editingUser}
-                                    className="form-input"
-                                    placeholder={editingUser ? "Leave same or enter new" : "Enter password"}
-                                    value={userForm.password}
-                                    onChange={e => setUserForm({ ...userForm, password: e.target.value })}
-                                />
-                            </div>
+                            {!editingUser && (
+                                <div>
+                                    <label className="form-label">Password (min 6 characters)</label>
+                                    <input
+                                        type="password"
+                                        required
+                                        className="form-input"
+                                        placeholder="Enter password"
+                                        value={userForm.password}
+                                        onChange={e => setUserForm({ ...userForm, password: e.target.value })}
+                                        minLength={6}
+                                    />
+                                </div>
+                            )}
+                            {editingUser && (
+                                <p style={{ fontSize: '0.85rem', color: '#666', margin: '0.5rem 0' }}>
+                                    Use the 🔒 button to send password reset email.
+                                </p>
+                            )}
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                 <div>
                                     <label className="form-label">Role</label>
@@ -350,8 +422,8 @@ const UserManagement = ({ showToast }: UserManagementProps) => {
                                     </select>
                                 </div>
                             </div>
-                            <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem', width: '100%' }}>
-                                {editingUser ? 'Update User' : 'Create User'}
+                            <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem', width: '100%' }} disabled={isCreating}>
+                                {isCreating ? 'Creating...' : (editingUser ? 'Update User' : 'Create User')}
                             </button>
                         </div>
                     </form>
