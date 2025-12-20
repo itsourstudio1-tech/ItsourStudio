@@ -8,17 +8,17 @@ interface FooterContent {
     email: string;
     facebook: string;
     instagram: string;
-    pinterest: string;
+    tiktok: string;
 }
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
     const [footerContent, setFooterContent] = useState<FooterContent>({
         brandText: "Empowering you to capture your authentic self",
-        email: "hello@studiolens.com",
-        facebook: "#",
-        instagram: "#",
-        pinterest: "#"
+        email: "itsourstudio1@gmail.com",
+        facebook: "https://www.facebook.com/itsouRstudioo/",
+        instagram: "https://www.instagram.com/its_our_studio/",
+        tiktok: "https://www.tiktok.com/@itsourstudio"
     });
 
     useEffect(() => {
@@ -65,7 +65,7 @@ const Footer = () => {
                             <h4>Connect</h4>
                             <a href={footerContent.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>
                             <a href={footerContent.facebook} target="_blank" rel="noopener noreferrer">Facebook</a>
-                            <a href={footerContent.pinterest} target="_blank" rel="noopener noreferrer">Pinterest</a>
+                            <a href={footerContent.tiktok} target="_blank" rel="noopener noreferrer">TikTok</a>
                             <a href={`mailto:${footerContent.email}`}>Email Us</a>
                         </div>
                     </div>

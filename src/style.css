@@ -3491,9 +3491,13 @@ section {
   opacity: 1;
 }
 
-/* Featured Badge Animation */
-.featured-badge {
+/* Services Page Featured Badge */
+.services-page .featured-badge {
+  position: relative;
   display: inline-block;
+  top: auto;
+  right: auto;
+  left: auto;
   background: var(--color-dark);
   color: white;
   padding: 0.5rem 1.5rem;
@@ -3505,6 +3509,7 @@ section {
   margin-bottom: var(--spacing-sm);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   animation: badgeBounce 2s ease-in-out infinite;
+  z-index: 2;
 }
 
 @keyframes badgeBounce {
@@ -3519,8 +3524,21 @@ section {
   }
 }
 
+/* Structural styles for specific packages */
+@media (min-width: 969px) {
+  .services-page #solo {
+    border-top: 100px solid transparent;
+    height: calc(90svh + 100px);
+    box-sizing: border-box;
+  }
+}
+
 /* Responsive */
 @media (max-width: 968px) {
+  .services-page #solo {
+    height: auto;
+    border-top: 80px solid transparent;
+  }
 
   .service-split,
   .service-split.reverse {
@@ -3586,6 +3604,192 @@ section {
     animation-delay: 0s !important;
   }
 }
+
+/* ===================================
+   MOBILE 320PX+ OPTIMIZATIONS
+   =================================== */
+@media (max-width: 480px) {
+  .services-page .service-fullscreen {
+    padding: 0;
+    min-height: auto;
+    height: auto;
+    display: block;
+    /* Natural flow */
+    margin-bottom: var(--spacing-xl);
+  }
+
+  /* Adjust first section spacing */
+  .services-page #solo {
+    border-top: 80px solid transparent;
+    padding-top: 0;
+    height: auto;
+  }
+
+  /* Remove default padding from split container to allow full-width card */
+  .services-page .service-split {
+    padding: 0 var(--spacing-sm);
+    gap: var(--spacing-lg);
+    width: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Card-style container for info */
+  .services-page .service-info {
+    position: relative;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem 1.5rem 1.5rem;
+    /* Extra top padding for badge */
+    box-shadow: 0 4px 20px rgba(59, 44, 40, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    margin: 0;
+  }
+
+  /* Badge as a premium corner tab */
+  .services-page .featured-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-bottom: 0;
+    border-radius: var(--radius-lg) 0 var(--radius-md) 0;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.75rem;
+    background: var(--color-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Typography Scaling */
+  .services-page .service-title-large {
+    font-size: 2rem;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+
+  .services-page .service-price-large {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+    /* Use gradient text for premium feel */
+    background: linear-gradient(135deg, var(--color-primary), var(--color-brown));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+  }
+
+  .services-page .service-duration-large {
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+  }
+
+  .services-page .service-desc-large {
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+  }
+
+  /* Compact Features List */
+  .services-page .service-features-large {
+    margin-bottom: 1.5rem;
+    grid-template-columns: 1fr;
+    /* Single column */
+    gap: 0;
+  }
+
+  .services-page .service-features-large li {
+    font-size: 0.9rem;
+    padding: 0.4rem 0 0.4rem 1.75rem;
+    border-bottom: 1px dashed rgba(59, 44, 40, 0.1);
+  }
+
+  /* Horizontal Scrolling Showcase (Carousel) */
+  .services-page .service-showcase {
+    width: 100%;
+    padding: 0;
+    /* Remove padding to let carousel bleed to edges if desired, or keep small padding */
+    margin-top: 0;
+    overflow: hidden;
+    /* Hide overflow from main container */
+  }
+
+  .services-page .showcase-grid {
+    display: flex;
+    /* Turn grid into flex row */
+    overflow-x: auto;
+    /* Horizontal scroll */
+    scroll-snap-type: x mandatory;
+    /* Snap effect */
+    gap: var(--spacing-md);
+    /* Spacing between cards */
+    padding: 0 var(--spacing-md);
+    /* Side padding for visual appeal/peek */
+    padding-bottom: var(--spacing-sm);
+    /* Spacing for scrollbar or shadow */
+    height: auto;
+    aspect-ratio: auto;
+    /* Remove fixed aspect ratio of container */
+    border-radius: 0;
+    /* Removing container border radius if bleeding */
+    box-shadow: none;
+    /* Remove container shadow, move to items */
+    /* Hide Scrollbar */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  .services-page .showcase-grid::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari and Opera */
+  }
+
+  .services-page .showcase-item {
+    flex: 0 0 85%;
+    /* Item takes 85% of width to show peek of next one */
+    scroll-snap-align: center;
+    /* Snap to center */
+    aspect-ratio: 4/5;
+    /* Taller aspect ratio for portraits */
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Reset grid specific layout */
+  .services-page .showcase-item.main {
+    grid-row: auto;
+  }
+
+  .services-page .showcase-item:hover {
+    transform: none;
+  }
+
+  .services-page .showcase-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Ensure it covers the area */
+  }
+
+  /* Full width, easier to tap buttons */
+  .services-page .btn-large {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    margin-top: 0.5rem;
+    font-size: 1rem;
+  }
+
+  /* Hide orb animations or reduce opacity for performance/visibility */
+  .services-orb {
+    opacity: 0.08;
+  }
+}
+
 
 /* ===================================
    GALLERY PAGE - STYLING
@@ -3980,13 +4184,6 @@ section {
   background: var(--color-dark);
 }
 
-/* Add border top to first section to give way to header */
-.services-page #solo {
-  border-top: 100px solid transparent;
-  height: calc(90svh + 100px);
-  /* Compensate for border to keep content area 90svh */
-  box-sizing: border-box;
-}
 
 /* ===================================
    BOOKING FLOW ENHANCEMENTS

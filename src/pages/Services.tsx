@@ -135,6 +135,62 @@ const services = [
     }
 ];
 
+const ServiceShowcase = ({ service }: { service: typeof services[0] }) => {
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [isPaused, setIsPaused] = useState(false);
+
+    useEffect(() => {
+        const scrollContainer = scrollRef.current;
+        if (!scrollContainer) return;
+
+        let intervalId: ReturnType<typeof setInterval>;
+
+        const startAutoScroll = () => {
+            intervalId = setInterval(() => {
+                if (isPaused || !scrollContainer) return;
+
+                const { scrollLeft, scrollWidth, clientWidth } = scrollContainer;
+                const maxScroll = scrollWidth - clientWidth;
+
+                // Threshold to determine if we are at the end
+                if (scrollLeft >= maxScroll - 10) {
+                    scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    const scrollAmount = clientWidth * 0.85;
+                    scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                }
+            }, 3000);
+        };
+
+        startAutoScroll();
+
+        return () => clearInterval(intervalId);
+    }, [isPaused]);
+
+    return (
+        <div className="service-showcase">
+            <div
+                className="showcase-grid"
+                ref={scrollRef}
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+                onTouchStart={() => setIsPaused(true)}
+                onTouchEnd={() => setIsPaused(false)}
+            >
+                <div className="showcase-item main">
+                    <img src={service.imageMain} alt={`${service.title} main`} loading="lazy" />
+                </div>
+                <div className="showcase-item">
+                    <img src={service.imageDetail} alt={`${service.title} detail`} loading="lazy" />
+                </div>
+                <div className="showcase-item">
+                    <img src={service.imageAction} alt={`${service.title} action`} loading="lazy" />
+                </div>
+            </div>
+        </div>
+    );
+};
+
 import { useBooking } from '../context/BookingContext';
 
 const Services = () => {
@@ -289,19 +345,7 @@ const Services = () => {
                             </button>
                         </div>
 
-                        <div className="service-showcase">
-                            <div className="showcase-grid">
-                                <div className="showcase-item main">
-                                    <img src={service.imageMain} alt={`${service.title} main`} loading="lazy" />
-                                </div>
-                                <div className="showcase-item">
-                                    <img src={service.imageDetail} alt={`${service.title} detail`} loading="lazy" />
-                                </div>
-                                <div className="showcase-item">
-                                    <img src={service.imageAction} alt={`${service.title} action`} loading="lazy" />
-                                </div>
-                            </div>
-                        </div>
+                        <ServiceShowcase service={service} />
                     </div>
                 </section>
             ))}
