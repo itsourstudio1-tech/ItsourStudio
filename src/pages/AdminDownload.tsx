@@ -56,7 +56,7 @@ const AdminDownload = () => {
 
                     <div className="action-area fade-slide-up" style={{ animationDelay: '0.4s' }}>
                         <div className="download-options-column">
-                            <a href="/downloads/Its_Our_Studio_Admin_Setup.exe" className="download-button windows" download>
+                            <a href="/downloads/Its_Our_Studio_Admin_Setup1.exe" className="download-button windows" download>
                                 <div className="btn-shine"></div>
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="dl-icon">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
