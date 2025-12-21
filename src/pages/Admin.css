@@ -239,25 +239,25 @@
     padding-right: 2rem;
 }
 
-.status-pending {
+.status-badge.status-pending {
     background-color: #fff8e1;
     color: #f57c00;
     border: 1px solid rgba(245, 124, 0, 0.2);
 }
 
-.status-confirmed {
+.status-badge.status-confirmed {
     background-color: #e8f5e9;
     color: #2e7d32;
     border: 1px solid rgba(46, 125, 50, 0.2);
 }
 
-.status-rejected {
+.status-badge.status-rejected {
     background-color: #ffebee;
     color: #c62828;
     border: 1px solid rgba(198, 40, 40, 0.2);
 }
 
-.status-completed {
+.status-badge.status-completed {
     background-color: #e3f2fd;
     color: #1565c0;
     border: 1px solid rgba(21, 101, 192, 0.2);
@@ -1499,304 +1499,286 @@ input:checked+.slider:before {
 
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+    /* ... existing 768px styles (Sidebar etc) handled above ... */
+
+    /* Generic Mobile Table Reset */
+    .bookings-table,
+    .bookings-table tbody,
+    .bookings-table tr,
+    .bookings-table td {
+        display: block;
+        width: 100%;
+    }
+
     .bookings-table thead {
         display: none;
     }
 
+    /* Card Style for Rows */
     .bookings-table tr {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        /* Tighter gap for compactness */
         background: #ffffff;
         margin-bottom: 1rem;
-        border-radius: 16px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        /* Softer shadow */
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         border: 1px solid rgba(0, 0, 0, 0.05);
-        padding: 1.25rem;
-        /* Reduced from 1.5rem for compactness */
+        padding: 1rem;
         position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        border-left: 5px solid transparent;
+        /* Default fallback */
+    }
+
+    .bookings-table tr.status-pending {
+        border-left-color: #f57c00;
+    }
+
+    .bookings-table tr.status-confirmed {
+        border-left-color: #2e7d32;
+    }
+
+    .bookings-table tr.status-rejected {
+        border-left-color: #c62828;
+    }
+
+    .bookings-table tr.status-completed {
+        border-left-color: #1565c0;
     }
 
     .bookings-table td {
-        display: block;
         padding: 0;
         border: none;
-        margin: 0;
+        text-align: left;
     }
 
-    .bookings-table td::before {
-        display: none;
-    }
-
-    /* HEADER: Client (Order 1) & Badge */
-    .bookings-table td:nth-child(1) {
-        width: 100%;
-        order: 1;
-        margin-bottom: 0.25rem;
-        /* Visual grouping with details */
-        padding-right: 85px;
-        /* Reduced right padding */
-    }
-
-    .bookings-table td:nth-child(1) div:first-child {
-        font-size: 1.15rem;
-        /* Slightly smaller header */
-        font-weight: 800;
-        color: var(--color-dark);
-        letter-spacing: -0.5px;
-        line-height: 1.2;
-        margin-bottom: 0.25rem;
-    }
-
-    .bookings-table td:nth-child(1) div:not(:first-child) {
-        font-size: 0.85rem;
-        color: #64748b;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-top: 0.2rem;
-    }
-
-    /* Status Badge */
-    .bookings-table td:nth-child(4) {
-        position: absolute;
-        top: 1.25rem;
-        /* Matches padding */
-        right: 1.25rem;
-        /* Matches padding */
-        width: auto !important;
-        margin: 0;
-        z-index: 2;
-    }
-
-    .status-badge {
-        padding: 0.3rem 0.6rem;
-        font-size: 0.7rem;
-        box-shadow: none;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    /* DETAILS GRID: Date, Package */
-    .bookings-table td:nth-child(2),
-    .bookings-table td:nth-child(3) {
-        order: 2;
-        width: calc(50% - 4px);
-        /* Adjusted for 8px gap */
+    /* 1. STATUS (Moved to normal flow) */
+    .bookings-table td[data-label="Status"] {
         background: #f8fafc;
-        border: 1px solid #f1f5f9;
-        border-radius: 10px;
         padding: 0.75rem;
-        /* Compact padding */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 0.15rem;
-        margin-top: 0.5rem;
+        border-radius: 8px;
+        order: 5;
+        /* Place near bottom before actions */
     }
 
-    /* Total Amount */
-    .bookings-table td:nth-child(5) {
-        order: 3;
+    .bookings-table tr.status-pending td[data-label="Status"] {
+        background: #fff8e1;
+        border: 1px solid rgba(245, 124, 0, 0.2);
+    }
+
+    .bookings-table tr.status-pending td[data-label="Status"]::before {
+        color: #f57c00;
+    }
+
+    .bookings-table tr.status-confirmed td[data-label="Status"] {
+        background: #e8f5e9;
+        border: 1px solid rgba(46, 125, 50, 0.2);
+    }
+
+    .bookings-table tr.status-confirmed td[data-label="Status"]::before {
+        color: #2e7d32;
+    }
+
+    .bookings-table tr.status-rejected td[data-label="Status"] {
+        background: #ffebee;
+        border: 1px solid rgba(198, 40, 40, 0.2);
+    }
+
+    .bookings-table tr.status-rejected td[data-label="Status"]::before {
+        color: #c62828;
+    }
+
+    .bookings-table tr.status-completed td[data-label="Status"] {
+        background: #e3f2fd;
+        border: 1px solid rgba(21, 101, 192, 0.2);
+    }
+
+    .bookings-table tr.status-completed td[data-label="Status"]::before {
+        color: #1565c0;
+    }
+
+    .bookings-table td[data-label="Status"]::before {
+        content: "Current Status";
+        color: #94a3b8;
+        font-size: 0.7rem;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+    }
+
+    .bookings-table td[data-label="Status"] select {
         width: 100%;
-        background: linear-gradient(135deg, #fff7ed 0%, #fff 100%);
-        border: 1px solid #ffedd5;
-        border-radius: 10px;
-        padding: 0.75rem 1rem;
-        /* Compact padding */
+        padding: 0.5rem;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        background-color: white;
+    }
+
+    /* 2. CLIENT INFO (Header) */
+    .bookings-table td[data-label="Client"] {
+        padding-right: 0;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 0.75rem;
+    }
+
+    .bookings-table td[data-label="Client"]>div:first-child {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--color-dark);
+        margin-bottom: 0.25rem;
+    }
+
+    /* 3. DETAILS GRID (Date, Time, Created, Package) */
+    /* Wrapper for these fields would be nice, but we are working with existing HTML structure.
+       So we rely on flex order or just stacking. */
+
+    .bookings-table td[data-label="Date & Time"],
+    .bookings-table td[data-label="Created At"],
+    .bookings-table td[data-label="Package"] {
+        background: #f8fafc;
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+    }
+
+    /* Add Labels via before */
+    .bookings-table td[data-label="Date & Time"]::before {
+        content: "Scheduled For";
+        color: #94a3b8;
+        font-size: 0.7rem;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 0.25rem;
+        text-transform: uppercase;
+    }
+
+    .bookings-table td[data-label="Created At"]::before {
+        content: "Booked On";
+        color: #94a3b8;
+        font-size: 0.7rem;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 0.25rem;
+        text-transform: uppercase;
+    }
+
+    .bookings-table td[data-label="Package"]::before {
+        content: "Package";
+        color: #94a3b8;
+        font-size: 0.7rem;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 0.25rem;
+        text-transform: uppercase;
+    }
+
+    /* 4. TOTAL PRICE */
+    .bookings-table td[data-label="Total"] {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 0;
-    }
-
-    /* Labels */
-    .bookings-table td:nth-child(2)::before {
-        content: "Date";
-        display: block;
-        font-size: 0.65rem;
-        text-transform: uppercase;
-        color: #94a3b8;
-        font-weight: 700;
-        margin-bottom: 2px;
-    }
-
-    .bookings-table td:nth-child(3)::before {
-        content: "Package";
-        display: block;
-        font-size: 0.65rem;
-        text-transform: uppercase;
-        color: #94a3b8;
-        font-weight: 700;
-        margin-bottom: 2px;
-    }
-
-    .bookings-table td:nth-child(5)::before {
-        content: "Total Amount";
-        display: block;
-        font-size: 0.7rem;
-        text-transform: uppercase;
+        background: #fff7ed;
         color: #c2410c;
         font-weight: 700;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-top: 0.25rem;
     }
 
-    .bookings-table td:nth-child(2) {
-        font-weight: 600;
-        color: #334155;
-        font-size: 0.85rem;
+    .bookings-table td[data-label="Total"]::before {
+        content: "TOTAL";
+        font-size: 0.75rem;
+        opacity: 0.8;
     }
 
-    .bookings-table td:nth-child(3) {
-        font-weight: 600;
-        color: #334155;
-        font-size: 0.85rem;
-        text-transform: capitalize;
+    /* 5. ACTIONS & PAYMENT */
+    .bookings-table td[data-label="Payment"],
+    .bookings-table td[data-label="Actions"] {
+        width: 100%;
+        margin-top: 0.25rem;
     }
 
-    .bookings-table td:nth-child(5) {
-        font-size: 1.25rem;
-        font-weight: 800;
-        color: var(--color-primary);
-        font-family: var(--font-display);
-    }
-
-
-    /* ACTIONS FOOTER */
-    .bookings-table td:nth-child(6),
-    .bookings-table td:nth-child(7) {
-        order: 4;
-        width: calc(50% - 6px);
-        margin-top: 0.75rem;
-    }
-
-    .bookings-table td:nth-child(6) .proof-link {
+    .bookings-table td[data-label="Payment"] .proof-link {
         width: 100%;
         justify-content: center;
         background: #f0f9ff;
-        color: #0369a1;
         border: 1px solid #bae6fd;
-        padding: 0.85rem;
-        border-radius: 12px;
-        font-size: 0.9rem;
+        padding: 0.75rem;
     }
 
-    .bookings-table td:nth-child(7) {
-        display: flex;
-        float: none;
-        /* Reset float from previous styles */
-    }
-
-    .bookings-table td:nth-child(7) .action-btn {
+    .bookings-table td[data-label="Actions"] .action-btn {
         width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 0.5rem;
         background: #fef2f2;
         color: #ef4444;
         border: 1px solid #fecaca;
-        padding: 0.85rem;
-        border-radius: 12px;
-        height: auto;
-    }
-
-    .bookings-table td:nth-child(7) .action-btn svg {
-        display: none;
-        /* Hide icon if text is enough, or keep it */
-    }
-
-    .bookings-table td:nth-child(7) .action-btn::after {
-        content: "Delete";
+        padding: 0.75rem;
+        border-radius: 8px;
         font-weight: 600;
-        font-size: 0.9rem;
     }
 
-    .bookings-table td:nth-child(6),
-    /* Payment */
-    .bookings-table td:nth-child(7)
-
-    /* Actions */
-        {
-        order: 3;
-        width: auto;
-        display: inline-block;
-        margin-top: 0.5rem;
-        margin-right: 0.5rem;
-        padding: 0;
-        background: none;
+    .bookings-table td[data-label="Actions"] .action-btn::after {
+        content: "Delete Booking";
+        margin-left: 0.5rem;
     }
 
-    .bookings-table td:nth-child(7) {
-        float: right;
-        margin-right: 0;
-    }
-
-    .proof-link {
-        font-size: 0.85rem;
-        padding: 0.5rem 0.75rem;
-    }
-}
-
-@media (max-width: 375px) {
-    .dashboard-controls {
-        padding: 0 1rem;
+    /* Hide the Delete Icon if needed, or keep it */
+    .bookings-table td[data-label="Actions"] .action-btn svg {
+        width: 18px;
+        height: 18px;
     }
 
     .bookings-header {
-        padding: 1.5rem 1rem;
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
     }
 
-    /* Force details to stack on very small screens if needed */
-    .bookings-table tr {
+    /* Pagination adjustments for mobile */
+    .pagination-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        text-align: center;
         padding: 1rem;
+    }
+
+    .pagination-controls>div {
+        justify-content: center;
+    }
+
+    .dashboard-controls {
+        padding: 0 1rem;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-input {
+        width: 100%;
     }
 }
 
-
-@media (max-width: 320px) {
-    .admin-container {
-        padding: 0.5rem !important;
-        /* Force smaller padding on very small screens */
-    }
-
-    .admin-header {
-        padding: 1rem !important;
-        margin-bottom: 1rem;
-    }
-
-    .admin-title {
-        font-size: 1.25rem;
-    }
-
-    .search-wrapper,
-    .filter-select {
-        width: 100%;
-    }
-
+@media (max-width: 480px) {
     .bookings-table tr {
         padding: 0.75rem;
     }
 
-    .bookings-table td {
-        font-size: 0.85rem;
-        padding: 0.5rem 0;
+    /* Stack grid items purely vertical on very small screens */
+    .bookings-table td[data-label="Client"] {
+        padding-right: 0;
+        padding-top: 2rem;
+        /* Move below status badge */
     }
 
-    .pagination-controls {
-        gap: 0.5rem;
-        padding: 0.5rem 0;
-    }
-
-    .pagination-btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.8rem;
-    }
-
-    .status-badge {
-        padding: 0.3rem 0.6rem;
-        font-size: 0.7rem;
+    .bookings-table td[data-label="Status"] {
+        top: 0.75rem;
+        right: 0.75rem;
     }
 }
 

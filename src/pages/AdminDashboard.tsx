@@ -140,6 +140,13 @@ const AdminDashboard = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' }>({ key: 'date', direction: 'desc' });
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const handleTabChange = (tab: any) => {
         setActiveTab(tab);
@@ -222,12 +229,19 @@ const AdminDashboard = () => {
         const term = searchTerm.toLowerCase();
         const matchesSearch = booking.fullName.toLowerCase().includes(term) ||
             booking.email.toLowerCase().includes(term) ||
-            booking.id.toLowerCase().includes(term);
+            booking.id.toLowerCase().includes(term) ||
+            (booking.referenceNumber?.toLowerCase().includes(term) ?? false);
         const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
         return matchesSearch && matchesStatus;
     }).sort((a, b) => {
-        const aValue = a[sortConfig.key];
-        const bValue = b[sortConfig.key];
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+
+        // Handle Firestore Timestamps for sorting
+        if (sortConfig.key === 'createdAt') {
+            aValue = aValue?.seconds || 0;
+            bValue = bValue?.seconds || 0;
+        }
 
         if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
         if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
@@ -925,7 +939,7 @@ const AdminDashboard = () => {
                                     <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                                     <input
                                         type="text"
-                                        placeholder="Search by name, email..."
+                                        placeholder={isMobile ? "Search..." : "Search by name, email, ref number..."}
                                         className="search-input"
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -962,6 +976,12 @@ const AdminDashboard = () => {
                                                     {sortConfig.key === 'date' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                                                 </span>
                                             </th>
+                                            <th onClick={() => handleSort('createdAt')} className={`sort-header ${sortConfig.key === 'createdAt' ? 'active' : ''}`}>
+                                                Created
+                                                <span className="sort-indicator">
+                                                    {sortConfig.key === 'createdAt' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                                                </span>
+                                            </th>
                                             <th onClick={() => handleSort('package')} className={`sort-header ${sortConfig.key === 'package' ? 'active' : ''}`}>
                                                 Package
                                                 <span className="sort-indicator">
@@ -986,7 +1006,7 @@ const AdminDashboard = () => {
                                     </thead>
                                     <tbody>
                                         {paginatedBookings.map((booking) => (
-                                            <tr key={booking.id}>
+                                            <tr key={booking.id} className={`booking-row status-${booking.status}`}>
                                                 <td data-label="Client">
                                                     <div style={{ fontWeight: 500 }}>{booking.fullName}</div>
                                                     {booking.referenceNumber && (
@@ -998,6 +1018,10 @@ const AdminDashboard = () => {
                                                 <td data-label="Date & Time">
                                                     <div>{booking.date}</div>
                                                     <div style={{ fontSize: '0.8rem', color: '#888' }}>{booking.time}</div>
+                                                </td>
+                                                <td data-label="Created At">
+                                                    <div style={{ fontSize: '0.9rem' }}>{booking.createdAt?.seconds ? new Date(booking.createdAt.seconds * 1000).toLocaleDateString() : '-'}</div>
+                                                    <div style={{ fontSize: '0.8rem', color: '#888' }}>{booking.createdAt?.seconds ? new Date(booking.createdAt.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</div>
                                                 </td>
                                                 <td data-label="Package">{booking.package}</td>
                                                 <td data-label="Status">
@@ -1039,7 +1063,7 @@ const AdminDashboard = () => {
                                         ))}
                                         {processedBookings.length === 0 && (
                                             <tr>
-                                                <td colSpan={7} style={{ textAlign: 'center', padding: '3rem', color: '#888' }}>
+                                                <td colSpan={8} style={{ textAlign: 'center', padding: '3rem', color: '#888' }}>
                                                     {searchTerm || statusFilter !== 'all' ? 'No bookings match filters' : 'No bookings found.'}
                                                 </td>
                                             </tr>

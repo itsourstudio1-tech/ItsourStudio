@@ -37,3 +37,10 @@ release/Its Our Studio Admin Setup 0.0.0.exe.blockmap
 release/win-unpacked/Its Our Studio Admin.exe
 release/latest.yml
 release/win-unpacked/resources/app.asar
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

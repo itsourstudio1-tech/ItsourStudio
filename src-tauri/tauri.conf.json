@@ -5,9 +5,9 @@
   "identifier": "com.itsourstudio.admin",
   "build": {
     "frontendDist": "../dist",
-    "devUrl": "https://itsour-studio.vercel.app/admin/login",
-    "beforeDevCommand": "",
-    "beforeBuildCommand": ""
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
   },
   "app": {
     "windows": [
@@ -16,7 +16,7 @@
         "width": 1200,
         "height": 800,
         "maximized": true,
-        "url": "https://itsour-studio.vercel.app/admin/login"
+        "url": "index.html"
       }
     ],
     "security": {
