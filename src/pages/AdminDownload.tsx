@@ -65,7 +65,7 @@ const AdminDownload = () => {
                                 </svg>
                                 <div className="btn-label-group">
                                     <span className="btn-text">Download for Windows</span>
-                                    <span className="btn-meta">v1.0.0 • 81.6MB</span>
+                                    <span className="btn-meta">v1.0.0 • 163MB</span>
                                 </div>
                             </a>
 
