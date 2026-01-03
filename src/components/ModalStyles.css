@@ -1055,7 +1055,7 @@ textarea::placeholder {
     width: 100%;
     height: 200px;
     border-radius: 16px;
-    overflow: hidden;
+    /* overflow: hidden; removed to allow button to exceed bounds if needed */
     border: 2px solid #e2e8f0;
 }
 
@@ -1063,13 +1063,15 @@ textarea::placeholder {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 14px;
+    /* Added to match container shape */
 }
 
 .remove-preview-btn {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     color: white;
     border: none;
     width: 32px;
@@ -1081,11 +1083,25 @@ textarea::placeholder {
     cursor: pointer;
     transition: all 0.2s;
     backdrop-filter: blur(4px);
+    z-index: 20;
+    font-size: 1.25rem;
+    line-height: 1;
 }
 
 .remove-preview-btn:hover {
-    background: rgba(239, 68, 68, 0.9);
+    background: rgba(239, 68, 68, 1);
     transform: scale(1.1);
+}
+
+@media (max-width: 640px) {
+    .remove-preview-btn {
+        width: 40px;
+        height: 40px;
+        background: rgba(0, 0, 0, 0.8);
+        font-size: 1.5rem;
+        top: 0.75rem;
+        right: 0.75rem;
+    }
 }
 
 /* Custom Calendar */
