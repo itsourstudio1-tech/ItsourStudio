@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://itsour-studio.vercel.app/sitemap.xml
+Sitemap: https://itsourstudio.online/sitemap.xml
 
 # Disallow admin routes to avoid indexing login pages
 Disallow: /admin
