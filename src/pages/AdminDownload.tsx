@@ -56,7 +56,7 @@ const AdminDownload = () => {
 
                     <div className="action-area fade-slide-up" style={{ animationDelay: '0.4s' }}>
                         <div className="download-options-column">
-                            <a href="/downloads/ios-admin.msi" className="download-button windows" download>
+                            <a href="https://github.com/Sedictt/ItsourStudioNew/releases/download/v1.0.0/ios-admin.msi" className="download-button windows">
                                 <div className="btn-shine"></div>
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="dl-icon">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
