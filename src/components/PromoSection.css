@@ -129,3 +129,55 @@
         font-size: 2rem;
     }
 }
+
+@media (max-width: 480px) {
+    .promo-section {
+        padding: 2rem 0;
+    }
+
+    .promo-content {
+        padding: 1.5rem 1rem;
+        /* Ensure content stacks properly */
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .promo-title {
+        font-size: 1.5rem;
+        overflow-wrap: break-word;
+        /* Ensure long words don't overflow */
+        word-wrap: break-word;
+        hyphens: auto;
+        line-height: 1.3;
+        /* Improve line height for wrapping */
+        margin-top: 1.5rem;
+    }
+
+    .promo-features {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .promo-badge {
+        top: 12px;
+        left: 12px;
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
+        z-index: 20;
+        /* Ensure visual priority */
+    }
+
+    .promo-price-tag {
+        font-size: 1.75rem;
+    }
+
+    .promo-original-price {
+        font-size: 1rem;
+    }
+
+    .promo-content .btn-large {
+        width: 100%;
+        padding: 0.8rem 1rem;
+    }
+}
