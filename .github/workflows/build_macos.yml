@@ -1,0 +1,61 @@
+name: Build macOS App
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin, aarch64-apple-darwin
+
+      - name: Install dependencies (macOS)
+        run: |
+          # Tauri dependencies for macOS are usually pre-installed on GitHub runners
+          # but we can ensure everything is up to date if needed.
+          echo "Ready to build"
+
+      - name: Install Frontend Dependencies
+        run: npm ci
+
+      - name: Build Tauri App
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # To sign and notarize the app (prevents being "blocked"),
+          # you need an Apple Developer Account and must set these secrets in GitHub:
+          # APPLE_CERTIFICATE: Base64 encoded certificate
+          # APPLE_CERTIFICATE_PASSWORD: Password for the certificate
+          # APPLE_SIGNING_IDENTITY: Identity string (e.g. "Developer ID Application: Your Name (TEAMID)")
+          # APPLE_ID: Your Apple ID email
+          # APPLE_PASSWORD: App-specific password
+          # APPLE_TEAM_ID: Your Team ID
+        with:
+          tagName: app-v__VERSION__ # This will release a new version on GitHub Releases if a tag is pushed
+          releaseName: "App v__VERSION__"
+          releaseBody: "See the assets to download this version and install."
+          releaseDraft: true
+          prerelease: false
+          args: --target universal-apple-darwin 
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macOS App
+          path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+          if-no-files-found: warn
