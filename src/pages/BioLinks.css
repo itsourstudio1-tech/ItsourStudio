@@ -1,0 +1,247 @@
+/* src/pages/BioLinks.css */
+.bio-links-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1.5rem;
+    position: relative;
+    color: #fff;
+    font-family: var(--font-body);
+    overflow-x: hidden;
+}
+
+/* Dynamic Background Handling */
+.bio-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    transition: all 0.5s ease;
+}
+
+.bio-background::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    /* Overlay for readability */
+    backdrop-filter: blur(10px);
+    /* Glass effect base */
+    z-index: 1;
+}
+
+/* Content Wrapper */
+.bio-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 480px;
+    /* Mobile focused max-width */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    animation: fadeIn 0.8s ease-out;
+}
+
+/* Profile Section */
+.bio-profile {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.bio-avatar-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(45deg, #ff0f7b, #f89b29);
+    /* Instagram-ish gradient border */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    margin-bottom: 0.5rem;
+}
+
+.bio-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    background-color: #ffffff;
+    /* White background for logos */
+}
+
+.bio-name {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    /* Force white text */
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    margin: 0;
+}
+
+.bio-description {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    max-width: 300px;
+    line-height: 1.4;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Links List */
+.bio-links-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.bio-link-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Center text */
+    padding: 1.1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.bio-link-item:hover {
+    transform: translateY(-3px) scale(1.02);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.bio-link-item:active {
+    transform: scale(0.98);
+}
+
+.bio-link-icon {
+    position: absolute;
+    left: 1.5rem;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+}
+
+/* Social Icons Row (Optional footer style) */
+.bio-socials {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.bio-social-icon {
+    color: #fff;
+    font-size: 1.5rem;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.bio-social-icon:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.bio-link-item {
+    animation: slideUp 0.5s ease-out backwards;
+}
+
+/* Stagger animation for items */
+.bio-link-item:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.bio-link-item:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.bio-link-item:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.bio-link-item:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.bio-link-item:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.bio-link-item:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading State */
+.bio-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #111;
+    color: #fff;
+}
+
+/* Branding Badge */
+.bio-branding {
+    font-size: 0.75rem;
+    opacity: 0.6;
+    margin-top: 2rem;
+    letter-spacing: 1px;
+}

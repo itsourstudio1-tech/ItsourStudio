@@ -17,6 +17,7 @@ import AdminDownload from './pages/AdminDownload';
 import CookieConsent from './components/CookieConsent';
 import FAQ from './pages/FAQ';
 import NotFound from './pages/NotFound';
+import BioLinks from './pages/BioLinks';
 import StructuredData from './components/StructuredData';
 
 import { BookingProvider } from './context/BookingContext';
@@ -49,6 +50,8 @@ import LoadingScreen from './components/LoadingScreen';
 const AppContent = ({ onRouteChange }: { onRouteChange: () => void }) => {
     const location = useLocation();
     const isAdminRoute = location.pathname.startsWith('/admin');
+    const isBioLinksRoute = location.pathname === '/links';
+    const showNav = !isAdminRoute && !isBioLinksRoute;
     const prevPathnameRef = useRef(location.pathname);
 
     useEffect(() => {
@@ -64,7 +67,8 @@ const AppContent = ({ onRouteChange }: { onRouteChange: () => void }) => {
             <StructuredData />
             <ScrollToTop />
             <BackToTop />
-            {!isAdminRoute && <Navbar />}
+
+            {showNav && <Navbar />}
             <Routes>
                 <Route path="/" element={(Capacitor.isNativePlatform() || isTauri) ? <Navigate to="/admin" replace /> : <Home />} />
                 <Route path="/services" element={<Services />} />
@@ -74,6 +78,7 @@ const AppContent = ({ onRouteChange }: { onRouteChange: () => void }) => {
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/admin/download" element={<AdminDownload />} />
+                <Route path="/links" element={<BioLinks />} />
 
                 {/* Redirects for hash links that might be interpreted as routes */}
                 <Route path="/about" element={<Navigate to="/" replace state={{ scrollTo: 'about' }} />} />
@@ -91,10 +96,11 @@ const AppContent = ({ onRouteChange }: { onRouteChange: () => void }) => {
                 {/* Catch all - renders 404 page */}
                 <Route path="*" element={<NotFound />} />
             </Routes>
-            {!isAdminRoute && <Footer />}
-            {!isAdminRoute && <CookieConsent />}
+
+            {showNav && <Footer />}
+            {showNav && <CookieConsent />}
             <BookingModal />
-        </div>
+        </div >
     );
 };
 
