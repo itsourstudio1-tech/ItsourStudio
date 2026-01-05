@@ -46,11 +46,6 @@ jobs:
           # APPLE_PASSWORD: App-specific password
           # APPLE_TEAM_ID: Your Team ID
         with:
-          tagName: app-v__VERSION__ # This will release a new version on GitHub Releases if a tag is pushed
-          releaseName: "App v__VERSION__"
-          releaseBody: "See the assets to download this version and install."
-          releaseDraft: true
-          prerelease: false
           args: --target x86_64-apple-darwin --verbose 
 
       - name: Upload Artifacts
