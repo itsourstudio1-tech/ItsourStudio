@@ -18,6 +18,7 @@
     "electron:build": "npm run build && electron-builder",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
+    "tauri": "tauri",
     "mobile:open": "npx cap open android",
     "test": "vitest",
     "test:e2e": "playwright test"
