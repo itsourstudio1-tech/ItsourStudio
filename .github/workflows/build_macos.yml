@@ -22,7 +22,7 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: x86_64-apple-darwin, aarch64-apple-darwin
+          targets: x86_64-apple-darwin
 
       - name: Install dependencies (macOS)
         run: |
@@ -51,11 +51,11 @@ jobs:
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
           prerelease: false
-          args: --target universal-apple-darwin 
+          args: --target x86_64-apple-darwin --verbose 
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: macOS App
-          path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+          path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
           if-no-files-found: warn
