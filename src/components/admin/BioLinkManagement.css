@@ -521,15 +521,67 @@
     border-color: #bfdbfe;
 }
 
+/* Mobile Tabs - Hidden by default */
+.mobile-tabs {
+    display: none;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    background: #f1f5f9;
+    padding: 0.25rem;
+    border-radius: 8px;
+}
+
+.mobile-tab-btn {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mobile-tab-btn.active {
+    background: white;
+    color: var(--color-primary, #bf6a39);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-hidden {
+    /* Only effective inside media query usually, but safe to have */
+}
+
 /* Deep Mobile Optimization (up to 320px-480px) */
 @media (max-width: 480px) {
+    .mobile-tabs {
+        display: flex;
+    }
+
+    .mobile-hidden {
+        display: none !important;
+    }
+
     .bio-manager-layout {
         padding: 0.5rem;
-        gap: 1rem;
+        display: block;
+        /* Stack everything */
+        height: auto;
+    }
+
+    /* Override grid layout from desktop */
+    .bio-sidebar,
+    .bio-main {
+        width: 100%;
+        height: auto;
+        overflow: visible;
     }
 
     .bio-sidebar {
         padding: 1rem;
+        margin-bottom: 5rem;
+        /* Space for bottom scroll */
     }
 
     .main-header {
@@ -541,27 +593,30 @@
 
     .main-header h2 {
         text-align: center;
+        font-size: 1.1rem;
     }
 
     .main-header button {
         width: 100%;
         justify-content: center;
+        padding: 0.75rem;
+        /* Larger touch target */
     }
 
     .links-grid {
-        padding: 0.75rem;
+        padding: 0.5rem;
+        max-height: none;
+        /* Let page scroll */
     }
 
     .link-card {
-        /* Re-arrange grid for small screens: Icon | Content
-                                             Actions     */
         display: grid;
         grid-template-columns: 40px 1fr;
         grid-template-areas:
             "icon content"
             "actions actions";
         gap: 0.5rem;
-        padding: 0.75rem;
+        padding: 1rem;
         position: relative;
     }
 
@@ -569,12 +624,16 @@
         position: absolute;
         top: 0.5rem;
         left: 0.25rem;
-        opacity: 0.3;
+        padding: 0.5rem;
+        /* Larger touch target */
     }
 
     .lc-icon {
         grid-area: icon;
         font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .lc-content {
@@ -583,27 +642,48 @@
 
     .lc-actions {
         grid-area: actions;
-        justify-content: flex-end;
-        padding-top: 0.5rem;
+        justify-content: space-between;
+        /* Spread buttons */
+        padding-top: 0.75rem;
+        margin-top: 0.25rem;
         border-top: 1px dashed #f1f5f9;
         opacity: 1;
-        /* Always visible on mobile */
+    }
+
+    .lc-actions button {
+        padding: 0.5rem 1rem;
+        /* Big touch targets */
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        flex: 1;
+        margin: 0 0.125rem;
     }
 
     /* Modal adjustments */
     .compact-modal {
-        width: 90%;
+        width: 95%;
         max-width: 320px;
         padding: 1.25rem;
         margin: auto;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-height: 90vh;
+        overflow-y: auto;
     }
 
     .emoji-picker-grid {
         grid-template-columns: repeat(5, 1fr);
     }
 
-    .profile-card input {
+    .profile-card input,
+    .profile-card textarea {
         width: 100%;
-        /* Ensure inputs fill container */
+        font-size: 1rem;
+        /* Prevent iOS zoom */
+        margin-bottom: 0.5rem;
+        border: 1px solid #e2e8f0;
+        /* Visible borders helps */
     }
 }

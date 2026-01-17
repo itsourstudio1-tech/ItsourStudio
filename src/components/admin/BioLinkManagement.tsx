@@ -56,6 +56,9 @@ const BioLinkManagement = ({ showToast }: Props) => {
     const [currentLink, setCurrentLink] = useState<BioLink | null>(null);
     const [linkFormData, setLinkFormData] = useState({ title: '', url: '', icon: '🔗', special: false });
 
+    // Mobile View State
+    const [activeMobileTab, setActiveMobileTab] = useState<'profile' | 'links'>('links');
+
     // Initial Fetch
     useEffect(() => {
         const fetchProfile = async () => {
@@ -213,9 +216,23 @@ const BioLinkManagement = ({ showToast }: Props) => {
 
     return (
         <div className="bio-manager-layout">
+            <div className="mobile-tabs">
+                <button
+                    className={`mobile-tab-btn ${activeMobileTab === 'links' ? 'active' : ''}`}
+                    onClick={() => setActiveMobileTab('links')}
+                >
+                    🔗 Links
+                </button>
+                <button
+                    className={`mobile-tab-btn ${activeMobileTab === 'profile' ? 'active' : ''}`}
+                    onClick={() => setActiveMobileTab('profile')}
+                >
+                    🎨 Design
+                </button>
+            </div>
 
             {/* Sidebar: Profile & Settings */}
-            <aside className="bio-sidebar">
+            <aside className={`bio-sidebar ${activeMobileTab === 'links' ? 'mobile-hidden' : ''}`}>
                 <div className="bio-sidebar-header">
                     <h3>Profile Config</h3>
                     <button className="text-btn small" onClick={saveProfile} disabled={uploading}>
@@ -289,7 +306,7 @@ const BioLinkManagement = ({ showToast }: Props) => {
             </aside>
 
             {/* Main: Link List */}
-            <main className="bio-main">
+            <main className={`bio-main ${activeMobileTab === 'profile' ? 'mobile-hidden' : ''}`}>
                 <div className="main-header">
                     <h2>Your Links</h2>
                     <button className="btn-primary-compact" onClick={() => openLinkModal()}>
