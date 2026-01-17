@@ -1,7 +1,7 @@
 {
   "name": "its-our-studio-admin",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Official Admin Dashboard for Its Our Studio",
   "author": "Its Our Studio",
   "homepage": "https://itsour-studio.vercel.app",
