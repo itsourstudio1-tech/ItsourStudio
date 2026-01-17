@@ -8,7 +8,6 @@ import './AdminAnalytics.css';
 import UserManagement from '../components/admin/UserManagement';
 import FeedbackManagement from '../components/admin/FeedbackManagement';
 import ContentManagement from '../components/admin/ContentManagement';
-import BioLinkManagement from '../components/admin/BioLinkManagement';
 import ReportManagement from '../components/admin/ReportManagement';
 
 
@@ -596,10 +595,6 @@ const AdminDashboard = () => {
                         <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                         <span className="nav-label">Content</span>
                     </button>
-                    <button className={`nav-item ${activeTab === 'bio_links' ? 'active' : ''}`} onClick={() => handleTabChange('bio_links')}>
-                        <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                        <span className="nav-label">Bio Links </span>
-                    </button>
                     <button className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => handleTabChange('reports')}>
                         <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                         <span className="nav-label">Reports</span>
@@ -769,7 +764,6 @@ const AdminDashboard = () => {
 
                 )}
 
-                {activeTab === 'bio_links' && <BioLinkManagement showToast={showToast} />}
 
                 {activeTab === 'reports' && <ReportManagement showToast={showToast} />}
 
