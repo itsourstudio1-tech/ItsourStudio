@@ -1,0 +1,29 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper function to check auth
+    function isAdmin() {
+      return request.auth != null; 
+      // Ideally check custom claims, but for now auth presence is the baseline
+    }
+
+    // Gallery images: Public read, Admin write
+    match /gallery/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Report attachments: Public read (for admin dashboard), Public create (upload)
+    match /reports/{item} {
+       allow read: if true; // Or strictly isAdmin() if you want privacy
+       allow create: if true; // Allow anyone to upload a screenshot
+       allow update, delete: if isAdmin();
+    }
+    
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, query, orderBy, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import './BioLinks.css';
+import BioIcon from '../components/BioIcon';
+import { useBooking } from '../context/BookingContext';
 
 interface BioLink {
     id: string;
@@ -38,6 +40,17 @@ const BioLinks = () => {
         socials: {}
     });
     const [loading, setLoading] = useState(true);
+    const { openBooking } = useBooking();
+
+    useEffect(() => {
+        // Set body background to dark to avoid white/cream gaps
+        const originalBg = document.body.style.backgroundColor;
+        document.body.style.backgroundColor = 'var(--color-dark)';
+
+        return () => {
+            document.body.style.backgroundColor = originalBg;
+        };
+    }, []);
 
     useEffect(() => {
         // 1. Fetch Profile Settings
@@ -89,16 +102,33 @@ const BioLinks = () => {
 
     // Default Images
     const displayImage = profile.profileImage || '/logo/android-chrome-512x512.png'; // Assuming public asset
-    const bgStyle = profile.backgroundImage
-        ? { backgroundImage: `url(${profile.backgroundImage})` }
-        : {
-            background: `linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)`
-        };
 
     return (
         <div className="bio-links-container">
-            {/* Background Layer */}
-            <div className="bio-background" style={bgStyle}></div>
+            {/* Animated Aurora Background */}
+            <div className="bio-aurora-bg" aria-hidden="true">
+                <div className="aurora-gradient aurora-1"></div>
+                <div className="aurora-gradient aurora-2"></div>
+                <div className="aurora-gradient aurora-3"></div>
+                <div className="aurora-gradient aurora-4"></div>
+            </div>
+
+            {/* Floating Particles */}
+            <div className="bio-particles" aria-hidden="true">
+                {[...Array(20)].map((_, i) => (
+                    <div key={i} className="particle" style={{
+                        '--delay': `${Math.random() * 8}s`,
+                        '--duration': `${15 + Math.random() * 20}s`,
+                        '--x-start': `${Math.random() * 100}%`,
+                        '--x-end': `${Math.random() * 100}%`,
+                        '--size': `${2 + Math.random() * 4}px`,
+                        '--opacity': `${0.3 + Math.random() * 0.5}`,
+                    } as React.CSSProperties}></div>
+                ))}
+            </div>
+
+            {/* Subtle Noise Overlay */}
+            <div className="bio-noise" aria-hidden="true"></div>
 
             <div className="bio-content">
                 {/* Profile Header */}
@@ -113,7 +143,7 @@ const BioLinks = () => {
                             }}
                         />
                     </div>
-                    <h1 className="bio-name">{profile.displayName}</h1>
+                    <h1 className="bio-name">{profile.displayName || "It's ouR Studio"}</h1>
                     <p className="bio-description">{profile.bioDescription}</p>
                 </div>
 
@@ -132,30 +162,34 @@ const BioLinks = () => {
 
                 {/* Links List */}
                 <div className="bio-links-list">
-                    {links.length === 0 && (
-                        <div style={{ textAlign: 'center', opacity: 0.7, fontStyle: 'italic' }}>
-                            No links configured yet.
-                        </div>
-                    )}
-
-                    {links.map((link) => (
-                        <a
-                            key={link.id}
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bio-link-item"
-                            style={link.special ? {
-                                background: 'rgba(255, 255, 255, 0.9)',
-                                color: '#000',
-                                transform: 'scale(1.02)',
-                                fontWeight: 800
-                            } : {}}
-                        >
-                            {link.icon && <span className="bio-link-icon">{link.icon}</span>}
-                            {link.title}
-                        </a>
-                    ))}
+                    {links.map((link) => {
+                        if (link.url === '#booking') {
+                            return (
+                                <button
+                                    key={link.id}
+                                    className="bio-link-item"
+                                    data-special={link.special}
+                                    onClick={() => openBooking()}
+                                >
+                                    {link.icon && <BioIcon name={link.icon} className="bio-link-icon" size={20} />}
+                                    {link.title}
+                                </button>
+                            );
+                        }
+                        return (
+                            <a
+                                key={link.id}
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bio-link-item"
+                                data-special={link.special}
+                            >
+                                {link.icon && <BioIcon name={link.icon} className="bio-link-icon" size={20} />}
+                                {link.title}
+                            </a>
+                        );
+                    })}
                 </div>
 
 

@@ -1,0 +1,225 @@
+.report-management {
+    padding: 1rem;
+}
+
+.report-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.report-stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.report-stat-label {
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.report-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.report-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #e2e8f0;
+}
+
+.report-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.report-header {
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+}
+
+.report-type-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge-bug {
+    background-color: #fee2e2;
+    color: #ef4444;
+}
+
+.badge-visual {
+    background-color: #e0f2fe;
+    color: #0ea5e9;
+}
+
+.badge-feature {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.badge-other {
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+.report-status-select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    background: white;
+    cursor: pointer;
+}
+
+.report-status-select.status-new {
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.report-status-select.status-in-progress {
+    border-color: #f59e0b;
+    color: #f59e0b;
+}
+
+.report-status-select.status-resolved {
+    border-color: #10b981;
+    color: #10b981;
+}
+
+.report-body {
+    padding: 1rem;
+}
+
+.report-desc {
+    color: #334155;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    white-space: pre-wrap;
+}
+
+.report-meta {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.report-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.report-actions {
+    padding: 0.75rem 1rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-delete-report {
+    color: #ef4444;
+    background: none;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.btn-delete-report:hover {
+    background: #fee2e2;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #94a3b8;
+}
+
+/* Mobile Optimization (up to 320px-480px) */
+@media (max-width: 480px) {
+    .report-management {
+        padding: 0.5rem;
+    }
+
+    .report-stats {
+        grid-template-columns: 1fr;
+        /* Stack vertically on small screens */
+        gap: 0.75rem;
+    }
+
+    .report-stat-card {
+        padding: 1rem;
+    }
+
+    .report-stat-value {
+        font-size: 1.5rem;
+    }
+
+    .reports-grid {
+        grid-template-columns: 1fr;
+        /* Force 1 column */
+    }
+
+    .report-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+
+    .report-type-badge {
+        font-size: 0.7rem;
+    }
+
+    .report-body {
+        padding: 0.75rem;
+    }
+
+    .report-desc {
+        font-size: 0.9rem;
+    }
+
+    .report-meta-item {
+        font-size: 0.75rem;
+        flex-wrap: wrap;
+        /* Allow long URLs/emails to wrap */
+        word-break: break-all;
+    }
+}

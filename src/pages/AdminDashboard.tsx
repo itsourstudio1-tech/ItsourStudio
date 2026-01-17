@@ -9,6 +9,7 @@ import UserManagement from '../components/admin/UserManagement';
 import FeedbackManagement from '../components/admin/FeedbackManagement';
 import ContentManagement from '../components/admin/ContentManagement';
 import BioLinkManagement from '../components/admin/BioLinkManagement';
+import ReportManagement from '../components/admin/ReportManagement';
 
 
 interface Booking {
@@ -61,7 +62,7 @@ const AdminDashboard = () => {
         revenue: 0
     });
 
-    const [activeTab, setActiveTab] = useState<'bookings' | 'feedbacks' | 'content' | 'users' | 'gallery' | 'calendar' | 'analytics' | 'bio_links'>('analytics');
+    const [activeTab, setActiveTab] = useState<'bookings' | 'feedbacks' | 'content' | 'users' | 'gallery' | 'calendar' | 'analytics' | 'bio_links' | 'reports'>('analytics');
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     const [unavailableDates, setUnavailableDates] = useState<Record<string, string>>({}); // date -> reason map
@@ -597,7 +598,11 @@ const AdminDashboard = () => {
                     </button>
                     <button className={`nav-item ${activeTab === 'bio_links' ? 'active' : ''}`} onClick={() => handleTabChange('bio_links')}>
                         <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                        <span className="nav-label">Bio Links (New)</span>
+                        <span className="nav-label">Bio Links </span>
+                    </button>
+                    <button className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => handleTabChange('reports')}>
+                        <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        <span className="nav-label">Reports</span>
                     </button>
                 </nav>
 
@@ -765,6 +770,8 @@ const AdminDashboard = () => {
                 )}
 
                 {activeTab === 'bio_links' && <BioLinkManagement showToast={showToast} />}
+
+                {activeTab === 'reports' && <ReportManagement showToast={showToast} />}
 
 
                 {activeTab === 'calendar' && (

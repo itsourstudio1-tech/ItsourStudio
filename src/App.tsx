@@ -66,7 +66,8 @@ const AppContent = ({ onRouteChange }: { onRouteChange: () => void }) => {
         <div className="app-container">
             <StructuredData />
             <ScrollToTop />
-            <BackToTop />
+            <ScrollToTop />
+            {showNav && <BackToTop />}
 
             {showNav && <Navbar />}
             <Routes>

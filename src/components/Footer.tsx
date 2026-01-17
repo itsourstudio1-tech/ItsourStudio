@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import ReportModal from './ReportModal';
 
 interface FooterContent {
     brandText: string;
@@ -20,6 +21,7 @@ const Footer = () => {
         instagram: "https://www.instagram.com/its_our_studio/",
         tiktok: "https://www.tiktok.com/@itsourstudio"
     });
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchFooter = async () => {
@@ -72,8 +74,23 @@ const Footer = () => {
                 <div className="footer-bottom">
                     <p>&copy; {currentYear} it's ouR Studio. All rights reserved.</p>
                     <Link to="/privacy-policy" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', marginTop: '0.5rem', display: 'inline-block' }}>Privacy Policy</Link>
+                    <span style={{ margin: '0 0.5rem', color: 'rgba(255,255,255,0.3)' }}>|</span>
+                    <button
+                        onClick={() => setIsReportModalOpen(true)}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'rgba(255,255,255,0.7)',
+                            fontSize: '0.85rem',
+                            cursor: 'pointer',
+                            textDecoration: 'underline'
+                        }}
+                    >
+                        Report an Issue
+                    </button>
                 </div>
             </div>
+            <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} />
         </footer>
     );
 };
