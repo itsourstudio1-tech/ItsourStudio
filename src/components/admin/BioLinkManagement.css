@@ -520,3 +520,90 @@
     color: #2563eb;
     border-color: #bfdbfe;
 }
+
+/* Deep Mobile Optimization (up to 320px-480px) */
+@media (max-width: 480px) {
+    .bio-manager-layout {
+        padding: 0.5rem;
+        gap: 1rem;
+    }
+
+    .bio-sidebar {
+        padding: 1rem;
+    }
+
+    .main-header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
+    .main-header h2 {
+        text-align: center;
+    }
+
+    .main-header button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .links-grid {
+        padding: 0.75rem;
+    }
+
+    .link-card {
+        /* Re-arrange grid for small screens: Icon | Content
+                                             Actions     */
+        display: grid;
+        grid-template-columns: 40px 1fr;
+        grid-template-areas:
+            "icon content"
+            "actions actions";
+        gap: 0.5rem;
+        padding: 0.75rem;
+        position: relative;
+    }
+
+    .lc-drag {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.25rem;
+        opacity: 0.3;
+    }
+
+    .lc-icon {
+        grid-area: icon;
+        font-size: 1.5rem;
+    }
+
+    .lc-content {
+        grid-area: content;
+    }
+
+    .lc-actions {
+        grid-area: actions;
+        justify-content: flex-end;
+        padding-top: 0.5rem;
+        border-top: 1px dashed #f1f5f9;
+        opacity: 1;
+        /* Always visible on mobile */
+    }
+
+    /* Modal adjustments */
+    .compact-modal {
+        width: 90%;
+        max-width: 320px;
+        padding: 1.25rem;
+        margin: auto;
+    }
+
+    .emoji-picker-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .profile-card input {
+        width: 100%;
+        /* Ensure inputs fill container */
+    }
+}
