@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { db, storage } from '../firebase';
-import { collection, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, updateDoc, query, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import './ReportModal.css';
 
@@ -48,6 +48,46 @@ const ReportModal = ({ isOpen, onClose }: ReportModalProps) => {
                 // Update doc with screenshot URL
                 await updateDoc(docRef, { screenshot: downloadURL });
             }
+
+            // --- NOTIFY IT USERS VIA EMAIL ---
+            try {
+                // Find users with 'it' or 'IT' role
+                const itUsersQuery = query(collection(db, 'users'), where('role', 'in', ['it', 'IT']));
+                const itSnapshot = await getDocs(itUsersQuery);
+
+                if (!itSnapshot.empty) {
+                    const finalScreenshotUrl = file ? await getDownloadURL(ref(storage, `reports/${docRef.id}_${file.name}`)) : null;
+                    const reporterContact = email || 'Anonymous User';
+
+                    const emailPromises = itSnapshot.docs.map(doc => {
+                        const itUser = doc.data();
+                        if (itUser.email) {
+                            return fetch('/api/send-email', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    type: 'report_issue',
+                                    report: {
+                                        subject: `Public Report: ${type}`,
+                                        message: description,
+                                        screenshotUrl: finalScreenshotUrl,
+                                        reporterEmail: reporterContact,
+                                        toEmail: itUser.email
+                                    }
+                                })
+                            }).then(res => {
+                                if (!res.ok) console.error(`Failed to send email to ${itUser.email}: Status ${res.status}`);
+                            });
+                        }
+                        return Promise.resolve();
+                    });
+
+                    await Promise.all(emailPromises);
+                }
+            } catch (emailErr) {
+                console.error("Failed to send IT notification emails for public report:", emailErr);
+            }
+            // ---------------------------------
 
             setIsSuccess(true);
             setTimeout(() => {

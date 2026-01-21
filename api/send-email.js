@@ -23,7 +23,7 @@ const style = {
 // --- Helper to render Booking Reference ---
 const renderReference = (ref) => ref ? `
     <div style="${style.refBox}">
-        <p style="${style.refLabel}">Booking Reference</p>
+        <p style="${style.refLabel}">Booking Reference:</p>
         <p style="${style.refCode}">${ref}</p>
         <p style="margin: 8px 0 0; font-size: 11px; color: #94a3b8;">Keep this for your records</p>
     </div>
@@ -44,7 +44,7 @@ const getReceivedEmail = (booking) => `
 
         <!-- Hero -->
         <div style="${style.hero}">
-            <div style="width: 60px; height: 60px; background-color: #fff7ed; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #ea580c; font-size: 30px;">⏳</div>
+
             <h2 style="${style.heroTitle}">Booking Received</h2>
             <p style="${style.heroText}">Thanks ${booking.name}! We've reserved your slot temporarily.<br>To confirm, please settle the <strong>50% downpayment</strong>.</p>
         </div>
@@ -55,7 +55,7 @@ const getReceivedEmail = (booking) => `
 
             <!-- Payment Card -->
             <div style="background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); border-radius: 16px; padding: 30px; text-align: center; color: white; margin-bottom: 30px; box-shadow: 0 10px 25px -5px rgba(234, 88, 12, 0.4);">
-                <p style="margin: 0 0 5px; font-size: 13px; opacity: 0.9; text-transform: uppercase; font-weight: 600;">Total Downpayment</p>
+                <p style="margin: 0 0 5px; font-size: 13px; opacity: 0.9; text-transform: uppercase; font-weight: 600;">Total Downpayment:</p>
                 <h3 style="margin: 0 0 20px; font-size: 36px; font-weight: 800;">₱${booking.downpayment}</h3>
                 <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 12px; backdrop-filter: blur(5px);">
                     <p style="margin: 0; font-weight: 700; font-size: 16px;">GCash: Reggie L.</p>
@@ -67,10 +67,10 @@ const getReceivedEmail = (booking) => `
             <!-- Details -->
             <h3 style="font-size: 14px; text-transform: uppercase; color: #94a3b8; font-weight: 700; margin-bottom: 15px;">Session Details</h3>
             <div style="border-top: 1px solid #f1f5f9;">
-                <div style="${style.detailRow}"><span style="${style.detailLabel}">Package</span><span style="${style.detailValue}">${booking.package}</span></div>
-                <div style="${style.detailRow}"><span style="${style.detailLabel}">Date</span><span style="${style.detailValue}">${booking.date}</span></div>
-                <div style="${style.detailRow}"><span style="${style.detailLabel}">Time</span><span style="${style.detailValue}">${booking.time_start}</span></div>
-                <div style="${style.detailRow}"><span style="${style.detailLabel}">Total Price</span><span style="${style.detailValue}">₱${booking.total_amount}</span></div>
+                <div style="${style.detailRow}"><span style="${style.detailLabel}">Package:</span><span style="${style.detailValue}">${booking.package}</span></div>
+                <div style="${style.detailRow}"><span style="${style.detailLabel}">Date:</span><span style="${style.detailValue}">${booking.date}</span></div>
+                <div style="${style.detailRow}"><span style="${style.detailLabel}">Time:</span><span style="${style.detailValue}">${booking.time_start}</span></div>
+                <div style="${style.detailRow}"><span style="${style.detailLabel}">Total Price:</span><span style="${style.detailValue}">₱${booking.total_amount}</span></div>
             </div>
         </div>
 
@@ -94,7 +94,7 @@ const getConfirmedEmail = (booking) => `
 
         <!-- Hero -->
         <div style="${style.hero}">
-            <div style="width: 60px; height: 60px; background-color: #f0fdf4; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #16a34a; font-size: 30px;">✅</div>
+
             <h2 style="${style.heroTitle}">You're Booked!</h2>
             <p style="${style.heroText}">Get ready, ${booking.name}! Your session is officially confirmed.</p>
         </div>
@@ -182,7 +182,7 @@ const getContactEmail = (contact) => `
 
         <div style="padding: 40px;">
             <div style="margin-bottom: 25px;">
-                <p style="font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin: 0 0 5px;">From</p>
+                <p style="font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin: 0 0 5px;">From:</p>
                 <h2 style="margin: 0; color: #1e293b; font-size: 20px;">${contact.name}</h2>
                 <a href="mailto:${contact.email}" style="color: #ea580c; text-decoration: none; font-weight: 500;">${contact.email}</a>
             </div>
@@ -190,6 +190,43 @@ const getContactEmail = (contact) => `
             <div style="background-color: #f8fafc; padding: 25px; border-radius: 12px; border-left: 4px solid #ea580c;">
                 <p style="margin: 0; color: #334155; line-height: 1.6; white-space: pre-wrap;">${contact.message}</p>
             </div>
+        </div>
+    </div>
+</body>
+</html>`;
+
+const getReminderEmail = (booking) => `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Session Reminder</title></head>
+<body style="${style.body}">
+    <div style="${style.container}">
+         <div style="background-color: #f59e0b; padding: 10px;"></div>
+         
+         <div style="${style.hero}">
+
+            <h2 style="${style.heroTitle}">30 Minutes to Go!</h2>
+            <p style="${style.heroText}">Hi ${booking.name}, your session is starting very soon.</p>
+        </div>
+
+        <div style="${style.section}">
+            ${renderReference(booking.referenceNumber)}
+
+            <div style="background-color: #fff7ed; border: 1px solid #fed7aa; border-radius: 12px; padding: 25px; text-align: center; margin-bottom: 25px;">
+                <p style="margin: 0 0 5px; font-size: 13px; color: #9a3412; text-transform: uppercase; font-weight: 700;">Start Time:</p>
+                <h3 style="margin: 0; color: #ea580c; font-size: 28px; font-weight: 800;">${booking.time_start}</h3>
+                <p style="margin: 5px 0 0; color: #9a3412;">${booking.package}</p>
+            </div>
+
+             <div style="text-align: center;">
+                <p style="color: #1e293b; font-weight: 600; margin-bottom: 5px;">📍 The Studio</p>
+                <p style="color: #64748b; font-size: 14px; margin: 0;">FJ Center 15 Tongco Maysan, Valenzuela City</p>
+                 <p style="color: #64748b; font-size: 13px; margin: 15px 0 0;">Please arrive 10-15 minutes early to prep!</p>
+            </div>
+        </div>
+
+        <div style="${style.footer}">
+             <p style="${style.footerText}">See you soon!<br>© It's ouR Studio</p>
         </div>
     </div>
 </body>
@@ -208,7 +245,7 @@ const getNewBookingAdminEmail = (booking) => `
 
         <!-- Hero -->
         <div style="${style.hero}">
-            <div style="width: 80px; height: 80px; background-color: #fef2f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #dc2626; font-size: 40px;">📸</div>
+
             <h2 style="${style.heroTitle}">Action Required</h2>
             <p style="${style.heroText}">A new booking has just been submitted. Please review and respond promptly.</p>
         </div>
@@ -221,19 +258,19 @@ const getNewBookingAdminEmail = (booking) => `
              <div style="background-color: #fff7ed; border: 2px solid #fed7aa; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
                 <h3 style="margin: 0 0 15px; color: #9a3412; font-size: 16px; font-weight: 700;">Customer Information</h3>
                 <div style="border-top: 1px solid #fed7aa;">
-                    <div style="${style.detailRow}"><span style="${style.detailLabel}">Name</span><span style="${style.detailValue}">${booking.name}</span></div>
-                    <div style="${style.detailRow}"><span style="${style.detailLabel}">Email</span><span style="${style.detailValue}">${booking.email}</span></div>
-                    <div style="${style.detailRow}"><span style="${style.detailLabel}">Phone</span><span style="${style.detailValue}">${booking.phone}</span></div>
+                    <div style="${style.detailRow}"><span style="${style.detailLabel}">Name:</span><span style="${style.detailValue}">${booking.name}</span></div>
+                    <div style="${style.detailRow}"><span style="${style.detailLabel}">Email:</span><span style="${style.detailValue}">${booking.email}</span></div>
+                    <div style="${style.detailRow}"><span style="${style.detailLabel}">Phone:</span><span style="${style.detailValue}">${booking.phone}</span></div>
                 </div>
              </div>
 
              <!-- Booking Details -->
              <h3 style="font-size: 14px; text-transform: uppercase; color: #94a3b8; font-weight: 700; margin-bottom: 15px;">Booking Details</h3>
              <div style="border-top: 1px solid #f1f5f9;">
-                 <div style="${style.detailRow}"><span style="${style.detailLabel}">Package</span><span style="${style.detailValue}">${booking.package}</span></div>
-                 <div style="${style.detailRow}"><span style="${style.detailLabel}">Date</span><span style="${style.detailValue}">${booking.date}</span></div>
-                 <div style="${style.detailRow}"><span style="${style.detailLabel}">Time</span><span style="${style.detailValue}">${booking.time_start}</span></div>
-                 <div style="${style.detailRow}"><span style="${style.detailLabel}">Total Price</span><span style="${style.detailValue}">₱${booking.totalPrice}</span></div>
+                 <div style="${style.detailRow}"><span style="${style.detailLabel}">Package:</span><span style="${style.detailValue}">${booking.package}</span></div>
+                 <div style="${style.detailRow}"><span style="${style.detailLabel}">Date:</span><span style="${style.detailValue}">${booking.date}</span></div>
+                 <div style="${style.detailRow}"><span style="${style.detailLabel}">Time:</span><span style="${style.detailValue}">${booking.time_start}</span></div>
+                 <div style="${style.detailRow}"><span style="${style.detailLabel}">Total Price:</span><span style="${style.detailValue}">₱${booking.totalPrice}</span></div>
              </div>
 
              <!-- Action CTA -->
@@ -245,6 +282,47 @@ const getNewBookingAdminEmail = (booking) => `
 
         <div style="${style.footer}">
              <p style="${style.footerText}">This is an automated notification from your booking system.<br>© It's ouR Studio</p>
+        </div>
+    </div>
+</body>
+</html>`;
+
+const getReportEmail = (report) => `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>New Issue Report</title></head>
+<body style="${style.body}">
+    <div style="${style.container}">
+         <div style="background-color: #ef4444; padding: 10px;"></div>
+         
+         <div style="${style.hero}">
+            <div style="width: 60px; height: 60px; background-color: #fef2f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #dc2626; font-size: 30px;">🛠️</div>
+            <h2 style="${style.heroTitle}">New Issue Reported</h2>
+            <p style="${style.heroText}">An admin has reported a system issue.</p>
+        </div>
+
+        <div style="${style.section}">
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-bottom: 25px;">
+                <p style="margin: 0 0 5px; font-size: 13px; color: #64748b; text-transform: uppercase; font-weight: 700;">Subject:</p>
+                <h3 style="margin: 0 0 15px; color: #1e293b; font-size: 20px;">${report.subject}</h3>
+                
+                <p style="margin: 0 0 5px; font-size: 13px; color: #64748b; text-transform: uppercase; font-weight: 700;">Message:</p>
+                <p style="margin: 0; color: #334155; line-height: 1.6; white-space: pre-wrap;">${report.message}</p>
+            </div>
+
+            <div style="text-align: center;">
+                 <p style="color: #64748b; font-size: 14px; margin: 0;">Reported by: ${report.reporterEmail}</p>
+                 <p style="color: #94a3b8; font-size: 12px; margin: 5px 0 0;">${new Date().toLocaleString()}</p>
+                 
+                 ${report.screenshotUrl ? `
+                 <div style="margin-top: 20px;">
+                    <a href="${report.screenshotUrl}" style="display: inline-block; background-color: #1e293b; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600;">View Screenshot</a>
+                 </div>` : ''}
+            </div>
+        </div>
+
+        <div style="${style.footer}">
+             <p style="${style.footerText}">System Notification<br>© It's ouR Studio</p>
         </div>
     </div>
 </body>
@@ -266,7 +344,7 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: 'Server configuration error: Missing credentials' });
     }
 
-    const { type, booking, contact } = req.body;
+    const { type, booking, contact, report } = req.body;
 
     // Transporter
     const transporter = nodemailer.createTransport({
@@ -300,10 +378,19 @@ export default async function handler(req, res) {
                 html = getContactEmail(contact);
                 toEmail = process.env.BUSINESS_EMAIL || process.env.EMAIL_USER;
                 break;
+            case 'reminder':
+                subject = `Reminder: Session in 30 Minutes [${booking.referenceNumber || 'IOS'}]`;
+                html = getReminderEmail(booking);
+                break;
             case 'new_booking_admin':
                 subject = `🔴 NEW BOOKING - ${booking.name} [${booking.referenceNumber || 'IOS'}]`;
                 html = getNewBookingAdminEmail(booking);
                 toEmail = process.env.BUSINESS_EMAIL || process.env.EMAIL_USER;
+                break;
+            case 'report_issue':
+                subject = `🛠️ Issue Report: ${report.subject}`;
+                html = getReportEmail(report);
+                toEmail = report.toEmail;
                 break;
             default:
                 throw new Error('Invalid email type');

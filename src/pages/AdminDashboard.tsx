@@ -173,6 +173,7 @@ const AdminDashboard = () => {
 
         setIsSubmittingReport(true);
         try {
+            const reporterEmail = auth.currentUser?.email || 'Admin User';
             let screenshotUrl = null;
 
             if (screenshotFile) {
@@ -184,12 +185,53 @@ const AdminDashboard = () => {
 
             await addDoc(collection(db, 'reports'), {
                 subject: reportSubject,
-                message: reportMessage,
-                status: 'pending',
-                createdAt: new Date().toISOString(),
+                description: reportMessage, // Renamed to description
+                status: 'new', // Changed to 'new'
+                timestamp: serverTimestamp(), // Changed createdAt to timestamp
                 type: 'admin_report',
-                screenshotUrl
+                screenshot: screenshotUrl, // Renamed to screenshot
+                email: reporterEmail // Added email field for ReportManagement
             });
+
+            // Notify IT Users via Email
+            try {
+                // Check for both 'it' and 'IT' just in case
+                const itUsersQuery = query(collection(db, 'users'), where('role', 'in', ['it', 'IT']));
+                const itSnapshot = await getDocs(itUsersQuery);
+                console.log(`Found ${itSnapshot.size} IT users to notify.`);
+                itSnapshot.forEach(doc => console.log('IT User Found:', doc.data())); // Debug Log
+
+                const emailPromises = itSnapshot.docs.map(doc => {
+                    const itUser = doc.data();
+                    if (itUser.email) {
+                        return fetch('/api/send-email', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                type: 'report_issue',
+                                report: {
+                                    subject: reportSubject,
+                                    message: reportMessage,
+                                    screenshotUrl: screenshotUrl,
+                                    reporterEmail: reporterEmail,
+                                    toEmail: itUser.email
+                                }
+                            })
+                        }).then(res => {
+                            if (!res.ok) console.error(`Failed to send email to ${itUser.email}: Status ${res.status}`);
+                            else console.log(`Email sent to ${itUser.email}: Status ${res.status}`);
+                            return res;
+                        });
+                    }
+                    return Promise.resolve();
+                });
+
+                await Promise.all(emailPromises);
+                console.log(`Report sent to ${emailPromises.length} IT users.`);
+            } catch (emailErr) {
+                console.error("Failed to send IT notification emails:", emailErr);
+            }
+
             showToast('success', 'Report Sent', 'Your issue report has been submitted to the IT admin.');
             setReportSubject('');
             setReportMessage('');
