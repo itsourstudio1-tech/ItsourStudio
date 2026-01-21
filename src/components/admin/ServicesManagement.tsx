@@ -473,14 +473,14 @@ const ServicesManagement = ({ showToast }: ServicesManagementProps) => {
                         {/* Images Section */}
                         <div className="full-width" style={{ marginTop: '2rem' }}>
                             <h5 style={{ marginBottom: '1rem' }}>Preview Images</h5>
-                            <div className="images-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                            <div className="images-grid">
                                 {/* Main Image */}
                                 <div>
                                     <label className="form-label">Main Image</label>
                                     <div className="image-uploader">
                                         {formData.imageMain ? (
-                                            <div style={{ position: 'relative' }}>
-                                                <img src={formData.imageMain} alt="Main" style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '8px' }} />
+                                            <div className="preview-image-container">
+                                                <img src={formData.imageMain} alt="Main" className="preview-img" />
                                                 <button type="button" onClick={() => setFormData(prev => ({ ...prev, imageMain: '' }))} className="btn-remove-img" style={{ position: 'absolute', top: 5, right: 5, background: 'rgba(0,0,0,0.5)', color: 'white', borderRadius: '50%', border: 'none', width: '24px', height: '24px' }}>×</button>
                                             </div>
                                         ) : (
@@ -495,8 +495,8 @@ const ServicesManagement = ({ showToast }: ServicesManagementProps) => {
                                     <label className="form-label">Detail Image</label>
                                     <div className="image-uploader">
                                         {formData.imageDetail ? (
-                                            <div style={{ position: 'relative' }}>
-                                                <img src={formData.imageDetail} alt="Detail" style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '8px' }} />
+                                            <div className="preview-image-container">
+                                                <img src={formData.imageDetail} alt="Detail" className="preview-img" />
                                                 <button type="button" onClick={() => setFormData(prev => ({ ...prev, imageDetail: '' }))} className="btn-remove-img" style={{ position: 'absolute', top: 5, right: 5, background: 'rgba(0,0,0,0.5)', color: 'white', borderRadius: '50%', border: 'none', width: '24px', height: '24px' }}>×</button>
                                             </div>
                                         ) : (
@@ -511,8 +511,8 @@ const ServicesManagement = ({ showToast }: ServicesManagementProps) => {
                                     <label className="form-label">Action Image</label>
                                     <div className="image-uploader">
                                         {formData.imageAction ? (
-                                            <div style={{ position: 'relative' }}>
-                                                <img src={formData.imageAction} alt="Action" style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '8px' }} />
+                                            <div className="preview-image-container">
+                                                <img src={formData.imageAction} alt="Action" className="preview-img" />
                                                 <button type="button" onClick={() => setFormData(prev => ({ ...prev, imageAction: '' }))} className="btn-remove-img" style={{ position: 'absolute', top: 5, right: 5, background: 'rgba(0,0,0,0.5)', color: 'white', borderRadius: '50%', border: 'none', width: '24px', height: '24px' }}>×</button>
                                             </div>
                                         ) : (
@@ -541,33 +541,24 @@ const ServicesManagement = ({ showToast }: ServicesManagementProps) => {
                         </div>
                     </form>
                 ) : (
-                    <div className="services-list" style={{ display: 'grid', gap: '1rem' }}>
+                    <div className="services-list">
                         {services.length === 0 ? (
                             <p className="text-muted">No services found. Add one to get started.</p>
                         ) : (
                             services.map(service => (
-                                <div key={service.id} className="service-item" style={{
-                                    background: '#ffffff',
-                                    padding: '1rem',
-                                    borderRadius: '8px',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    border: '1px solid #e2e8f0',
-                                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                                }}>
-                                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                                        <div className="service-img" style={{ width: '60px', height: '60px', borderRadius: '4px', overflow: 'hidden' }}>
-                                            {service.imageMain && <img src={service.imageMain} alt={service.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                                <div key={service.id} className="service-item">
+                                    <div className="service-item-content">
+                                        <div className="service-img">
+                                            {service.imageMain && <img src={service.imageMain} alt={service.title} />}
                                         </div>
                                         <div>
-                                            <h5 style={{ margin: 0, fontSize: '1.2rem', color: '#1e293b', fontWeight: 600 }}>{service.title}</h5>
-                                            <div style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '4px' }}>
+                                            <h5 className="service-title">{service.title}</h5>
+                                            <div className="service-meta">
                                                 {service.price} • {service.duration}
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="actions" style={{ display: 'flex', gap: '0.75rem' }}>
+                                    <div className="actions">
                                         <button
                                             className="btn btn-sm"
                                             style={{
