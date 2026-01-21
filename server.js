@@ -331,6 +331,47 @@ const getContactEmail = (contact) => `
 </html>`;
 
 
+const getReportEmail = (report) => `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>New Issue Report</title></head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+    <div style="width: 100%; max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+         <div style="background-color: #ef4444; padding: 10px;"></div>
+         
+         <div style="padding: 40px 30px; text-align: center;">
+            <div style="width: 60px; height: 60px; background-color: #fef2f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #dc2626; font-size: 30px;">🛠️</div>
+            <h2 style="margin: 0 0 10px; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; color: #1e293b;">New Issue Reported</h2>
+            <p style="margin: 0; font-size: 16px; color: #64748b; line-height: 1.6;">An admin has reported a system issue.</p>
+        </div>
+
+        <div style="padding: 0 40px 40px;">
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-bottom: 25px;">
+                <p style="margin: 0 0 5px; font-size: 13px; color: #64748b; text-transform: uppercase; font-weight: 700;">Subject:</p>
+                <h3 style="margin: 0 0 15px; color: #1e293b; font-size: 20px;">${report.subject}</h3>
+                
+                <p style="margin: 0 0 5px; font-size: 13px; color: #64748b; text-transform: uppercase; font-weight: 700;">Message:</p>
+                <p style="margin: 0; color: #334155; line-height: 1.6; white-space: pre-wrap;">${report.message}</p>
+            </div>
+
+            <div style="text-align: center;">
+                 <p style="color: #64748b; font-size: 14px; margin: 0;">Reported by: ${report.reporterEmail}</p>
+                 <p style="color: #94a3b8; font-size: 12px; margin: 5px 0 0;">${new Date().toLocaleString()}</p>
+                 
+                 ${report.screenshotUrl ? `
+                 <div style="margin-top: 20px;">
+                    <a href="${report.screenshotUrl}" style="display: inline-block; background-color: #1e293b; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600;">View Screenshot</a>
+                 </div>` : ''}
+            </div>
+        </div>
+
+        <div style="background-color: #f8fafc; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
+             <p style="margin: 0; font-size: 12px; color: #94a3b8;">System Notification<br>© It's ouR Studio</p>
+        </div>
+    </div>
+</body>
+</html>`;
+
 // Upload Endpoint (Rate Limited)
 app.post('/upload', uploadLimiter, upload.single('paymentProof'), (req, res) => {
     if (!req.file) {
@@ -385,12 +426,16 @@ app.post('/upload/gallery', uploadLimiter, galleryUpload.single('galleryImage'),
 
 // Email Endpoint (Rate Limited)
 app.post('/send-email', emailLimiter, async (req, res) => {
-    const { type, booking, contact } = req.body;
+    const { type, booking, contact, report } = req.body;
 
     // Allow contact type with different validation
     if (type === 'contact') {
         if (!contact || !contact.name || !contact.email || !contact.message) {
             return res.status(400).json({ error: 'Missing required fields for contact form' });
+        }
+    } else if (type === 'report_issue') {
+        if (!report || !report.subject || !report.message || !report.toEmail) {
+            return res.status(400).json({ error: 'Missing required fields for issue report' });
         }
     } else if (!type || !booking || !booking.email) {
         return res.status(400).json({ error: 'Missing required fields' });
@@ -400,6 +445,10 @@ app.post('/send-email', emailLimiter, async (req, res) => {
     let html = '';
     let attachments = [];
     let toEmail = booking?.email; // Default recipient
+
+    if (type === 'report_issue') {
+        toEmail = report.toEmail;
+    }
 
     switch (type) {
         case 'confirmed':
@@ -425,12 +474,18 @@ app.post('/send-email', emailLimiter, async (req, res) => {
             html = getContactEmail(contact);
             toEmail = process.env.BUSINESS_EMAIL || process.env.EMAIL_USER; // Send to business
             break;
+        case 'report_issue':
+            subject = `🛠️ Issue Report: ${report.subject}`;
+            html = getReportEmail(report);
+            toEmail = report.toEmail;
+            break;
         default:
             return res.status(400).json({ error: 'Invalid email type' });
     }
 
     try {
-        await transporter.sendMail({
+        console.log(`📨 Sending email [${type}] to: ${toEmail}`);
+        const info = await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: toEmail,
             replyTo: type === 'contact' ? contact.email : undefined, // Allow easy reply
@@ -438,9 +493,10 @@ app.post('/send-email', emailLimiter, async (req, res) => {
             html: html,
             attachments: attachments
         });
+        console.log(`✅ Email sent successfully [MessageID: ${info.messageId}]`);
         res.json({ message: 'Email sent successfully' });
     } catch (error) {
-        console.error('Error sending email:', error);
+        console.error('❌ Error sending email:', error);
         res.status(500).json({ error: 'Failed to send email', details: error.message });
     }
 });

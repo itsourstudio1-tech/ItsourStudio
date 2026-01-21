@@ -42,6 +42,142 @@ const FeatureCard = ({ icon, title, badges, children, isFeatured, isPlanned, def
     );
 };
 
+interface PatchVersionProps {
+    version: string;
+    date: string;
+    children: React.ReactNode;
+    defaultExpanded?: boolean;
+}
+
+const PatchVersion = ({ version, date, children, defaultExpanded = false }: PatchVersionProps) => {
+    const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+
+    return (
+        <div className={`patch-version-container ${isExpanded ? 'expanded' : ''}`}>
+            <button className="patch-version-header" onClick={() => setIsExpanded(!isExpanded)}>
+                <div className="patch-version-info">
+                    <div className="patch-version-title">
+                        <h2>{version}</h2>
+                        {defaultExpanded && <span className="version-tag">Latest</span>}
+                    </div>
+                    <p className="patch-version-date">Released on {date}</p>
+                </div>
+                <svg
+                    className={`chevron-icon ${isExpanded ? 'rotated' : ''}`}
+                    width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                >
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+            <div className={`patch-version-body ${isExpanded ? 'expanded' : ''}`}>
+                {children}
+            </div>
+        </div>
+    );
+};
+
+
+const SetupGuide = () => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleDownloadEnv = () => {
+        const envContent = `ADMIN_EMAIL=youremail@gmail.com
+ADMIN_PASSWORD=
+# ^^^ ENTER YOUR ADMIN DASHBOARD PASSWORD ABOVE BEFORE IMPORTING ^^^`;
+
+        const blob = new Blob([envContent], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'vercel.env';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    };
+
+    return (
+        <div className="setup-guide-wrapper">
+            <button className={`btn-tutorial-trigger ${isOpen ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}>
+                <span className="trigger-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                    </svg>
+                </span>
+                <span className="trigger-text">
+                    {isOpen ? 'Close Setup Guide' : 'Deployment Setup Guide'}
+                </span>
+                <span className="trigger-tag">Required for Email</span>
+            </button>
+
+            {isOpen && (
+                <div className="inline-tutorial-content" onClick={e => e.stopPropagation()}>
+                    <div className="tutorial-intro">
+                        <h4>Enable Automated Reminders</h4>
+                        <p>Follow these simple steps to configure the live server.</p>
+                    </div>
+
+                    <div className="tutorial-steps-container">
+                        {/* Step 1 */}
+                        <div className="tutorial-step">
+                            <div className="step-marker">
+                                <div className="step-circle">1</div>
+                                <div className="step-line"></div>
+                            </div>
+                            <div className="step-content">
+                                <div className="step-header">
+                                    <strong>Download Configuration</strong>
+                                </div>
+                                <p>Get the pre-configured settings file. No editing needed.</p>
+                                <button className="btn-download-primary" onClick={handleDownloadEnv}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                    Download vercel.env
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Step 2 */}
+                        <div className="tutorial-step">
+                            <div className="step-marker">
+                                <div className="step-circle">2</div>
+                                <div className="step-line"></div>
+                            </div>
+                            <div className="step-content">
+                                <div className="step-header">
+                                    <strong>Go to Vercel Settings</strong>
+                                </div>
+                                <p>Open your Project Dashboard and navigate to:</p>
+                                <div className="breadcrumb">
+                                    <span>Settings</span>
+                                    <span className="separator">›</span>
+                                    <span>Environment Variables</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Step 3 */}
+                        <div className="tutorial-step">
+                            <div className="step-marker">
+                                <div className="step-circle">3</div>
+                            </div>
+                            <div className="step-content">
+                                <div className="step-header">
+                                    <strong>Import & Activate</strong>
+                                </div>
+                                <p>Click <strong>"Import .env"</strong>, select the file you downloaded, and enter your login email and password.</p>
+                                <div className="tip-box">
+                                    <span className="tip-icon">💡</span>
+                                    <span>This single action configures the entire email system.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 const PatchNotes = () => {
     return (
         <div className="patch-notes-container">
@@ -49,29 +185,120 @@ const PatchNotes = () => {
                 <header className="patch-notes-header">
                     <div className="header-top">
                         <h1>Patch Notes</h1>
-                        <span className="version-tag">v1.1.0</span>
                     </div>
-                    <p className="update-meta">Released on January 21, 2026</p>
+                    <p className="update-meta">Track all updates and improvements to the studio system.</p>
                 </header>
 
                 <main className="patch-notes-main">
-                    <section className="patch-section">
-                        <h2 className="section-label">Completed Updates</h2>
 
+                    {/* v1.2.0 - The Reminder & IT Update */}
+                    <PatchVersion version="v1.2.0" date="January 21, 2026" defaultExpanded={true}>
                         <FeatureCard
-                            title="Notification System"
+                            title="Session Reminders"
                             isFeatured
                             defaultExpanded
+                            icon={
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            }
+                            badges={[<span key="new" className="badge new">NEW</span>]}
+                        >
+                            <ul className="change-list">
+                                <li><strong>Automated 30-Minute Warnings</strong>
+                                    <ul>
+                                        <li>System automatically scans for upcoming sessions every minute.</li>
+                                        <li>Triggers email alerts exactly 30 minutes before start time.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Dual Notification System</strong>
+                                    <ul>
+                                        <li><strong>Client:</strong> Friendly reminder to arrive early.</li>
+                                        <li><strong>Admin:</strong> Operational alert to prepare the studio.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Server-Side Reliability</strong>
+                                    <ul>
+                                        <li>Powered by robust background cron jobs.</li>
+                                        <li>Works independently of browser sessions.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+
+                            <SetupGuide />
+                        </FeatureCard>
+
+                        <FeatureCard
+                            title="IT Notifications System"
+                            icon={
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            }
+                            badges={[<span key="new" className="badge new">NEW</span>]}
+                        >
+                            <ul className="change-list">
+                                <li><strong>Instant Email Alerts</strong>
+                                    <ul>
+                                        <li>Reports submitted now instantly notify the IT team via email.</li>
+                                        <li>Emails include issue type, description, and direct screenshot links.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Public & Admin Reporting</strong>
+                                    <ul>
+                                        <li>Unified reporting logic for both public visitors and internal staff.</li>
+                                        <li>Consistent ticket tracking for all issue sources.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Dedicated 'IT' Role</strong>
+                                    <ul>
+                                        <li>New user role specifically for technical staff.</li>
+                                        <li>Ensures critical system alerts are routed only to the correct personnel.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </FeatureCard>
+
+                        <FeatureCard
+                            title="Email Template Refinements"
+                            icon={
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            }
+                            badges={[<span key="improve" className="badge improved">IMPROVED</span>]}
+                        >
+                            <ul className="change-list">
+                                <li><strong>Cleaner Layout</strong>
+                                    <ul>
+                                        <li>Removed emoji icons from headers for a more professional look.</li>
+                                        <li>Improved spacing and alignment across all notification types.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Standardized Formatting</strong>
+                                    <ul>
+                                        <li>Added consistent labeling (e.g., "Label: Value") to prevent display issues on mobile clients.</li>
+                                        <li>Unified design language for Admin and Client alerts.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </FeatureCard>
+                    </PatchVersion>
+
+                    {/* v1.1.0 - The Admin Overhaul */}
+                    <PatchVersion version="v1.1.0" date="January 15, 2026">
+                        <FeatureCard
+                            title="Notification System"
                             icon={
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                                     <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                                 </svg>
                             }
-                            badges={[
-                                <span key="new" className="badge new">NEW</span>,
-                                <span key="featured" className="badge featured">MAJOR</span>
-                            ]}
+                            badges={[<span key="core" className="badge improved">CORE</span>]}
                         >
                             <ul className="change-list">
                                 <li><strong>Real-time Booking Alerts</strong>
@@ -85,14 +312,6 @@ const PatchNotes = () => {
                                         <li>Native browser notifications (Windows/macOS compatible)</li>
                                         <li>Taskbar icon flashing for background attention</li>
                                         <li>Custom notification sound</li>
-                                        <li>Browser tab title flashing and favicon badge indicators</li>
-                                    </ul>
-                                </li>
-                                <li><strong>Admin Integration</strong>
-                                    <ul>
-                                        <li>Professional HTML email alerts with full booking details</li>
-                                        <li>Click notification to jump directly to bookings page</li>
-                                        <li>Persistent alerts in Windows Action Center</li>
                                     </ul>
                                 </li>
                             </ul>
@@ -111,7 +330,6 @@ const PatchNotes = () => {
                             <ul className="change-list">
                                 <li>Complete services management interface for admins</li>
                                 <li>Dynamic creation, editing, and deletion of service packages</li>
-                                <li>Flexible pricing, duration, and description configurations</li>
                             </ul>
                         </FeatureCard>
 
@@ -129,7 +347,6 @@ const PatchNotes = () => {
                             <ul className="change-list">
                                 <li>Control homepage image carousel from the admin panel</li>
                                 <li>Built-in image optimization and compression engine</li>
-                                <li>Category organization (Solo, Duo, Group)</li>
                             </ul>
                         </FeatureCard>
 
@@ -147,7 +364,6 @@ const PatchNotes = () => {
                             <ul className="change-list">
                                 <li>Direct communication line from admins to the IT team</li>
                                 <li>Screenshot attachment support for clearer bug reporting</li>
-                                <li>Automated IT alerts for every new report submission</li>
                             </ul>
                         </FeatureCard>
 
@@ -163,7 +379,6 @@ const PatchNotes = () => {
                             <ul className="change-list">
                                 <li>Integrated professional-grade color wheel for backdrop selection</li>
                                 <li>Real-time preview for hex, text, and accent color combinations</li>
-                                <li>Streamlined popover interface for a cleaner workspace</li>
                             </ul>
                         </FeatureCard>
 
@@ -179,40 +394,14 @@ const PatchNotes = () => {
                             <ul className="change-list">
                                 <li>Updated QoL design for all confirmation popups</li>
                                 <li>Clearer visual feedback for destructive actions</li>
-                                <li>Standardized UI across all dashboard modules</li>
                             </ul>
                         </FeatureCard>
-                    </section>
+                    </PatchVersion>
 
                     <section className="patch-section planned">
                         <h2 className="section-label">Future Roadmap</h2>
 
-                        <FeatureCard
-                            title="Session Reminders"
-                            isPlanned
-                            icon={
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <polyline points="12 6 12 12 16 14"></polyline>
-                                </svg>
-                            }
-                            badges={[<span key="planned" className="badge planned">PLANNED</span>]}
-                        >
-                            <p className="planned-note">Automated multi-channel reminders scheduled 30 minutes before every session to minimize no-shows.</p>
-                        </FeatureCard>
 
-                        <FeatureCard
-                            title="IT Admin Notifications"
-                            isPlanned
-                            icon={
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-                                </svg>
-                            }
-                            badges={[<span key="planned" className="badge planned">PLANNED</span>]}
-                        >
-                            <p className="planned-note">Real-time alerts for the IT team whenever high-priority admin reports are filed.</p>
-                        </FeatureCard>
 
                         <FeatureCard
                             title="Audit & Walk-in System"

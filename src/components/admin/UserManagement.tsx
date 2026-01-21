@@ -8,7 +8,7 @@ interface User {
     id: string;
     fullName: string;
     email: string;
-    role: 'admin' | 'editor' | 'viewer';
+    role: 'admin' | 'editor' | 'viewer' | 'it';
     status: 'active' | 'inactive';
     authUid?: string;
     createdAt?: any;
@@ -210,6 +210,7 @@ const UserManagement = ({ showToast }: UserManagementProps) => {
                                         <option value="viewer">Viewer</option>
                                         <option value="editor">Editor</option>
                                         <option value="admin">Admin</option>
+                                        <option value="it">IT</option>
                                     </select>
                                 </td>
                                 <td>
@@ -312,6 +313,7 @@ const UserManagement = ({ showToast }: UserManagementProps) => {
                                     <option value="viewer">Viewer</option>
                                     <option value="editor">Editor</option>
                                     <option value="admin">Admin</option>
+                                    <option value="it">IT</option>
                                 </select>
                             </div>
                             <div className="card-row">
@@ -408,6 +410,7 @@ const UserManagement = ({ showToast }: UserManagementProps) => {
                                         <option value="viewer">Viewer</option>
                                         <option value="editor">Editor</option>
                                         <option value="admin">Admin</option>
+                                        <option value="it">IT</option>
                                     </select>
                                 </div>
                                 <div>

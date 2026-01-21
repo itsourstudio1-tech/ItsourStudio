@@ -5,7 +5,8 @@ import './ReportManagement.css';
 
 interface Report {
     id: string;
-    type: 'bug' | 'visual' | 'feature' | 'other';
+    type: 'bug' | 'visual' | 'feature' | 'other' | 'admin_report';
+    subject?: string; // Added subject
     description: string;
     email: string;
     status: 'new' | 'in-progress' | 'resolved';
@@ -131,6 +132,7 @@ const ReportManagement = ({ showToast }: ReportManagementProps) => {
                                 </select>
                             </div>
                             <div className="report-body">
+                                {report.subject && <h4 style={{ margin: '0 0 0.5rem', color: '#334155' }}>{report.subject}</h4>}
                                 <p className="report-desc">{report.description}</p>
                                 <div className="report-meta">
                                     <div className="report-meta-item">
