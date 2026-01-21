@@ -3,6 +3,7 @@ import { db, storage } from '../../firebase';
 import { doc, getDoc, setDoc, collection, query, orderBy, onSnapshot, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { compressImage } from '../../utils/compressImage';
+import ServicesManagement from './ServicesManagement';
 import './ContentManagement.css';
 
 interface ContentManagementProps {
@@ -112,7 +113,7 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
     const [editingBackdropId, setEditingBackdropId] = useState<string | null>(null);
 
     // Navigation State
-    const [activeSection, setActiveSection] = useState<'promoBanner' | 'seasonalPromo' | 'about' | 'footer' | 'backdrops' | 'faq'>('promoBanner');
+    const [activeSection, setActiveSection] = useState<'promoBanner' | 'seasonalPromo' | 'about' | 'footer' | 'backdrops' | 'faq' | 'services'>('promoBanner');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(true); // For mobile view navigation
     const [isBackdropModalOpen, setIsBackdropModalOpen] = useState(false);
 
@@ -504,6 +505,18 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
                         </div>
                         <div className="nav-arrow">›</div>
                     </button>
+
+                    <button
+                        className={`content-nav-btn ${activeSection === 'services' ? 'active' : ''}`}
+                        onClick={() => navigateToSection('services')}
+                    >
+                        <div className="nav-icon">📸</div>
+                        <div className="nav-label">
+                            <span>Services</span>
+                            <small>Packages & Pricing</small>
+                        </div>
+                        <div className="nav-arrow">›</div>
+                    </button>
                 </div>
 
                 {/* Main Content Area */}
@@ -517,7 +530,8 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
                             activeSection === 'seasonalPromo' ? 'Seasonal Promo' :
                                 activeSection === 'about' ? 'About Section' :
                                     activeSection === 'footer' ? 'Footer Info' :
-                                        activeSection === 'faq' ? 'FAQ Management' : 'Backdrops'}</h3>
+                                        activeSection === 'faq' ? 'FAQ Management' :
+                                            activeSection === 'services' ? 'Services Management' : 'Backdrops'}</h3>
                     </div>
 
                     {/* Promo Banner Edit */}
@@ -1215,6 +1229,10 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
                                 </div>
                             </div>
                         </div>
+                    )}
+
+                    {activeSection === 'services' && (
+                        <ServicesManagement showToast={showToast} />
                     )}
 
                     {/* FAQ Modal */}
