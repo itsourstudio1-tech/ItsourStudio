@@ -289,7 +289,7 @@ const PatchNotes = () => {
                     </PatchVersion>
 
                     {/* v1.1.0 - The Admin Overhaul */}
-                    <PatchVersion version="v1.1.0" date="January 15, 2026">
+                    <PatchVersion version="v1.1.0" date="January 21, 2026">
                         <FeatureCard
                             title="Notification System"
                             icon={
