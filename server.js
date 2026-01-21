@@ -8,6 +8,10 @@ import { dirname } from 'path';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
+import cron from 'node-cron';
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 dotenv.config();
 
@@ -438,6 +442,128 @@ app.post('/send-email', emailLimiter, async (req, res) => {
     } catch (error) {
         console.error('Error sending email:', error);
         res.status(500).json({ error: 'Failed to send email', details: error.message });
+    }
+});
+
+// --- Reminder System (Cron Job) ---
+
+// Firebase Config (Matches client config for simplicity in this hybrid setup)
+const firebaseConfig = {
+    apiKey: process.env.VITE_FIREBASE_API_KEY || "AIzaSyD6BBWMs6yuWrkwxFkTXui44gdymo1VDa8",
+    authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || "it-s-our-studio.firebaseapp.com",
+    projectId: process.env.VITE_FIREBASE_PROJECT_ID || "it-s-our-studio",
+    storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET || "it-s-our-studio.firebasestorage.app",
+    messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "1040611577378",
+    appId: process.env.VITE_FIREBASE_APP_ID || "1:1040611577378:web:7e0510d41cfbafe63a847b"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+const auth = getAuth(fbApp);
+
+// Authenticate Server for Database Access
+const signInAdmin = async () => {
+    if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+        try {
+            await signInWithEmailAndPassword(auth, process.env.ADMIN_EMAIL, process.env.ADMIN_PASSWORD);
+            console.log('✅ Reminder System: Service Authenticated');
+        } catch (error) {
+            console.error('❌ Reminder System: Auth Failed:', error.message);
+        }
+    } else {
+        console.warn('⚠️ Reminder System: Missing ADMIN_EMAIL/ADMIN_PASSWORD in .env. Reminders may fail if rules require auth.');
+    }
+};
+signInAdmin();
+
+// Schedule: Check every minute
+cron.schedule('* * * * *', async () => {
+    // 1. Calculate Target Time (Now + 30 mins) in Manila Time
+    const now = new Date();
+    const targetTime = new Date(now.getTime() + 30 * 60000); // + 30 minutes
+
+    const formatterDate = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Manila',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    });
+    const formatterTime = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Manila',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
+
+    const targetDateStr = formatterDate.format(targetTime); // YYYY-MM-DD
+    const targetTimeStr = formatterTime.format(targetTime); // HH:mm
+
+    // We only care if the formatted time matches a slot (e.g., "14:00" or "14:30")
+    // Since bookings are usually on :00 or :30, running every minute catches it exactly when it hits.
+    // e.g. at 13:30, target is 14:00. Match!
+    // at 13:31, target is 14:01. No match (likely).
+
+    try {
+        const q = query(
+            collection(db, 'bookings'),
+            where('date', '==', targetDateStr),
+            where('time', '==', targetTimeStr),
+            where('status', '==', 'confirmed')
+        );
+
+        const snapshot = await getDocs(q);
+
+        snapshot.docs.forEach(async (doc) => {
+            const booking = doc.data();
+            console.log(`🔔 Sending reminder for ${booking.fullName} (${booking.time})`);
+
+            // Email to Customer
+            const customerHtml = `
+            <div style="font-family: Arial, sans-serif; padding: 20px; text-align: center;">
+                <h2>⏰ Your Session in 30 Minutes!</h2>
+                <p>Hi ${booking.fullName}, just a friendly reminder that your photoshoot starts soon.</p>
+                <div style="background: #fff7ed; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                    <strong style="color: #c2410c;">Time: ${booking.time}</strong><br>
+                    <span>Package: ${booking.package}</span>
+                </div>
+                <p>Please arrive 10-15 minutes early!</p>
+                <p>📍 FJ Center 15 Tongco Maysan, Valenzuela City</p>
+            </div>
+            `;
+
+            // Email to Admin
+            const adminHtml = `
+            <div style="font-family: Arial, sans-serif; padding: 20px;">
+                <h2 style="color: #c2410c;">🔔 Upcoming Session Alert</h2>
+                <p><strong>30 Minutes to go!</strong></p>
+                <ul>
+                    <li><strong>Client:</strong> ${booking.fullName}</li>
+                    <li><strong>Time:</strong> ${booking.time}</li>
+                    <li><strong>Package:</strong> ${booking.package}</li>
+                    <li><strong>Ref:</strong> ${booking.referenceNumber}</li>
+                </ul>
+            </div>
+            `;
+
+            // Send Customer Email
+            await transporter.sendMail({
+                from: process.env.EMAIL_USER,
+                to: booking.email,
+                subject: `Reminder: Your Session is in 30 Minutes!`,
+                html: customerHtml
+            });
+
+            // Send Admin Email
+            await transporter.sendMail({
+                from: process.env.EMAIL_USER,
+                to: process.env.BUSINESS_EMAIL || process.env.EMAIL_USER,
+                subject: `🔔 30m Reminder: ${booking.fullName} @ ${booking.time}`,
+                html: adminHtml
+            });
+        });
+
+    } catch (error) {
+        console.error('Error in reminder cron:', error);
     }
 });
 
