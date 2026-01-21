@@ -4,6 +4,7 @@ import { doc, getDoc, setDoc, collection, query, orderBy, onSnapshot, deleteDoc 
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { compressImage } from '../../utils/compressImage';
 import ServicesManagement from './ServicesManagement';
+import GalleryManagement from './GalleryManagement';
 import './ContentManagement.css';
 
 interface ContentManagementProps {
@@ -113,7 +114,7 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
     const [editingBackdropId, setEditingBackdropId] = useState<string | null>(null);
 
     // Navigation State
-    const [activeSection, setActiveSection] = useState<'promoBanner' | 'seasonalPromo' | 'about' | 'footer' | 'backdrops' | 'faq' | 'services'>('promoBanner');
+    const [activeSection, setActiveSection] = useState<'promoBanner' | 'seasonalPromo' | 'about' | 'footer' | 'backdrops' | 'faq' | 'services' | 'gallery'>('promoBanner');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(true); // For mobile view navigation
     const [isBackdropModalOpen, setIsBackdropModalOpen] = useState(false);
 
@@ -507,6 +508,18 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
                     </button>
 
                     <button
+                        className={`content-nav-btn ${activeSection === 'gallery' ? 'active' : ''}`}
+                        onClick={() => navigateToSection('gallery')}
+                    >
+                        <div className="nav-icon">🖼️</div>
+                        <div className="nav-label">
+                            <span>Image Carousel</span>
+                            <small>Homepage Gallery</small>
+                        </div>
+                        <div className="nav-arrow">›</div>
+                    </button>
+
+                    <button
                         className={`content-nav-btn ${activeSection === 'services' ? 'active' : ''}`}
                         onClick={() => navigateToSection('services')}
                     >
@@ -531,8 +544,14 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
                                 activeSection === 'about' ? 'About Section' :
                                     activeSection === 'footer' ? 'Footer Info' :
                                         activeSection === 'faq' ? 'FAQ Management' :
-                                            activeSection === 'services' ? 'Services Management' : 'Backdrops'}</h3>
+                                            activeSection === 'services' ? 'Services Management' :
+                                                activeSection === 'gallery' ? 'Gallery & Carousel' : 'Backdrops'}</h3>
                     </div>
+
+                    {/* Gallery Management */}
+                    {activeSection === 'gallery' && (
+                        <GalleryManagement showToast={showToast} />
+                    )}
 
                     {/* Promo Banner Edit */}
                     {activeSection === 'promoBanner' && (

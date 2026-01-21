@@ -175,21 +175,35 @@ const Home = () => {
 
     useEffect(() => {
         const fetchGallery = async () => {
-            const q = query(collection(db, 'gallery'), orderBy('createdAt', 'desc'), limit(12));
+            // Fetch more items to ensure we get enough carousel-enabled ones, 
+            // sorting by creation date. Client-side filtering is safer without composite index.
+            const q = query(collection(db, 'gallery'), orderBy('createdAt', 'desc'), limit(50));
+
             const unsubscribe = onSnapshot(q, (snapshot) => {
-                const fetchedItems = snapshot.docs.map(doc => {
-                    const data = doc.data();
-                    return {
-                        src: data.src,
-                        category: data.category === 'solo' ? 'Portrait' : data.category === 'duo' ? 'Couple' : 'Group', // map to display names
-                        title: data.alt || 'Studio Session'
-                    };
-                });
-                // If we have dynamic items, use them. Otherwise fallback or merge.
-                // Strategy: Put dynamic items first, then static items if needed to fill space, or just use dynamic if enough.
-                // For now, let's prepend them to static items.
+                const fetchedItems = snapshot.docs
+                    .map(doc => {
+                        const data = doc.data();
+                        return {
+                            id: doc.id,
+                            src: data.src,
+                            category: data.category === 'solo' ? 'Portrait' : data.category === 'duo' ? 'Couple' : 'Group', // map to display names
+                            title: data.alt || 'Studio Session',
+                            showInCarousel: data.showInCarousel
+                        };
+                    })
+                    // Filter for carousel items
+                    .filter(item => item.showInCarousel);
+
+                // If we have dynamic items, use them entirely. 
+                // Fallback to static galleryItems ONLY if no dynamic items exist (or just empty if user explicitly turned all off).
+                // Actually, let's merge or prefer dynamic. 
+                // User wants control, so if they set items in DB, we should probably ONLY show those?
+                // But initially DB is empty.
                 if (fetchedItems.length > 0) {
-                    setDynamicGalleryItems([...fetchedItems, ...galleryItems]);
+                    setDynamicGalleryItems(fetchedItems);
+                } else {
+                    // Fallback to static if nothing in DB is marked for carousel
+                    setDynamicGalleryItems(galleryItems);
                 }
             });
             return () => unsubscribe();
