@@ -143,6 +143,54 @@ const AdminDashboard = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
+    // Report Issue State
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [reportSubject, setReportSubject] = useState('');
+    const [reportMessage, setReportMessage] = useState('');
+    const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+    const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
+    const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
+
+    const handleSubmitReport = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!reportSubject.trim() || !reportMessage.trim()) {
+            showToast('error', 'Error', 'Please fill in all fields');
+            return;
+        }
+
+        setIsSubmittingReport(true);
+        try {
+            let screenshotUrl = null;
+
+            if (screenshotFile) {
+                const compressedBlob = await compressImage(screenshotFile);
+                const storageRef = ref(storage, `reports/${Date.now()}_${screenshotFile.name}`);
+                await uploadBytes(storageRef, compressedBlob);
+                screenshotUrl = await getDownloadURL(storageRef);
+            }
+
+            await addDoc(collection(db, 'reports'), {
+                subject: reportSubject,
+                message: reportMessage,
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+                type: 'admin_report',
+                screenshotUrl
+            });
+            showToast('success', 'Report Sent', 'Your issue report has been submitted to the IT admin.');
+            setReportSubject('');
+            setReportMessage('');
+            setScreenshotFile(null);
+            setScreenshotPreview(null);
+            setIsReportModalOpen(false);
+        } catch (error) {
+            console.error("Error submitting report:", error);
+            showToast('error', 'Error', 'Failed to submit report. Please try again.');
+        } finally {
+            setIsSubmittingReport(false);
+        }
+    };
+
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 768);
         window.addEventListener('resize', handleResize);
@@ -602,6 +650,10 @@ const AdminDashboard = () => {
                 </nav>
 
                 <div className="sidebar-footer" style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #f0f0f0' }}>
+                    <button className="nav-item" onClick={() => setIsReportModalOpen(true)} style={{ color: '#ef4444' }}>
+                        <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        <span className="nav-label">Report Issue</span>
+                    </button>
                     <button className="nav-item logout-btn" onClick={async () => {
                         if (window.confirm('Are you sure you want to logout?')) {
                             try {
@@ -1486,7 +1538,144 @@ const AdminDashboard = () => {
                     ))}
                 </div>
             </main>
-        </div >
+
+            {/* Report Issue Modal */}
+            {isReportModalOpen && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    background: 'rgba(0,0,0,0.5)',
+                    zIndex: 10000,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backdropFilter: 'blur(2px)'
+                }} onClick={() => setIsReportModalOpen(false)}>
+                    <div style={{
+                        background: '#fff',
+                        padding: '2rem',
+                        borderRadius: '12px',
+                        width: '90%',
+                        maxWidth: '500px',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+                    }} onClick={e => e.stopPropagation()}>
+                        <h4 style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: 0 }}>
+                            <span>⚠️</span> Report a Technical Issue
+                        </h4>
+                        <p style={{ color: '#64748b', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+                            Describe the issue you're facing. Our IT team will review it shortly.
+                        </p>
+
+                        <form onSubmit={handleSubmitReport}>
+                            <div style={{ marginBottom: '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: '#0f172a' }}>Subject</label>
+                                <input
+                                    type="text"
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        borderRadius: '6px',
+                                        border: '1px solid #e2e8f0',
+                                        fontSize: '0.9rem'
+                                    }}
+                                    value={reportSubject}
+                                    onChange={e => setReportSubject(e.target.value)}
+                                    placeholder="e.g. Cannot upload images"
+                                    required
+                                />
+                            </div>
+
+                            <div style={{ marginBottom: '1.5rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: '#0f172a' }}>Description</label>
+                                <textarea
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        borderRadius: '6px',
+                                        border: '1px solid #e2e8f0',
+                                        minHeight: '120px',
+                                        fontSize: '0.9rem',
+                                        fontFamily: 'inherit'
+                                    }}
+                                    rows={5}
+                                    value={reportMessage}
+                                    onChange={e => setReportMessage(e.target.value)}
+                                    placeholder="Please describe what happened..."
+                                    required
+                                ></textarea>
+                            </div>
+
+                            <div style={{ marginBottom: '1.5rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: '#0f172a' }}>Screenshot (Optional)</label>
+                                <div style={{ border: '2px dashed #e2e8f0', padding: '1rem', borderRadius: '6px', textAlign: 'center' }}>
+                                    {!screenshotPreview ? (
+                                        <>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                id="screenshot-upload"
+                                                style={{ display: 'none' }}
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        setScreenshotFile(file);
+                                                        setScreenshotPreview(URL.createObjectURL(file));
+                                                    }
+                                                }}
+                                            />
+                                            <label htmlFor="screenshot-upload" style={{ cursor: 'pointer', color: '#64748b', fontSize: '0.9rem' }}>
+                                                <span style={{ color: '#ef4444', fontWeight: 500 }}>Click to upload</span> or drag and drop
+                                            </label>
+                                        </>
+                                    ) : (
+                                        <div style={{ position: 'relative', display: 'inline-block' }}>
+                                            <img src={screenshotPreview} alt="Screenshot Preview" style={{ maxHeight: '100px', borderRadius: '4px', border: '1px solid #e2e8f0' }} />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setScreenshotFile(null);
+                                                    setScreenshotPreview(null);
+                                                }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '-8px',
+                                                    right: '-8px',
+                                                    background: '#ef4444',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '50%',
+                                                    width: '20px',
+                                                    height: '20px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    fontSize: '12px'
+                                                }}
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                                <button type="button" className="btn" style={{ background: '#f1f5f9', color: '#475569', border: 'none' }} onClick={() => setIsReportModalOpen(false)} disabled={isSubmittingReport}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn" style={{ background: '#ef4444', color: 'white', border: 'none' }} disabled={isSubmittingReport}>
+                                    {isSubmittingReport ? 'Sending...' : 'Submit Report'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 };
 

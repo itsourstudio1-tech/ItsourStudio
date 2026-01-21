@@ -124,6 +124,8 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
     const [editingFaqId, setEditingFaqId] = useState<string | null>(null);
     const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
 
+
+
     // Fetch Site Content
     useEffect(() => {
         const fetchContent = async () => {
@@ -423,6 +425,8 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
         }
     };
 
+
+
     const navigateToSection = (section: typeof activeSection) => {
         setActiveSection(section);
         setIsMobileMenuOpen(false);
@@ -530,6 +534,8 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
                         </div>
                         <div className="nav-arrow">›</div>
                     </button>
+
+
                 </div>
 
                 {/* Main Content Area */}
@@ -1295,6 +1301,7 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
                                                 onChange={e => setFaqForm({ ...faqForm, order: parseInt(e.target.value) || 0 })}
                                             />
                                         </div>
+
                                     </div>
                                     <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                                         <button type="button" className="btn btn-outline" onClick={handleCancelFaqEdit}>Cancel</button>
@@ -1309,6 +1316,7 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
 
                 </div>
             </div>
+
         </div>
     );
 };
