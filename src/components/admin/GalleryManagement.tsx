@@ -100,18 +100,7 @@ const GalleryManagement = ({ showToast }: GalleryManagementProps) => {
         setImagePreview(previewUrl);
     };
 
-    const handleEdit = (item: GalleryItem) => {
-        setEditingId(item.id);
-        setFormData({
-            category: item.category,
-            alt: item.alt,
-            showInCarousel: item.showInCarousel,
-            carouselOrder: item.carouselOrder || 0
-        });
-        setImagePreview(item.src);
-        setImageFile(null); // Reset file input as we have a URL
-        setIsEditing(true);
-    };
+
 
     const handleCancel = () => {
         if (imagePreview && !editingId) URL.revokeObjectURL(imagePreview);
