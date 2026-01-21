@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { db, storage, auth } from '../firebase';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -143,6 +143,67 @@ const AdminDashboard = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
+    // Report Issue State
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [reportSubject, setReportSubject] = useState('');
+    const [reportMessage, setReportMessage] = useState('');
+    const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+    const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
+    const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
+
+    // Notification states
+    const previousBookingCount = useRef<number>(0);
+    const [isTabFlashing, setIsTabFlashing] = useState(false);
+    const originalTitle = useRef(document.title);
+    const flashInterval = useRef<number | null>(null);
+
+    // Request notification permission on mount
+    useEffect(() => {
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    }, []);
+
+    const handleSubmitReport = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!reportSubject.trim() || !reportMessage.trim()) {
+            showToast('error', 'Error', 'Please fill in all fields');
+            return;
+        }
+
+        setIsSubmittingReport(true);
+        try {
+            let screenshotUrl = null;
+
+            if (screenshotFile) {
+                const compressedBlob = await compressImage(screenshotFile);
+                const storageRef = ref(storage, `reports/${Date.now()}_${screenshotFile.name}`);
+                await uploadBytes(storageRef, compressedBlob);
+                screenshotUrl = await getDownloadURL(storageRef);
+            }
+
+            await addDoc(collection(db, 'reports'), {
+                subject: reportSubject,
+                message: reportMessage,
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+                type: 'admin_report',
+                screenshotUrl
+            });
+            showToast('success', 'Report Sent', 'Your issue report has been submitted to the IT admin.');
+            setReportSubject('');
+            setReportMessage('');
+            setScreenshotFile(null);
+            setScreenshotPreview(null);
+            setIsReportModalOpen(false);
+        } catch (error) {
+            console.error("Error submitting report:", error);
+            showToast('error', 'Error', 'Failed to submit report. Please try again.');
+        } finally {
+            setIsSubmittingReport(false);
+        }
+    };
+
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 768);
         window.addEventListener('resize', handleResize);
@@ -175,6 +236,13 @@ const AdminDashboard = () => {
                 id: doc.id,
                 ...doc.data()
             })) as Booking[];
+
+            // Detect new booking
+            if (previousBookingCount.current > 0 && bookingsData.length > previousBookingCount.current) {
+                const newBooking = bookingsData[0]; // Most recent booking
+                handleNewBookingNotification(newBooking);
+            }
+            previousBookingCount.current = bookingsData.length;
 
             setBookings(bookingsData);
 
@@ -266,6 +334,229 @@ const AdminDashboard = () => {
             key,
             direction: current.key === key && current.direction === 'asc' ? 'desc' : 'asc'
         }));
+    };
+
+    // Handle new booking notification
+    const handleNewBookingNotification = async (booking: Booking) => {
+        // Play sound using native Audio API (same as Prime Audio button)
+        try {
+            const audio = new Audio('/notification.wav');
+            audio.volume = 0.5;
+            await audio.play();
+            console.log('✓ Notification sound played successfully');
+        } catch (error) {
+            console.error('✗ Audio playback failed:', error);
+            if ((error as Error).name === 'NotAllowedError') {
+                console.warn('⚠️ Audio blocked - user needs to click Prime Audio first');
+                showToast('error', 'Sound Blocked', 'Click "Prime Audio" to enable sounds');
+            }
+        }
+
+        // Show toast notification
+        showToast('success', '🎉 New Booking!', `${booking.fullName} booked ${booking.package}`);
+
+        // Start tab flashing
+        startTabFlashing();
+
+        // Show browser notification (Windows taskbar)
+        showBrowserNotification(booking);
+
+        // Update favicon to show alert
+        updateFaviconBadge();
+
+        // Send email notification to admin
+        await sendAdminEmailNotification(booking);
+    };
+
+    // Show native browser notification
+    const showBrowserNotification = (booking: Booking) => {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            try {
+                // Close any existing notifications first to ensure new one is noticed
+                const existingNotification = (window as any).lastBookingNotification;
+                if (existingNotification) {
+                    existingNotification.close();
+                }
+
+                const notification = new Notification('🔴 NEW BOOKING ALERT!', {
+                    body: `${booking.fullName} booked ${booking.package}\n📅 ${booking.date}\n🕐 ${booking.time}`,
+                    icon: '/logo192.png',
+                    badge: '/logo192.png',
+                    tag: 'new-booking-' + Date.now(), // Unique tag to force new notification each time
+                    requireInteraction: true, // Keeps notification visible and taskbar flashing
+                    silent: false, // Ensures system sound plays
+                    data: { bookingId: booking.id, timestamp: Date.now() }
+                });
+
+                // Store reference to close later
+                (window as any).lastBookingNotification = notification;
+
+                // When notification is clicked, focus the window and go to bookings
+                notification.onclick = () => {
+                    window.focus();
+                    handleTabChange('bookings');
+                    notification.close();
+                };
+
+                // When notification is closed, clear reference
+                notification.onclose = () => {
+                    (window as any).lastBookingNotification = null;
+                };
+
+                // Error handler
+                notification.onerror = (error) => {
+                    console.error('Notification error:', error);
+                };
+
+                // Auto-close after 30 seconds if user doesn't interact
+                setTimeout(() => {
+                    if (notification) {
+                        notification.close();
+                    }
+                }, 30000);
+
+                console.log('✓ Browser notification created successfully');
+            } catch (error) {
+                console.error('✗ Error showing browser notification:', error);
+            }
+        } else if (Notification.permission === 'default') {
+            // Request permission if not yet determined
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    showBrowserNotification(booking);
+                }
+            });
+        } else if (Notification.permission === 'denied') {
+            console.warn('⚠️ Notifications are blocked. Please enable in browser settings.');
+            showToast('error', 'Notifications Blocked', 'Enable notifications in browser settings');
+        }
+    };
+
+    // Update favicon to show notification badge
+    const updateFaviconBadge = () => {
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+
+            if (ctx) {
+                // Draw red circle badge
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(24, 8, 8, 0, 2 * Math.PI);
+                ctx.fill();
+
+                // Draw white exclamation mark
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('!', 24, 8);
+
+                // Update favicon
+                const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement || document.createElement('link');
+                link.type = 'image/x-icon';
+                link.rel = 'shortcut icon';
+                link.href = canvas.toDataURL();
+                document.head.appendChild(link);
+            }
+        } catch (error) {
+            console.error('Error updating favicon:', error);
+        }
+    };
+
+    // Restore original favicon when tab is focused
+    useEffect(() => {
+        const handleFocus = () => {
+            if (!isTabFlashing) {
+                // Restore original favicon (you might want to set this to your actual favicon path)
+                const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+                if (link) {
+                    link.href = '/favicon.ico'; // Change this to your actual favicon path
+                }
+            }
+        };
+
+        window.addEventListener('focus', handleFocus);
+        return () => window.removeEventListener('focus', handleFocus);
+    }, [isTabFlashing]);
+
+    // Tab flashing effect
+    const startTabFlashing = () => {
+        if (isTabFlashing) return;
+        setIsTabFlashing(true);
+
+        let isRed = false;
+        flashInterval.current = setInterval(() => {
+            if (isRed) {
+                document.title = originalTitle.current;
+            } else {
+                document.title = '🔴 NEW BOOKING! 🔴';
+            }
+            isRed = !isRed;
+        }, 1000);
+
+        // Auto-stop after 30 seconds
+        setTimeout(() => {
+            stopTabFlashing();
+        }, 30000);
+    };
+
+    const stopTabFlashing = () => {
+        if (flashInterval.current) {
+            clearInterval(flashInterval.current);
+            flashInterval.current = null;
+        }
+        document.title = originalTitle.current;
+        setIsTabFlashing(false);
+    };
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            stopTabFlashing();
+        };
+    }, []);
+
+    // Stop flashing when user focuses on the tab
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (!document.hidden && isTabFlashing) {
+                stopTabFlashing();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [isTabFlashing]);
+
+    // Send email to admin about new booking
+    const sendAdminEmailNotification = async (booking: Booking) => {
+        try {
+            await fetch('/api/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    type: 'new_booking_admin',
+                    booking: {
+                        referenceNumber: booking.referenceNumber,
+                        name: booking.fullName,
+                        email: booking.email,
+                        phone: booking.phone,
+                        package: booking.package,
+                        date: booking.date,
+                        time_start: booking.time,
+                        totalPrice: booking.totalPrice
+                    }
+                })
+            });
+            console.log('Admin email notification sent');
+        } catch (error) {
+            console.error('Failed to send admin email notification', error);
+        }
     };
 
     const sendEmailNotification = async (booking: Booking, status: string, reason?: string) => {
@@ -602,6 +893,10 @@ const AdminDashboard = () => {
                 </nav>
 
                 <div className="sidebar-footer" style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #f0f0f0' }}>
+                    <button className="nav-item" onClick={() => setIsReportModalOpen(true)} style={{ color: '#ef4444' }}>
+                        <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        <span className="nav-label">Report Issue</span>
+                    </button>
                     <button className="nav-item logout-btn" onClick={async () => {
                         if (window.confirm('Are you sure you want to logout?')) {
                             try {
@@ -1486,7 +1781,144 @@ const AdminDashboard = () => {
                     ))}
                 </div>
             </main>
-        </div >
+
+            {/* Report Issue Modal */}
+            {isReportModalOpen && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    background: 'rgba(0,0,0,0.5)',
+                    zIndex: 10000,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backdropFilter: 'blur(2px)'
+                }} onClick={() => setIsReportModalOpen(false)}>
+                    <div style={{
+                        background: '#fff',
+                        padding: '2rem',
+                        borderRadius: '12px',
+                        width: '90%',
+                        maxWidth: '500px',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+                    }} onClick={e => e.stopPropagation()}>
+                        <h4 style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: 0 }}>
+                            <span>⚠️</span> Report a Technical Issue
+                        </h4>
+                        <p style={{ color: '#64748b', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+                            Describe the issue you're facing. Our IT team will review it shortly.
+                        </p>
+
+                        <form onSubmit={handleSubmitReport}>
+                            <div style={{ marginBottom: '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: '#0f172a' }}>Subject</label>
+                                <input
+                                    type="text"
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        borderRadius: '6px',
+                                        border: '1px solid #e2e8f0',
+                                        fontSize: '0.9rem'
+                                    }}
+                                    value={reportSubject}
+                                    onChange={e => setReportSubject(e.target.value)}
+                                    placeholder="e.g. Cannot upload images"
+                                    required
+                                />
+                            </div>
+
+                            <div style={{ marginBottom: '1.5rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: '#0f172a' }}>Description</label>
+                                <textarea
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        borderRadius: '6px',
+                                        border: '1px solid #e2e8f0',
+                                        minHeight: '120px',
+                                        fontSize: '0.9rem',
+                                        fontFamily: 'inherit'
+                                    }}
+                                    rows={5}
+                                    value={reportMessage}
+                                    onChange={e => setReportMessage(e.target.value)}
+                                    placeholder="Please describe what happened..."
+                                    required
+                                ></textarea>
+                            </div>
+
+                            <div style={{ marginBottom: '1.5rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: '#0f172a' }}>Screenshot (Optional)</label>
+                                <div style={{ border: '2px dashed #e2e8f0', padding: '1rem', borderRadius: '6px', textAlign: 'center' }}>
+                                    {!screenshotPreview ? (
+                                        <>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                id="screenshot-upload"
+                                                style={{ display: 'none' }}
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        setScreenshotFile(file);
+                                                        setScreenshotPreview(URL.createObjectURL(file));
+                                                    }
+                                                }}
+                                            />
+                                            <label htmlFor="screenshot-upload" style={{ cursor: 'pointer', color: '#64748b', fontSize: '0.9rem' }}>
+                                                <span style={{ color: '#ef4444', fontWeight: 500 }}>Click to upload</span> or drag and drop
+                                            </label>
+                                        </>
+                                    ) : (
+                                        <div style={{ position: 'relative', display: 'inline-block' }}>
+                                            <img src={screenshotPreview} alt="Screenshot Preview" style={{ maxHeight: '100px', borderRadius: '4px', border: '1px solid #e2e8f0' }} />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setScreenshotFile(null);
+                                                    setScreenshotPreview(null);
+                                                }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '-8px',
+                                                    right: '-8px',
+                                                    background: '#ef4444',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '50%',
+                                                    width: '20px',
+                                                    height: '20px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    fontSize: '12px'
+                                                }}
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                                <button type="button" className="btn" style={{ background: '#f1f5f9', color: '#475569', border: 'none' }} onClick={() => setIsReportModalOpen(false)} disabled={isSubmittingReport}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn" style={{ background: '#ef4444', color: 'white', border: 'none' }} disabled={isSubmittingReport}>
+                                    {isSubmittingReport ? 'Sending...' : 'Submit Report'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 };
 

@@ -3,7 +3,9 @@ import { db, storage } from '../../firebase';
 import { doc, getDoc, setDoc, collection, query, orderBy, onSnapshot, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { compressImage } from '../../utils/compressImage';
+import { HexColorPicker } from "react-colorful";
 import ServicesManagement from './ServicesManagement';
+import GalleryManagement from './GalleryManagement';
 import './ContentManagement.css';
 
 interface ContentManagementProps {
@@ -113,7 +115,7 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
     const [editingBackdropId, setEditingBackdropId] = useState<string | null>(null);
 
     // Navigation State
-    const [activeSection, setActiveSection] = useState<'promoBanner' | 'seasonalPromo' | 'about' | 'footer' | 'backdrops' | 'faq' | 'services'>('promoBanner');
+    const [activeSection, setActiveSection] = useState<'promoBanner' | 'seasonalPromo' | 'about' | 'footer' | 'backdrops' | 'faq' | 'services' | 'gallery'>('promoBanner');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(true); // For mobile view navigation
     const [isBackdropModalOpen, setIsBackdropModalOpen] = useState(false);
 
@@ -122,6 +124,8 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
     const [faqForm, setFaqForm] = useState<FAQItem>({ id: '', question: '', answer: '', order: 0 });
     const [editingFaqId, setEditingFaqId] = useState<string | null>(null);
     const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
+
+
 
     // Fetch Site Content
     useEffect(() => {
@@ -422,6 +426,8 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
         }
     };
 
+
+
     const navigateToSection = (section: typeof activeSection) => {
         setActiveSection(section);
         setIsMobileMenuOpen(false);
@@ -507,6 +513,18 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
                     </button>
 
                     <button
+                        className={`content-nav-btn ${activeSection === 'gallery' ? 'active' : ''}`}
+                        onClick={() => navigateToSection('gallery')}
+                    >
+                        <div className="nav-icon">🖼️</div>
+                        <div className="nav-label">
+                            <span>Image Carousel</span>
+                            <small>Homepage Gallery</small>
+                        </div>
+                        <div className="nav-arrow">›</div>
+                    </button>
+
+                    <button
                         className={`content-nav-btn ${activeSection === 'services' ? 'active' : ''}`}
                         onClick={() => navigateToSection('services')}
                     >
@@ -517,6 +535,8 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
                         </div>
                         <div className="nav-arrow">›</div>
                     </button>
+
+
                 </div>
 
                 {/* Main Content Area */}
@@ -531,8 +551,14 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
                                 activeSection === 'about' ? 'About Section' :
                                     activeSection === 'footer' ? 'Footer Info' :
                                         activeSection === 'faq' ? 'FAQ Management' :
-                                            activeSection === 'services' ? 'Services Management' : 'Backdrops'}</h3>
+                                            activeSection === 'services' ? 'Services Management' :
+                                                activeSection === 'gallery' ? 'Gallery & Carousel' : 'Backdrops'}</h3>
                     </div>
+
+                    {/* Gallery Management */}
+                    {activeSection === 'gallery' && (
+                        <GalleryManagement showToast={showToast} />
+                    )}
 
                     {/* Promo Banner Edit */}
                     {activeSection === 'promoBanner' && (
@@ -1064,58 +1090,117 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
                                             />
                                         </div>
                                         <div className="form-grid three-col full-width" style={{ marginTop: '0.5rem' }}>
-                                            <div>
+                                            <div style={{ position: 'relative' }}>
                                                 <label className="form-label">Hex Color</label>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                                    <input
-                                                        type="color"
-                                                        value={backdropForm.hex}
-                                                        onChange={e => setBackdropForm({ ...backdropForm, hex: e.target.value })}
-                                                        style={{ width: '100%', height: '40px', padding: 0, border: 'none', cursor: 'pointer', borderRadius: '4px' }}
+                                                <div style={{ position: 'relative' }}>
+                                                    <div
+                                                        style={{
+                                                            width: '100%',
+                                                            height: '40px',
+                                                            backgroundColor: backdropForm.hex,
+                                                            borderRadius: '4px',
+                                                            border: '1px solid #ddd',
+                                                            cursor: 'pointer',
+                                                            marginBottom: '0.5rem'
+                                                        }}
+                                                        onClick={() => {
+                                                            const el = document.getElementById('picker-hex');
+                                                            if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+                                                        }}
                                                     />
+                                                    <div id="picker-hex" style={{ display: 'none', position: 'absolute', top: '100%', left: 0, zIndex: 10 }}>
+                                                        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }} onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const el = document.getElementById('picker-hex');
+                                                            if (el) el.style.display = 'none';
+                                                        }} />
+                                                        <div style={{ position: 'relative', background: 'white', padding: '10px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                                                            <HexColorPicker color={backdropForm.hex} onChange={(color) => setBackdropForm({ ...backdropForm, hex: color })} />
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <input
                                                     type="text"
                                                     className="form-input"
                                                     value={backdropForm.hex}
                                                     onChange={e => setBackdropForm({ ...backdropForm, hex: e.target.value })}
-                                                    style={{ fontSize: '0.8rem', marginTop: '4px' }}
+                                                    style={{ fontSize: '0.8rem' }}
                                                 />
                                             </div>
-                                            <div>
+
+                                            <div style={{ position: 'relative' }}>
                                                 <label className="form-label">Text Color</label>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                                    <input
-                                                        type="color"
-                                                        value={backdropForm.textColor}
-                                                        onChange={e => setBackdropForm({ ...backdropForm, textColor: e.target.value })}
-                                                        style={{ width: '100%', height: '40px', padding: 0, border: 'none', cursor: 'pointer', borderRadius: '4px' }}
+                                                <div style={{ position: 'relative' }}>
+                                                    <div
+                                                        style={{
+                                                            width: '100%',
+                                                            height: '40px',
+                                                            backgroundColor: backdropForm.textColor,
+                                                            borderRadius: '4px',
+                                                            border: '1px solid #ddd',
+                                                            cursor: 'pointer',
+                                                            marginBottom: '0.5rem'
+                                                        }}
+                                                        onClick={() => {
+                                                            const el = document.getElementById('picker-text');
+                                                            if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+                                                        }}
                                                     />
+                                                    <div id="picker-text" style={{ display: 'none', position: 'absolute', top: '100%', left: 0, zIndex: 10 }}>
+                                                        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }} onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const el = document.getElementById('picker-text');
+                                                            if (el) el.style.display = 'none';
+                                                        }} />
+                                                        <div style={{ position: 'relative', background: 'white', padding: '10px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                                                            <HexColorPicker color={backdropForm.textColor} onChange={(color) => setBackdropForm({ ...backdropForm, textColor: color })} />
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <input
                                                     type="text"
                                                     className="form-input"
                                                     value={backdropForm.textColor}
                                                     onChange={e => setBackdropForm({ ...backdropForm, textColor: e.target.value })}
-                                                    style={{ fontSize: '0.8rem', marginTop: '4px' }}
+                                                    style={{ fontSize: '0.8rem' }}
                                                 />
                                             </div>
-                                            <div>
+
+                                            <div style={{ position: 'relative' }}>
                                                 <label className="form-label">Accent</label>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                                    <input
-                                                        type="color"
-                                                        value={backdropForm.accentColor}
-                                                        onChange={e => setBackdropForm({ ...backdropForm, accentColor: e.target.value })}
-                                                        style={{ width: '100%', height: '40px', padding: 0, border: 'none', cursor: 'pointer', borderRadius: '4px' }}
+                                                <div style={{ position: 'relative' }}>
+                                                    <div
+                                                        style={{
+                                                            width: '100%',
+                                                            height: '40px',
+                                                            backgroundColor: backdropForm.accentColor,
+                                                            borderRadius: '4px',
+                                                            border: '1px solid #ddd',
+                                                            cursor: 'pointer',
+                                                            marginBottom: '0.5rem'
+                                                        }}
+                                                        onClick={() => {
+                                                            const el = document.getElementById('picker-accent');
+                                                            if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+                                                        }}
                                                     />
+                                                    <div id="picker-accent" style={{ display: 'none', position: 'absolute', top: '100%', left: 0, zIndex: 10 }}>
+                                                        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }} onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const el = document.getElementById('picker-accent');
+                                                            if (el) el.style.display = 'none';
+                                                        }} />
+                                                        <div style={{ position: 'relative', background: 'white', padding: '10px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                                                            <HexColorPicker color={backdropForm.accentColor} onChange={(color) => setBackdropForm({ ...backdropForm, accentColor: color })} />
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <input
                                                     type="text"
                                                     className="form-input"
                                                     value={backdropForm.accentColor}
                                                     onChange={e => setBackdropForm({ ...backdropForm, accentColor: e.target.value })}
-                                                    style={{ fontSize: '0.8rem', marginTop: '4px' }}
+                                                    style={{ fontSize: '0.8rem' }}
                                                 />
                                             </div>
                                         </div>
@@ -1276,6 +1361,7 @@ const ContentManagement = ({ showToast }: ContentManagementProps) => {
                                                 onChange={e => setFaqForm({ ...faqForm, order: parseInt(e.target.value) || 0 })}
                                             />
                                         </div>
+
                                     </div>
                                     <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                                         <button type="button" className="btn btn-outline" onClick={handleCancelFaqEdit}>Cancel</button>

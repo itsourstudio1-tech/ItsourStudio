@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, addDoc, setDoc, serverTimestamp, query, where, getDocs, doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, setDoc, serverTimestamp, query, where, getDocs, doc, getDoc, onSnapshot, orderBy } from 'firebase/firestore';
 import { sanitizeName, sanitizeEmail, sanitizePhoneNumber, sanitizeText } from '../utils/sanitize';
 import { generateBookingReference } from '../utils/generateReference';
 import paymentQr from '../assets/payment_qr.png';
@@ -50,8 +50,26 @@ const BookingModal = () => {
     const [seasonalPromo, setSeasonalPromo] = useState<any>(null); // State for seasonal promo data
     const [privacyConsent, setPrivacyConsent] = useState(false); // DPA Compliance
 
-    // Fetch Seasonal Promo Data
+    const [services, setServices] = useState<any[]>([]);
+
+    // Fetch Seasonal Promo & Services Data
     useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const q = query(collection(db, 'services'), orderBy('order', 'asc'));
+                const snapshot = await getDocs(q);
+                if (!snapshot.empty) {
+                    const fetched = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    setServices(fetched);
+                }
+            } catch (err) {
+                console.error("Error fetching services for booking:", err);
+            }
+        };
+
         const fetchPromo = async () => {
             try {
                 const docSnap = await getDoc(doc(db, 'siteContent', 'seasonalPromo'));
@@ -79,6 +97,7 @@ const BookingModal = () => {
         });
 
         fetchPromo();
+        fetchServices();
         return () => unsubscribe();
     }, []);
 
@@ -429,18 +448,33 @@ const BookingModal = () => {
         return `${formattedHour}:${minute} ${ampm}`;
     };
 
-    // Dynamic Package List including Seasonal Promo
+    // Helper to parse numeric values from strings (e.g., "₱299" -> 299, "15 Minutes" -> 15)
+    const parseNumeric = (value: any) => {
+        if (typeof value === 'number') return value;
+        if (!value) return 0;
+        return parseInt(value.toString().replace(/\D/g, '')) || 0;
+    };
+
+    // Dynamic Package List including Seasonal Promo and Database Services
     const allPackages = [
         ...(seasonalPromo && seasonalPromo.isActive ? [{
             id: 'seasonal-promo',
             name: seasonalPromo.title,
-            price: parseInt(seasonalPromo.price.replace(/\D/g, '')) || 999,
+            price: parseNumeric(seasonalPromo.price),
             duration: 45 // Default duration for promo
         }] : []),
-        ...PACKAGES
+        ...services.map(s => ({
+            id: s.id,
+            name: s.title,
+            price: parseNumeric(s.price),
+            duration: parseNumeric(s.duration)
+        }))
     ];
 
-    const selectedPackage = allPackages.find(p => p.id === formData.package);
+    // Fallback to hardcoded if DB is empty to prevent crash
+    const finalPackages = allPackages.length > 0 ? allPackages : PACKAGES;
+
+    const selectedPackage = finalPackages.find(p => p.id === formData.package);
     const basePrice = selectedPackage ? selectedPackage.price : 0;
     const extensionPrice = EXTENSION_RATES[formData.extensionDuration as keyof typeof EXTENSION_RATES] || 0;
     const totalPrice = basePrice + extensionPrice;
@@ -764,7 +798,7 @@ const BookingModal = () => {
                                     </div>
 
                                     <div className="packages-grid">
-                                        {allPackages.map(pkg => (
+                                        {finalPackages.map(pkg => (
                                             <div
                                                 key={pkg.id}
                                                 className={`package-card ${formData.package === pkg.id ? 'selected' : ''}`}

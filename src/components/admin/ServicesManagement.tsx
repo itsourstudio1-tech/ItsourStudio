@@ -3,6 +3,7 @@ import { db, storage } from '../../firebase';
 import { collection, getDocs, doc, setDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { compressImage } from '../../utils/compressImage';
+import ConfirmPopup from '../ConfirmPopup';
 import './ContentManagement.css'; // Reuse existing styles or create specific ones
 
 interface Service {
@@ -188,6 +189,19 @@ const ServicesManagement = ({ showToast }: ServicesManagementProps) => {
     // Image Upload State
     const [uploadingImage, setUploadingImage] = useState<string | null>(null);
 
+    // Confirmation Popup State
+    const [confirmConfig, setConfirmConfig] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => { },
+        isDestructive: false
+    });
+
+    const closeConfirm = () => {
+        setConfirmConfig(prev => ({ ...prev, isOpen: false }));
+    };
+
     useEffect(() => {
         fetchServices();
     }, []);
@@ -281,17 +295,25 @@ const ServicesManagement = ({ showToast }: ServicesManagementProps) => {
         setIsEditing(false);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!window.confirm('Are you sure you want to delete this service?')) return;
-
-        try {
-            await deleteDoc(doc(db, 'services', id));
-            setServices(prev => prev.filter(s => s.id !== id));
-            showToast('success', 'Deleted', 'Service deleted successfully');
-        } catch (error) {
-            console.error("Error deleting service:", error);
-            showToast('error', 'Error', 'Failed to delete service');
-        }
+    const handleDelete = (id: string) => {
+        setConfirmConfig({
+            isOpen: true,
+            title: 'Delete Service',
+            message: 'Are you sure you want to delete this service? This action cannot be undone.',
+            isDestructive: true,
+            onConfirm: async () => {
+                try {
+                    await deleteDoc(doc(db, 'services', id));
+                    setServices(prev => prev.filter(s => s.id !== id));
+                    showToast('success', 'Deleted', 'Service deleted successfully');
+                } catch (error) {
+                    console.error("Error deleting service:", error);
+                    showToast('error', 'Error', 'Failed to delete service');
+                } finally {
+                    closeConfirm();
+                }
+            }
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -326,21 +348,29 @@ const ServicesManagement = ({ showToast }: ServicesManagementProps) => {
         }
     };
 
-    const handleLoadDefaults = async () => {
-        if (!window.confirm("This will overwrite existing services with defaults. Continue?")) return;
-        setLoading(true);
-        try {
-            for (const service of DEFAULT_SERVICES_SEED) {
-                await setDoc(doc(db, 'services', service.id), service);
+    const handleLoadDefaults = () => {
+        setConfirmConfig({
+            isOpen: true,
+            title: 'Load Default Services',
+            message: 'This will overwrite your current list with the default packages. Are you sure you want to continue?',
+            isDestructive: false,
+            onConfirm: async () => {
+                setLoading(true);
+                try {
+                    for (const service of DEFAULT_SERVICES_SEED) {
+                        await setDoc(doc(db, 'services', service.id), service);
+                    }
+                    showToast('success', 'Loaded', 'Default services loaded successfully');
+                    fetchServices();
+                } catch (error) {
+                    console.error("Error loading defaults:", error);
+                    showToast('error', 'Error', 'Failed to load default services');
+                } finally {
+                    setLoading(false);
+                    closeConfirm();
+                }
             }
-            showToast('success', 'Loaded', 'Default services loaded successfully');
-            fetchServices();
-        } catch (error) {
-            console.error("Error loading defaults:", error);
-            showToast('error', 'Error', 'Failed to load default services');
-        } finally {
-            setLoading(false);
-        }
+        });
     };
 
     if (loading) return <div>Loading services...</div>;
@@ -610,6 +640,15 @@ const ServicesManagement = ({ showToast }: ServicesManagementProps) => {
                     </div>
                 )}
             </div>
+
+            <ConfirmPopup
+                isOpen={confirmConfig.isOpen}
+                title={confirmConfig.title}
+                message={confirmConfig.message}
+                onConfirm={confirmConfig.onConfirm}
+                onCancel={closeConfirm}
+                isDestructive={confirmConfig.isDestructive}
+            />
         </div>
     );
 };

@@ -195,6 +195,61 @@ const getContactEmail = (contact) => `
 </body>
 </html>`;
 
+const getNewBookingAdminEmail = (booking) => `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>New Booking Alert</title></head>
+<body style="${style.body}">
+    <div style="${style.container}">
+        <!-- Alert Header -->
+        <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 30px; text-align: center;">
+             <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800;">🔴 NEW BOOKING ALERT!</h1>
+        </div>
+
+        <!-- Hero -->
+        <div style="${style.hero}">
+            <div style="width: 80px; height: 80px; background-color: #fef2f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #dc2626; font-size: 40px;">📸</div>
+            <h2 style="${style.heroTitle}">Action Required</h2>
+            <p style="${style.heroText}">A new booking has just been submitted. Please review and respond promptly.</p>
+        </div>
+
+        <div style="${style.section}">
+             <!-- Reference -->
+             ${renderReference(booking.referenceNumber)}
+
+             <!-- Customer Info Box -->
+             <div style="background-color: #fff7ed; border: 2px solid #fed7aa; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="margin: 0 0 15px; color: #9a3412; font-size: 16px; font-weight: 700;">Customer Information</h3>
+                <div style="border-top: 1px solid #fed7aa;">
+                    <div style="${style.detailRow}"><span style="${style.detailLabel}">Name</span><span style="${style.detailValue}">${booking.name}</span></div>
+                    <div style="${style.detailRow}"><span style="${style.detailLabel}">Email</span><span style="${style.detailValue}">${booking.email}</span></div>
+                    <div style="${style.detailRow}"><span style="${style.detailLabel}">Phone</span><span style="${style.detailValue}">${booking.phone}</span></div>
+                </div>
+             </div>
+
+             <!-- Booking Details -->
+             <h3 style="font-size: 14px; text-transform: uppercase; color: #94a3b8; font-weight: 700; margin-bottom: 15px;">Booking Details</h3>
+             <div style="border-top: 1px solid #f1f5f9;">
+                 <div style="${style.detailRow}"><span style="${style.detailLabel}">Package</span><span style="${style.detailValue}">${booking.package}</span></div>
+                 <div style="${style.detailRow}"><span style="${style.detailLabel}">Date</span><span style="${style.detailValue}">${booking.date}</span></div>
+                 <div style="${style.detailRow}"><span style="${style.detailLabel}">Time</span><span style="${style.detailValue}">${booking.time_start}</span></div>
+                 <div style="${style.detailRow}"><span style="${style.detailLabel}">Total Price</span><span style="${style.detailValue}">₱${booking.totalPrice}</span></div>
+             </div>
+
+             <!-- Action CTA -->
+             <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 12px; padding: 25px; text-align: center; margin-top: 30px;">
+                <p style="margin: 0 0 15px; color: white; font-size: 14px; font-weight: 600;">Go to your admin dashboard to review and confirm</p>
+                <a href="https://itsour-studio.vercel.app/admin" style="display: inline-block; background-color: #ea580c; color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px;">Open Admin Dashboard</a>
+             </div>
+        </div>
+
+        <div style="${style.footer}">
+             <p style="${style.footerText}">This is an automated notification from your booking system.<br>© It's ouR Studio</p>
+        </div>
+    </div>
+</body>
+</html>`;
+
 // --- Main Handler ---
 
 export default async function handler(req, res) {
@@ -243,6 +298,11 @@ export default async function handler(req, res) {
             case 'contact':
                 subject = `Inquiry: ${contact.name}`;
                 html = getContactEmail(contact);
+                toEmail = process.env.BUSINESS_EMAIL || process.env.EMAIL_USER;
+                break;
+            case 'new_booking_admin':
+                subject = `🔴 NEW BOOKING - ${booking.name} [${booking.referenceNumber || 'IOS'}]`;
+                html = getNewBookingAdminEmail(booking);
                 toEmail = process.env.BUSINESS_EMAIL || process.env.EMAIL_USER;
                 break;
             default:

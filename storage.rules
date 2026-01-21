@@ -15,8 +15,9 @@ service firebase.storage {
     }
 
     // Report attachments: Public read (for admin dashboard), Public create (upload)
+    // Report attachments: Public create (upload), Admin read/update/delete
     match /reports/{item} {
-       allow read: if true; // Or strictly isAdmin() if you want privacy
+       allow read: if isAdmin(); 
        allow create: if true; // Allow anyone to upload a screenshot
        allow update, delete: if isAdmin();
     }
