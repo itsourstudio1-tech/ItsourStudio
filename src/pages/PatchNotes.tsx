@@ -211,7 +211,7 @@ const PatchNotes = () => {
                             }
                             badges={[<span key="planned" className="badge planned">PLANNED</span>]}
                         >
-                            <p className="planned-note">Real-time alerts for the engineering team whenever high-priority admin reports are filed.</p>
+                            <p className="planned-note">Real-time alerts for the IT team whenever high-priority admin reports are filed.</p>
                         </FeatureCard>
                     </section>
                 </main>
