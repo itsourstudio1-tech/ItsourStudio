@@ -1,0 +1,290 @@
+.patch-notes-container {
+    min-height: 100vh;
+    background-color: #fcfcfd;
+    padding-top: 80px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.patch-notes-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem 5rem;
+}
+
+/* Header Revamp */
+.patch-notes-header {
+    margin-bottom: 4rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #f1f5f9;
+    /* Single subtle line instead of double */
+}
+
+.header-top {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.patch-notes-header h1 {
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: #1a1a1b;
+    margin: 0;
+    letter-spacing: -0.025em;
+}
+
+.version-tag {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #ea580c;
+    background: #fff7ed;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    text-transform: uppercase;
+}
+
+.update-meta {
+    font-size: 1rem;
+    color: #64748b;
+    margin: 0;
+}
+
+/* Section Styling */
+.patch-section {
+    margin-bottom: 4rem;
+}
+
+.section-label {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a1b;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+    /* Removed border-bottom to avoid double line effect */
+}
+
+/* Feature Card & Collapsible UI */
+.feature-card {
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.feature-card:hover {
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.feature-card.active {
+    border-color: #ea580c;
+    box-shadow: 0 10px 15px -3px rgba(234, 88, 12, 0.05);
+}
+
+.feature-card.featured {
+    border-left: 4px solid #ea580c;
+}
+
+.feature-card.planned {
+    border-style: dashed;
+    background: #fafafa;
+}
+
+.feature-header-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+}
+
+.feature-header-btn:hover {
+    background: #fbfbfb;
+}
+
+.feature-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.feature-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background: #f8fafc;
+    color: #475569;
+    border-radius: 10px;
+    transition: all 0.2s;
+}
+
+.feature-card.active .feature-icon-wrapper {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.feature-title-group h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1a1a1b;
+    margin: 0 0 0.25rem;
+}
+
+.badge-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.badge.new {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge.improved {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge.featured {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge.planned {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* Chevron Interaction */
+.chevron-icon {
+    color: #94a3b8;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chevron-icon.rotated {
+    transform: rotate(180deg);
+    color: #ea580c;
+}
+
+/* Content Body */
+.feature-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feature-body.expanded {
+    max-height: 800px;
+    /* Large enough to hold content */
+}
+
+.feature-body-content {
+    padding: 0 1.5rem 1.5rem 5rem;
+    /* Indented to align with text, not icon */
+}
+
+.change-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.change-list>li {
+    font-size: 0.95rem;
+    color: #475569;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.change-list>li>strong {
+    color: #1a1a1b;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.change-list ul {
+    list-style: none;
+    padding-left: 1.25rem;
+    margin-top: 0.5rem;
+}
+
+.change-list ul li {
+    position: relative;
+    padding-left: 1rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.change-list ul li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #cbd5e1;
+}
+
+.planned-note {
+    font-size: 0.95rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Footer Section */
+.patch-notes-footer {
+    margin-top: 6rem;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.patch-notes-footer p {
+    margin-bottom: 1rem;
+}
+
+.patch-notes-footer strong {
+    color: #64748b;
+}
+
+.footer-copyright {
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .patch-notes-wrapper {
+        padding-top: 1rem;
+    }
+
+    .patch-notes-header h1 {
+        font-size: 2.25rem;
+    }
+
+    .feature-body-content {
+        padding-left: 1.5rem;
+    }
+
+    .feature-header-left {
+        gap: 0.75rem;
+    }
+}

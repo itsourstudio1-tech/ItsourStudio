@@ -18,6 +18,7 @@ import CookieConsent from './components/CookieConsent';
 import FAQ from './pages/FAQ';
 import NotFound from './pages/NotFound';
 import BioLinks from './pages/BioLinks';
+import PatchNotes from './pages/PatchNotes';
 import StructuredData from './components/StructuredData';
 
 import { BookingProvider } from './context/BookingContext';
@@ -93,6 +94,8 @@ const AppContent = ({ onRouteChange }: { onRouteChange: () => void }) => {
                         </ProtectedRoute>
                     }
                 />
+
+                <Route path="/patch-notes" element={<PatchNotes />} />
 
                 {/* Catch all - renders 404 page */}
                 <Route path="*" element={<NotFound />} />
