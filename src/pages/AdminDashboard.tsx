@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { db, storage, auth } from '../firebase';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -151,6 +151,19 @@ const AdminDashboard = () => {
     const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
     const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
 
+    // Notification states
+    const previousBookingCount = useRef<number>(0);
+    const [isTabFlashing, setIsTabFlashing] = useState(false);
+    const originalTitle = useRef(document.title);
+    const flashInterval = useRef<number | null>(null);
+
+    // Request notification permission on mount
+    useEffect(() => {
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    }, []);
+
     const handleSubmitReport = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!reportSubject.trim() || !reportMessage.trim()) {
@@ -223,6 +236,13 @@ const AdminDashboard = () => {
                 id: doc.id,
                 ...doc.data()
             })) as Booking[];
+
+            // Detect new booking
+            if (previousBookingCount.current > 0 && bookingsData.length > previousBookingCount.current) {
+                const newBooking = bookingsData[0]; // Most recent booking
+                handleNewBookingNotification(newBooking);
+            }
+            previousBookingCount.current = bookingsData.length;
 
             setBookings(bookingsData);
 
@@ -314,6 +334,229 @@ const AdminDashboard = () => {
             key,
             direction: current.key === key && current.direction === 'asc' ? 'desc' : 'asc'
         }));
+    };
+
+    // Handle new booking notification
+    const handleNewBookingNotification = async (booking: Booking) => {
+        // Play sound using native Audio API (same as Prime Audio button)
+        try {
+            const audio = new Audio('/notification.wav');
+            audio.volume = 0.5;
+            await audio.play();
+            console.log('✓ Notification sound played successfully');
+        } catch (error) {
+            console.error('✗ Audio playback failed:', error);
+            if ((error as Error).name === 'NotAllowedError') {
+                console.warn('⚠️ Audio blocked - user needs to click Prime Audio first');
+                showToast('error', 'Sound Blocked', 'Click "Prime Audio" to enable sounds');
+            }
+        }
+
+        // Show toast notification
+        showToast('success', '🎉 New Booking!', `${booking.fullName} booked ${booking.package}`);
+
+        // Start tab flashing
+        startTabFlashing();
+
+        // Show browser notification (Windows taskbar)
+        showBrowserNotification(booking);
+
+        // Update favicon to show alert
+        updateFaviconBadge();
+
+        // Send email notification to admin
+        await sendAdminEmailNotification(booking);
+    };
+
+    // Show native browser notification
+    const showBrowserNotification = (booking: Booking) => {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            try {
+                // Close any existing notifications first to ensure new one is noticed
+                const existingNotification = (window as any).lastBookingNotification;
+                if (existingNotification) {
+                    existingNotification.close();
+                }
+
+                const notification = new Notification('🔴 NEW BOOKING ALERT!', {
+                    body: `${booking.fullName} booked ${booking.package}\n📅 ${booking.date}\n🕐 ${booking.time}`,
+                    icon: '/logo192.png',
+                    badge: '/logo192.png',
+                    tag: 'new-booking-' + Date.now(), // Unique tag to force new notification each time
+                    requireInteraction: true, // Keeps notification visible and taskbar flashing
+                    silent: false, // Ensures system sound plays
+                    data: { bookingId: booking.id, timestamp: Date.now() }
+                });
+
+                // Store reference to close later
+                (window as any).lastBookingNotification = notification;
+
+                // When notification is clicked, focus the window and go to bookings
+                notification.onclick = () => {
+                    window.focus();
+                    handleTabChange('bookings');
+                    notification.close();
+                };
+
+                // When notification is closed, clear reference
+                notification.onclose = () => {
+                    (window as any).lastBookingNotification = null;
+                };
+
+                // Error handler
+                notification.onerror = (error) => {
+                    console.error('Notification error:', error);
+                };
+
+                // Auto-close after 30 seconds if user doesn't interact
+                setTimeout(() => {
+                    if (notification) {
+                        notification.close();
+                    }
+                }, 30000);
+
+                console.log('✓ Browser notification created successfully');
+            } catch (error) {
+                console.error('✗ Error showing browser notification:', error);
+            }
+        } else if (Notification.permission === 'default') {
+            // Request permission if not yet determined
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    showBrowserNotification(booking);
+                }
+            });
+        } else if (Notification.permission === 'denied') {
+            console.warn('⚠️ Notifications are blocked. Please enable in browser settings.');
+            showToast('error', 'Notifications Blocked', 'Enable notifications in browser settings');
+        }
+    };
+
+    // Update favicon to show notification badge
+    const updateFaviconBadge = () => {
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+
+            if (ctx) {
+                // Draw red circle badge
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(24, 8, 8, 0, 2 * Math.PI);
+                ctx.fill();
+
+                // Draw white exclamation mark
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('!', 24, 8);
+
+                // Update favicon
+                const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement || document.createElement('link');
+                link.type = 'image/x-icon';
+                link.rel = 'shortcut icon';
+                link.href = canvas.toDataURL();
+                document.head.appendChild(link);
+            }
+        } catch (error) {
+            console.error('Error updating favicon:', error);
+        }
+    };
+
+    // Restore original favicon when tab is focused
+    useEffect(() => {
+        const handleFocus = () => {
+            if (!isTabFlashing) {
+                // Restore original favicon (you might want to set this to your actual favicon path)
+                const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+                if (link) {
+                    link.href = '/favicon.ico'; // Change this to your actual favicon path
+                }
+            }
+        };
+
+        window.addEventListener('focus', handleFocus);
+        return () => window.removeEventListener('focus', handleFocus);
+    }, [isTabFlashing]);
+
+    // Tab flashing effect
+    const startTabFlashing = () => {
+        if (isTabFlashing) return;
+        setIsTabFlashing(true);
+
+        let isRed = false;
+        flashInterval.current = setInterval(() => {
+            if (isRed) {
+                document.title = originalTitle.current;
+            } else {
+                document.title = '🔴 NEW BOOKING! 🔴';
+            }
+            isRed = !isRed;
+        }, 1000);
+
+        // Auto-stop after 30 seconds
+        setTimeout(() => {
+            stopTabFlashing();
+        }, 30000);
+    };
+
+    const stopTabFlashing = () => {
+        if (flashInterval.current) {
+            clearInterval(flashInterval.current);
+            flashInterval.current = null;
+        }
+        document.title = originalTitle.current;
+        setIsTabFlashing(false);
+    };
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            stopTabFlashing();
+        };
+    }, []);
+
+    // Stop flashing when user focuses on the tab
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (!document.hidden && isTabFlashing) {
+                stopTabFlashing();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [isTabFlashing]);
+
+    // Send email to admin about new booking
+    const sendAdminEmailNotification = async (booking: Booking) => {
+        try {
+            await fetch('/api/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    type: 'new_booking_admin',
+                    booking: {
+                        referenceNumber: booking.referenceNumber,
+                        name: booking.fullName,
+                        email: booking.email,
+                        phone: booking.phone,
+                        package: booking.package,
+                        date: booking.date,
+                        time_start: booking.time,
+                        totalPrice: booking.totalPrice
+                    }
+                })
+            });
+            console.log('Admin email notification sent');
+        } catch (error) {
+            console.error('Failed to send admin email notification', error);
+        }
     };
 
     const sendEmailNotification = async (booking: Booking, status: string, reason?: string) => {
