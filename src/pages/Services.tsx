@@ -1,8 +1,23 @@
 import { useEffect, useState, useRef } from 'react';
+import { db } from '../firebase';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import LazyImage from '../components/LazyImage';
 
+interface Service {
+    id: string;
+    title: string;
+    price: string;
+    duration: string;
+    description: string;
+    features: string[];
+    imageMain: string;
+    imageDetail: string;
+    imageAction: string;
+    isBestSelling: boolean;
+    order?: number;
+}
 
-const services = [
+const DEFAULT_SERVICES: Service[] = [
     {
         id: 'solo',
         title: 'Solo Package',
@@ -136,7 +151,9 @@ const services = [
     }
 ];
 
-const ServiceShowcase = ({ service }: { service: typeof services[0] }) => {
+
+
+const ServiceShowcase = ({ service }: { service: Service }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [isPaused, setIsPaused] = useState(false);
 
@@ -216,12 +233,40 @@ const Services = () => {
     const { openBooking } = useBooking();
     const [isDragging, setIsDragging] = useState(false);
     const [sliderValue, setSliderValue] = useState(0);
+    const [services, setServices] = useState<Service[]>(DEFAULT_SERVICES);
+    const [loading, setLoading] = useState(true);
     const sliderRef = useRef<HTMLDivElement>(null);
+
+    // Initial load: Fetch services from Firestore
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const q = query(collection(db, 'services'), orderBy('order', 'asc'));
+                const snapshot = await getDocs(q);
+                if (!snapshot.empty) {
+                    const fetchedServices = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    })) as Service[];
+                    setServices(fetchedServices);
+                }
+            } catch (err) {
+                console.error("Failed to fetch services, using defaults:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchServices();
+    }, []);
+
+
 
     // Check if mobile for conditional rendering
     const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
 
     useEffect(() => {
+        if (loading || services.length === 0) return;
+
         let scrollTimeout: ReturnType<typeof setTimeout>;
 
         const handleScroll = () => {
@@ -251,7 +296,7 @@ const Services = () => {
             clearTimeout(scrollTimeout);
             window.removeEventListener('scroll', handleScroll);
         };
-    }, [isDragging]);
+    }, [isDragging, loading, services]);
 
     const scrollToSection = (id: string) => {
         const element = document.getElementById(id);

@@ -6,7 +6,7 @@ service cloud.firestore {
     // It's ouR Studio - Firestore Security Rules
     // =============================================
     // 
-    // These rules protect your data from unauthorized access.
+    // Those rules protect your data from unauthorized access.
     // Deploy with: firebase deploy --only firestore:rules
     //
     // IMPORTANT: Admin operations should use Firebase Admin SDK
@@ -72,6 +72,12 @@ service cloud.firestore {
     match /reports/{reportId} {
         allow create: if true;
         allow read, update, delete: if request.auth != null;
+    }
+
+    // Services - Public read, Auth for write
+    match /services/{serviceId} {
+        allow read: if true;
+        allow write: if request.auth != null;
     }
     
     // Default deny all other collections

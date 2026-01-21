@@ -156,7 +156,7 @@ const AdminDashboard = () => {
 
     // Toast Helper
     const showToast = (type: 'success' | 'error', title: string, message: string) => {
-        const id = Date.now();
+        const id = Date.now() + Math.random();
         setToasts(prev => [...prev, { id, type, title, message }]);
         setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 5000);
     };

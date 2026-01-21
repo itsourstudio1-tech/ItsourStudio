@@ -20,6 +20,12 @@ service firebase.storage {
        allow create: if true; // Allow anyone to upload a screenshot
        allow update, delete: if isAdmin();
     }
+
+    // Services images: Public read, Admin write
+    match /services/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
     
     // Default deny
     match /{allPaths=**} {
