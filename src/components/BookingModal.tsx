@@ -49,6 +49,11 @@ const BookingModal = () => {
     const [unavailableDates, setUnavailableDates] = useState<Record<string, string>>({});
     const [seasonalPromo, setSeasonalPromo] = useState<any>(null); // State for seasonal promo data
     const [privacyConsent, setPrivacyConsent] = useState(false); // DPA Compliance
+    const [calendarOpen, setCalendarOpen] = useState(false); // Calendar popup state
+    const [timeSlotPage, setTimeSlotPage] = useState(0); // Time slot pagination
+    const [packagePage, setPackagePage] = useState(0); // Package pagination
+    const SLOTS_PER_PAGE = 8;
+    const PACKAGES_PER_PAGE = 4;
 
     const [services, setServices] = useState<any[]>([]);
 
@@ -363,7 +368,15 @@ const BookingModal = () => {
         const dateDay = String(selectedDate.getDate()).padStart(2, '0');
         const dateString = `${year}-${month}-${dateDay}`;
 
-        setFormData(prev => ({ ...prev, date: dateString }));
+        setFormData(prev => ({ ...prev, date: dateString, time: '' }));
+        setTimeSlotPage(0); // Reset pagination when date changes
+        setCalendarOpen(false); // Close popup after selection
+    };
+
+    const formatSelectedDate = (dateStr: string) => {
+        if (!dateStr) return 'Select a date';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
     };
 
     const renderCalendar = () => {
@@ -797,33 +810,90 @@ const BookingModal = () => {
                                         <p className="step-subtitle">Choose a package that suits your needs</p>
                                     </div>
 
-                                    <div className="packages-grid">
-                                        {finalPackages.map(pkg => (
-                                            <div
-                                                key={pkg.id}
-                                                className={`package-card ${formData.package === pkg.id ? 'selected' : ''}`}
-                                                onClick={() => setFormData(prev => ({ ...prev, package: pkg.id }))}
-                                            >
-                                                <div className="package-info">
-                                                    <span className="package-name">{pkg.name}</span>
-                                                    <span className="package-duration">{pkg.duration} mins</span>
+                                    {(() => {
+                                        const totalPackages = finalPackages.length;
+                                        const totalPages = Math.ceil(totalPackages / PACKAGES_PER_PAGE);
+                                        const startIdx = packagePage * PACKAGES_PER_PAGE;
+                                        const endIdx = startIdx + PACKAGES_PER_PAGE;
+                                        const visiblePackages = finalPackages.slice(startIdx, endIdx);
+
+                                        return (
+                                            <>
+                                                <div className="packages-grid">
+                                                    {visiblePackages.map(pkg => (
+                                                        <div
+                                                            key={pkg.id}
+                                                            className={`package-card ${formData.package === pkg.id ? 'selected' : ''}`}
+                                                            onClick={() => setFormData(prev => ({ ...prev, package: pkg.id }))}
+                                                        >
+                                                            <div className="package-info">
+                                                                <span className="package-name">{pkg.name}</span>
+                                                                <span className="package-duration">{pkg.duration} mins</span>
+                                                            </div>
+                                                            <div className="package-price">₱{pkg.price}</div>
+                                                            {formData.package === pkg.id && (
+                                                                <div className="check-icon">
+                                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                                <div className="package-price">₱{pkg.price}</div>
-                                                {formData.package === pkg.id && (
-                                                    <div className="check-icon">
-                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                                {totalPages > 1 && (
+                                                    <div className="package-pagination">
+                                                        <button
+                                                            type="button"
+                                                            className="pagination-btn"
+                                                            onClick={() => setPackagePage(p => Math.max(0, p - 1))}
+                                                            disabled={packagePage === 0}
+                                                        >
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                <polyline points="15 18 9 12 15 6"></polyline>
+                                                            </svg>
+                                                            Prev
+                                                        </button>
+                                                        <div className="pagination-info">
+                                                            <span className="pagination-text">Page {packagePage + 1} of {totalPages}</span>
+                                                            <div className="pagination-dots">
+                                                                {Array.from({ length: totalPages }, (_, i) => (
+                                                                    <span
+                                                                        key={i}
+                                                                        className={`pagination-dot ${i === packagePage ? 'active' : ''}`}
+                                                                    ></span>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            className="pagination-btn"
+                                                            onClick={() => setPackagePage(p => Math.min(totalPages - 1, p + 1))}
+                                                            disabled={packagePage === totalPages - 1}
+                                                        >
+                                                            Next
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                <polyline points="9 18 15 12 9 6"></polyline>
+                                                            </svg>
+                                                        </button>
                                                     </div>
                                                 )}
-                                            </div>
-                                        ))}
-                                    </div>
+                                            </>
+                                        );
+                                    })()}
 
                                     <div className="form-section-divider"></div>
 
                                     <div className="date-time-container">
                                         <div className="form-group date-group">
                                             <label>Select Date</label>
-                                            {renderCalendar()}
+                                            <button
+                                                type="button"
+                                                className="date-input-trigger"
+                                                onClick={() => setCalendarOpen(true)}
+                                            >
+                                                <span className="date-icon">📅</span>
+                                                <span className="date-text">{formatSelectedDate(formData.date)}</span>
+                                                <span className="chevron-icon">▼</span>
+                                            </button>
                                         </div>
 
                                         <div className="form-group extension-group">
@@ -857,32 +927,77 @@ const BookingModal = () => {
                                                 <span className="icon">📅</span>
                                                 <p>Please select a date above to see available slots</p>
                                             </div>
-                                        ) : (
-                                            <>
-                                                <div className="time-slot-grid">
-                                                    {generateTimeSlots(formData.date).map(time => {
-                                                        const available = isSlotAvailable(time);
-                                                        const selected = formData.time === time;
-                                                        return (
+                                        ) : (() => {
+                                            const allSlots = generateTimeSlots(formData.date);
+                                            const totalPages = Math.ceil(allSlots.length / SLOTS_PER_PAGE);
+                                            const startIdx = timeSlotPage * SLOTS_PER_PAGE;
+                                            const endIdx = startIdx + SLOTS_PER_PAGE;
+                                            const visibleSlots = allSlots.slice(startIdx, endIdx);
+
+                                            return (
+                                                <>
+                                                    <div className="time-slot-grid">
+                                                        {visibleSlots.map(time => {
+                                                            const available = isSlotAvailable(time);
+                                                            const selected = formData.time === time;
+                                                            return (
+                                                                <button
+                                                                    key={time}
+                                                                    type="button"
+                                                                    className={`time-slot-btn ${selected ? 'selected' : ''} ${!available ? 'disabled' : ''}`}
+                                                                    onClick={() => available && handleTimeSelect(time)}
+                                                                    disabled={!available}
+                                                                >
+                                                                    {formatTime(time)}
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                    {totalPages > 1 && (
+                                                        <div className="time-pagination">
                                                             <button
-                                                                key={time}
                                                                 type="button"
-                                                                className={`time-slot-btn ${selected ? 'selected' : ''} ${!available ? 'disabled' : ''}`}
-                                                                onClick={() => available && handleTimeSelect(time)}
-                                                                disabled={!available}
+                                                                className="pagination-btn"
+                                                                onClick={() => setTimeSlotPage(p => Math.max(0, p - 1))}
+                                                                disabled={timeSlotPage === 0}
                                                             >
-                                                                {formatTime(time)}
+                                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                    <polyline points="15 18 9 12 15 6"></polyline>
+                                                                </svg>
+                                                                Prev
                                                             </button>
-                                                        );
-                                                    })}
-                                                </div>
-                                                <div className="time-legend">
-                                                    <div className="legend-item"><span className="dot available"></span> Available</div>
-                                                    <div className="legend-item"><span className="dot selected"></span> Selected</div>
-                                                    <div className="legend-item"><span className="dot booked"></span> Booked</div>
-                                                </div>
-                                            </>
-                                        )}
+                                                            <div className="pagination-info">
+                                                                <span className="pagination-text">Page {timeSlotPage + 1} of {totalPages}</span>
+                                                                <div className="pagination-dots">
+                                                                    {Array.from({ length: totalPages }, (_, i) => (
+                                                                        <span
+                                                                            key={i}
+                                                                            className={`pagination-dot ${i === timeSlotPage ? 'active' : ''}`}
+                                                                        ></span>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                className="pagination-btn"
+                                                                onClick={() => setTimeSlotPage(p => Math.min(totalPages - 1, p + 1))}
+                                                                disabled={timeSlotPage === totalPages - 1}
+                                                            >
+                                                                Next
+                                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                    <div className="time-legend">
+                                                        <div className="legend-item"><span className="dot available"></span> Available</div>
+                                                        <div className="legend-item"><span className="dot selected"></span> Selected</div>
+                                                        <div className="legend-item"><span className="dot booked"></span> Booked</div>
+                                                    </div>
+                                                </>
+                                            );
+                                        })()}
                                     </div>
                                 </div>
                             )}
@@ -1118,6 +1233,25 @@ const BookingModal = () => {
                     </div>
                 )}
             </div>
+
+            {/* Calendar Popup Modal */}
+            {calendarOpen && (
+                <div className="calendar-popup-overlay" onClick={() => setCalendarOpen(false)}>
+                    <div className="calendar-popup-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="calendar-popup-header">
+                            <h3>Select Date</h3>
+                            <button
+                                type="button"
+                                className="popup-close-btn"
+                                onClick={() => setCalendarOpen(false)}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        {renderCalendar()}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
