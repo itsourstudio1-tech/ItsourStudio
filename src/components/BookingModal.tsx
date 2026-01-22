@@ -1230,10 +1230,12 @@ const BookingModal = () => {
                             )}
 
                             <div className="wizard-actions">
-                                {step > 1 && (
+                                {step > 1 ? (
                                     <button type="button" className="btn btn-secondary btn-lg" onClick={handleBackStep}>
                                         Back
                                     </button>
+                                ) : (
+                                    <div></div>
                                 )}
                                 <button
                                     type="submit"
