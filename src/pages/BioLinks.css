@@ -24,164 +24,55 @@
     overflow-y: auto;
 }
 
-/* --- Aurora Background --- */
-.bio-aurora-bg {
+/* --- Dynamic Background --- */
+.bio-background {
     position: fixed;
     inset: 0;
-    z-index: -3;
-    background: linear-gradient(135deg, #0a0812 0%, #12101a 50%, #080610 100%);
-    overflow: hidden;
+    z-index: -5;
+    background-size: cover;
+    background-position: center;
+    transition: all 0.8s ease;
 }
 
-.aurora-gradient {
+/* Darken user uploaded backgrounds slightly */
+.bio-background img {
+    filter: brightness(0.4);
+}
+
+/* Fallback/Overlay Gradient */
+.bio-background::after {
+    content: '';
     position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    will-change: transform;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(59, 44, 40, 0.35), rgba(59, 44, 40, 0.95));
+    z-index: 1;
 }
 
-.aurora-1 {
-    width: 70vw;
-    height: 70vw;
-    max-width: 700px;
-    max-height: 700px;
-    top: -30%;
-    left: -20%;
-    background: radial-gradient(circle, rgba(255, 140, 50, 0.7) 0%, rgba(255, 100, 50, 0.3) 50%, transparent 70%);
-    animation: aurora1Move 8s ease-in-out infinite;
-}
-
-.aurora-2 {
-    width: 60vw;
-    height: 60vw;
-    max-width: 600px;
-    max-height: 600px;
-    top: 20%;
-    right: -25%;
-    background: radial-gradient(circle, rgba(200, 100, 255, 0.6) 0%, rgba(150, 50, 200, 0.25) 50%, transparent 70%);
-    animation: aurora2Move 10s ease-in-out infinite;
-}
-
-.aurora-3 {
-    width: 55vw;
-    height: 55vw;
-    max-width: 550px;
-    max-height: 550px;
-    bottom: -20%;
-    left: 10%;
-    background: radial-gradient(circle, rgba(50, 200, 255, 0.5) 0%, rgba(50, 150, 255, 0.2) 50%, transparent 70%);
-    animation: aurora3Move 12s ease-in-out infinite;
-}
-
-.aurora-4 {
-    width: 50vw;
-    height: 50vw;
-    max-width: 500px;
-    max-height: 500px;
-    top: 50%;
-    left: -30%;
-    background: radial-gradient(circle, rgba(255, 200, 100, 0.5) 0%, rgba(255, 150, 50, 0.2) 50%, transparent 70%);
-    animation: aurora4Move 9s ease-in-out infinite;
-}
-
-@keyframes aurora1Move {
-
-    0%,
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-
-    50% {
-        transform: translate(100px, 80px) scale(1.2);
-    }
-}
-
-@keyframes aurora2Move {
-
-    0%,
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-
-    50% {
-        transform: translate(-120px, 60px) scale(1.15);
-    }
-}
-
-@keyframes aurora3Move {
-
-    0%,
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-
-    50% {
-        transform: translate(80px, -100px) scale(1.25);
-    }
-}
-
-@keyframes aurora4Move {
-
-    0%,
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-
-    50% {
-        transform: translate(150px, -50px) scale(1.1);
-    }
-}
-
-/* --- Floating Particles --- */
-.bio-particles {
+/* --- VFX Layer --- */
+.bio-fx-container {
     position: fixed;
     inset: 0;
-    z-index: -2;
     pointer-events: none;
-    overflow: hidden;
-}
-
-.particle {
-    position: absolute;
-    width: var(--size, 4px);
-    height: var(--size, 4px);
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    bottom: -10px;
-    left: var(--x-start, 50%);
-    box-shadow: 0 0 6px 2px rgba(255, 200, 150, 0.6);
-    animation: particleRise var(--duration, 20s) linear infinite;
-    animation-delay: var(--delay, 0s);
-}
-
-@keyframes particleRise {
-    0% {
-        transform: translateY(0) translateX(0);
-        opacity: 0;
-    }
-
-    5% {
-        opacity: var(--opacity, 0.8);
-    }
-
-    95% {
-        opacity: var(--opacity, 0.8);
-    }
-
-    100% {
-        transform: translateY(-110vh) translateX(calc(var(--x-end, 50%) - var(--x-start, 50%)));
-        opacity: 0;
-    }
-}
-
-/* --- Noise Texture Overlay --- */
-.bio-noise {
-    position: fixed;
-    inset: 0;
     z-index: -1;
-    pointer-events: none;
+    overflow: hidden;
+}
+
+/* Noise Texture for 'Film' Look */
+.bio-noise {
+    position: absolute;
+    inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-    opacity: 0.04;
+    opacity: 0.07;
+    z-index: 4;
+}
+
+/* Animated Gradient + Circles (BioLinks background) */
+.bio-bubbles-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: var(--gradient-primary);
+    opacity: 0.7;
 }
 
 .bio-bubbles-inside {
@@ -194,19 +85,16 @@
     position: absolute;
     background: rgba(255, 244, 230, 0.9);
     border-radius: 50%;
-    will-change: transform, scale, opacity;
-    transform: translate3d(0, 0, 0);
-    scale: 1;
+    will-change: transform;
+    transform: translate3d(0, 0, 0) scale(1);
     --bio-bubble-dur: 10s;
-    --bio-bubble-breath-dur: 6s;
     --bio-bubble-from-x: 0px;
     --bio-bubble-from-y: 0px;
     --bio-bubble-to-x: 0px;
     --bio-bubble-to-y: 0px;
-    /* Removed old scale vars, using fixed breath for now or generic */
-    animation:
-        bioBubbleFloat var(--bio-bubble-dur) ease-in-out infinite alternate,
-        bioBreath var(--bio-bubble-breath-dur) ease-in-out infinite alternate-reverse;
+    --bio-bubble-from-s: 1.0;
+    --bio-bubble-to-s: 1.08;
+    animation: bioBubbleFloat var(--bio-bubble-dur) ease-in-out infinite alternate;
     animation-timing-function: cubic-bezier(.6, 0, .4, 1);
 }
 
@@ -216,15 +104,13 @@
     width: clamp(220px, 28vw, 320px);
     height: clamp(220px, 28vw, 320px);
     opacity: 0.28;
-    --bio-start-opacity: 0.28;
-    --bio-end-opacity: 0.4;
     animation-delay: 0s;
     --bio-bubble-dur: 9s;
-    --bio-bubble-breath-dur: 5s;
     --bio-bubble-from-x: 0px;
     --bio-bubble-from-y: 0px;
     --bio-bubble-to-x: 40px;
     --bio-bubble-to-y: -20px;
+    --bio-bubble-to-s: 1.10;
 }
 
 .bio-bubble--md {
@@ -233,15 +119,13 @@
     width: clamp(420px, 55vw, 640px);
     height: clamp(420px, 55vw, 640px);
     opacity: 0.20;
-    --bio-start-opacity: 0.20;
-    --bio-end-opacity: 0.3;
     animation-delay: 0.3s;
     --bio-bubble-dur: 12s;
-    --bio-bubble-breath-dur: 7s;
     --bio-bubble-from-x: 0px;
     --bio-bubble-from-y: 0px;
     --bio-bubble-to-x: 60px;
     --bio-bubble-to-y: 30px;
+    --bio-bubble-to-s: 1.07;
 }
 
 .bio-bubble--lg {
@@ -250,15 +134,13 @@
     width: clamp(640px, 80vw, 960px);
     height: clamp(640px, 80vw, 960px);
     opacity: 0.14;
-    --bio-start-opacity: 0.14;
-    --bio-end-opacity: 0.22;
     animation-delay: 0.6s;
     --bio-bubble-dur: 14s;
-    --bio-bubble-breath-dur: 8s;
     --bio-bubble-from-x: 0px;
     --bio-bubble-from-y: 0px;
     --bio-bubble-to-x: 80px;
     --bio-bubble-to-y: -40px;
+    --bio-bubble-to-s: 1.06;
 }
 
 .bio-bubble--xl {
@@ -267,15 +149,13 @@
     width: clamp(860px, 105vw, 1280px);
     height: clamp(860px, 105vw, 1280px);
     opacity: 0.10;
-    --bio-start-opacity: 0.10;
-    --bio-end-opacity: 0.16;
     animation-delay: 0.9s;
     --bio-bubble-dur: 16s;
-    --bio-bubble-breath-dur: 9s;
     --bio-bubble-from-x: 0px;
     --bio-bubble-from-y: 0px;
     --bio-bubble-to-x: 90px;
     --bio-bubble-to-y: 40px;
+    --bio-bubble-to-s: 1.05;
 }
 
 .bio-bubble--xxl {
@@ -284,36 +164,22 @@
     width: clamp(1080px, 130vw, 1560px);
     height: clamp(1080px, 130vw, 1560px);
     opacity: 0.06;
-    --bio-start-opacity: 0.06;
-    --bio-end-opacity: 0.1;
     animation-delay: 1.2s;
     --bio-bubble-dur: 18s;
-    --bio-bubble-breath-dur: 11s;
     --bio-bubble-from-x: 0px;
     --bio-bubble-from-y: 0px;
     --bio-bubble-to-x: 110px;
     --bio-bubble-to-y: -60px;
+    --bio-bubble-to-s: 1.04;
 }
 
 @keyframes bioBubbleFloat {
     0% {
-        transform: translate3d(var(--bio-bubble-from-x), var(--bio-bubble-from-y), 0);
+        transform: translate3d(var(--bio-bubble-from-x), var(--bio-bubble-from-y), 0) scale(var(--bio-bubble-from-s));
     }
 
     100% {
-        transform: translate3d(var(--bio-bubble-to-x), var(--bio-bubble-to-y), 0);
-    }
-}
-
-@keyframes bioBreath {
-    0% {
-        scale: 1;
-        opacity: var(--bio-start-opacity, 0.2);
-    }
-
-    100% {
-        scale: 1.15;
-        opacity: var(--bio-end-opacity, 0.35);
+        transform: translate3d(var(--bio-bubble-to-x), var(--bio-bubble-to-y), 0) scale(var(--bio-bubble-to-s));
     }
 }
 

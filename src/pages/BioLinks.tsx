@@ -102,33 +102,19 @@ const BioLinks = () => {
 
     // Default Images
     const displayImage = profile.profileImage || '/logo/android-chrome-512x512.png'; // Assuming public asset
+    const bgStyle = profile.backgroundImage
+        ? { backgroundImage: `url(${profile.backgroundImage})` }
+        : undefined;
 
     return (
         <div className="bio-links-container">
-            {/* Animated Aurora Background */}
-            <div className="bio-aurora-bg" aria-hidden="true">
-                <div className="aurora-gradient aurora-1"></div>
-                <div className="aurora-gradient aurora-2"></div>
-                <div className="aurora-gradient aurora-3"></div>
-                <div className="aurora-gradient aurora-4"></div>
-            </div>
+            {/* Background Layer */}
+            <div className="bio-background" style={bgStyle}></div>
 
-            {/* Floating Particles */}
-            <div className="bio-particles" aria-hidden="true">
-                {[...Array(20)].map((_, i) => (
-                    <div key={i} className="particle" style={{
-                        '--delay': `${Math.random() * 8}s`,
-                        '--duration': `${15 + Math.random() * 20}s`,
-                        '--x-start': `${Math.random() * 100}%`,
-                        '--x-end': `${Math.random() * 100}%`,
-                        '--size': `${2 + Math.random() * 4}px`,
-                        '--opacity': `${0.3 + Math.random() * 0.5}`,
-                    } as React.CSSProperties}></div>
-                ))}
+            {/* Visual Effects Layer */}
+            <div className="bio-fx-container">
+                <div className="bio-noise"></div>
             </div>
-
-            {/* Subtle Noise Overlay */}
-            <div className="bio-noise" aria-hidden="true"></div>
 
             <div className="bio-content">
                 {/* Profile Header */}

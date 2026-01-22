@@ -811,6 +811,10 @@ p {
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
+  /* Prevent browser touch gestures */
+  touch-action: pan-y pinch-zoom;
+  /* Performance optimizations */
+  -webkit-overflow-scrolling: touch;
 }
 
 .gallery-carousel-container:active {
@@ -844,6 +848,12 @@ p {
   width: max-content;
   gap: var(--spacing-md);
   animation: scroll 80s linear infinite;
+  will-change: transform;
+  /* Hardware acceleration for smoother dragging */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .gallery-track:hover {
@@ -873,6 +883,12 @@ p {
   background: white;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   /* Deep shadow */
+  /* Performance optimizations */
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Casual Tilt Effect */

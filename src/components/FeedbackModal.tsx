@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { sanitizeName, sanitizeText, sanitizeNumber } from '../utils/sanitize';
-import './ModalStyles.css'; // Reusing modal styles
+import './FeedbackModal.css';
 
 interface FeedbackModalProps {
     isOpen: boolean;
@@ -13,13 +13,25 @@ const FeedbackModal = ({ isOpen, onClose }: FeedbackModalProps) => {
     const [name, setName] = useState('');
     const [rating, setRating] = useState(5);
     const [message, setMessage] = useState('');
-    const [submitting, setSubmitting] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     if (!isOpen) return null;
 
+    const handleClose = () => {
+        setName('');
+        setMessage('');
+        setRating(5);
+        setIsSuccess(false);
+        setError(null);
+        onClose();
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setSubmitting(true);
+        setIsSubmitting(true);
+        setError(null);
 
         // Sanitize all inputs before storing
         const sanitizedName = sanitizeName(name, 50);
@@ -27,8 +39,8 @@ const FeedbackModal = ({ isOpen, onClose }: FeedbackModalProps) => {
         const sanitizedRating = sanitizeNumber(rating, 1, 5, 5);
 
         if (!sanitizedName || !sanitizedMessage) {
-            alert('Please provide a valid name and message.');
-            setSubmitting(false);
+            setError('Please provide a valid name and message.');
+            setIsSubmitting(false);
             return;
         }
 
@@ -41,77 +53,94 @@ const FeedbackModal = ({ isOpen, onClose }: FeedbackModalProps) => {
                 createdAt: serverTimestamp()
             });
 
-            alert('Thank you for your feedback!');
-            setName('');
-            setMessage('');
-            setRating(5);
-            onClose();
+            setIsSuccess(true);
+            setTimeout(() => {
+                handleClose();
+            }, 2000);
         } catch (error) {
             console.error("Error submitting feedback: ", error);
-            alert('Failed to submit feedback. Please try again.');
+            setError('Failed to submit feedback. Please try again.');
         } finally {
-            setSubmitting(false);
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="modal active">
-            <div className="modal-content" style={{ maxWidth: '400px', padding: '2rem' }}>
-                <button className="close-modal-btn" onClick={onClose} style={{
-                    position: 'absolute',
-                    right: '15px',
-                    top: '15px',
-                    fontSize: '1.5rem',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer'
-                }}>&times;</button>
+        <div className="feedback-modal-overlay" onClick={handleClose}>
+            <div className="feedback-modal-content" onClick={e => e.stopPropagation()}>
+                <button className="feedback-modal-close" onClick={handleClose}>
+                    ×
+                </button>
 
-                <h3 className="section-title" style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Leave a Review</h3>
-                <p style={{ marginBottom: '1.5rem' }}>We'd love to hear about your experience!</p>
-
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group" style={{ textAlign: 'left' }}>
-                        <label>Name</label>
-                        <input
-                            type="text"
-                            required
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Your Name"
-                        />
+                {isSuccess ? (
+                    <div className="feedback-success-message">
+                        <span className="feedback-success-icon">✓</span>
+                        <h3>Thank You!</h3>
+                        <p>Your feedback has been submitted successfully.</p>
                     </div>
-
-                    <div className="form-group" style={{ textAlign: 'left' }}>
-                        <label>Rating</label>
-                        <div className="star-rating" style={{ display: 'flex', gap: '5px', fontSize: '1.5rem', cursor: 'pointer' }}>
-                            {[1, 2, 3, 4, 5].map((star) => (
-                                <span
-                                    key={star}
-                                    onClick={() => setRating(star)}
-                                    style={{ color: star <= rating ? '#FFD700' : '#ddd' }}
-                                >
-                                    ★
-                                </span>
-                            ))}
+                ) : (
+                    <>
+                        <div className="feedback-modal-header">
+                            <h2>Leave a Review</h2>
+                            <p>We'd love to hear about your experience!</p>
                         </div>
-                    </div>
 
-                    <div className="form-group" style={{ textAlign: 'left' }}>
-                        <label>Message</label>
-                        <textarea
-                            required
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            placeholder="Share your experience..."
-                            rows={4}
-                        />
-                    </div>
+                        <form onSubmit={handleSubmit}>
+                            <div className="feedback-form-group">
+                                <label className="feedback-form-label">Name</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    placeholder="Your Name"
+                                    className="feedback-form-input"
+                                />
+                            </div>
 
-                    <button type="submit" className="btn btn-primary" disabled={submitting} style={{ width: '100%' }}>
-                        {submitting ? 'Submitting...' : 'Submit Review'}
-                    </button>
-                </form>
+                            <div className="feedback-form-group">
+                                <label className="feedback-form-label">Rating</label>
+                                <div className="star-rating">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <span
+                                            key={star}
+                                            onClick={() => setRating(star)}
+                                            className={star <= rating ? 'filled' : ''}
+                                        >
+                                            ★
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="feedback-form-group">
+                                <label className="feedback-form-label">Message</label>
+                                <textarea
+                                    required
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    placeholder="Share your experience..."
+                                    rows={4}
+                                    className="feedback-form-textarea"
+                                />
+                            </div>
+
+                            {error && (
+                                <div style={{ color: '#f87171', marginBottom: '1rem', fontSize: '0.9rem' }}>
+                                    {error}
+                                </div>
+                            )}
+
+                            <button 
+                                type="submit" 
+                                className="feedback-submit-btn" 
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? 'Submitting...' : 'Submit Review'}
+                            </button>
+                        </form>
+                    </>
+                )}
             </div>
         </div>
     );
