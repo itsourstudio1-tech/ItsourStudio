@@ -52,10 +52,20 @@ const BookingModal = () => {
     const [calendarOpen, setCalendarOpen] = useState(false); // Calendar popup state
     const [timeSlotPage, setTimeSlotPage] = useState(0); // Time slot pagination
     const [packagePage, setPackagePage] = useState(0); // Package pagination
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 640); // Mobile detection
     const SLOTS_PER_PAGE = 8;
     const PACKAGES_PER_PAGE = 4;
 
     const [services, setServices] = useState<any[]>([]);
+
+    // Detect mobile screen size
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 640);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Fetch Seasonal Promo & Services Data
     useEffect(() => {
@@ -813,8 +823,8 @@ const BookingModal = () => {
                                     {(() => {
                                         const totalPackages = finalPackages.length;
                                         const totalPages = Math.ceil(totalPackages / PACKAGES_PER_PAGE);
-                                        const startIdx = packagePage * PACKAGES_PER_PAGE;
-                                        const endIdx = startIdx + PACKAGES_PER_PAGE;
+                                        const startIdx = isMobile ? packagePage * PACKAGES_PER_PAGE : 0;
+                                        const endIdx = isMobile ? startIdx + PACKAGES_PER_PAGE : totalPackages;
                                         const visiblePackages = finalPackages.slice(startIdx, endIdx);
 
                                         return (
@@ -839,7 +849,7 @@ const BookingModal = () => {
                                                         </div>
                                                     ))}
                                                 </div>
-                                                {totalPages > 1 && (
+                                                {isMobile && totalPages > 1 && (
                                                     <div className="package-pagination">
                                                         <button
                                                             type="button"
@@ -885,15 +895,19 @@ const BookingModal = () => {
                                     <div className="date-time-container">
                                         <div className="form-group date-group">
                                             <label>Select Date</label>
-                                            <button
-                                                type="button"
-                                                className="date-input-trigger"
-                                                onClick={() => setCalendarOpen(true)}
-                                            >
-                                                <span className="date-icon">📅</span>
-                                                <span className="date-text">{formatSelectedDate(formData.date)}</span>
-                                                <span className="chevron-icon">▼</span>
-                                            </button>
+                                            {isMobile ? (
+                                                <button
+                                                    type="button"
+                                                    className="date-input-trigger"
+                                                    onClick={() => setCalendarOpen(true)}
+                                                >
+                                                    <span className="date-icon">📅</span>
+                                                    <span className="date-text">{formatSelectedDate(formData.date)}</span>
+                                                    <span className="chevron-icon">▼</span>
+                                                </button>
+                                            ) : (
+                                                renderCalendar()
+                                            )}
                                         </div>
 
                                         <div className="form-group extension-group">
@@ -930,8 +944,8 @@ const BookingModal = () => {
                                         ) : (() => {
                                             const allSlots = generateTimeSlots(formData.date);
                                             const totalPages = Math.ceil(allSlots.length / SLOTS_PER_PAGE);
-                                            const startIdx = timeSlotPage * SLOTS_PER_PAGE;
-                                            const endIdx = startIdx + SLOTS_PER_PAGE;
+                                            const startIdx = isMobile ? timeSlotPage * SLOTS_PER_PAGE : 0;
+                                            const endIdx = isMobile ? startIdx + SLOTS_PER_PAGE : allSlots.length;
                                             const visibleSlots = allSlots.slice(startIdx, endIdx);
 
                                             return (
@@ -953,7 +967,7 @@ const BookingModal = () => {
                                                             );
                                                         })}
                                                     </div>
-                                                    {totalPages > 1 && (
+                                                    {isMobile && totalPages > 1 && (
                                                         <div className="time-pagination">
                                                             <button
                                                                 type="button"
@@ -1234,8 +1248,8 @@ const BookingModal = () => {
                 )}
             </div>
 
-            {/* Calendar Popup Modal */}
-            {calendarOpen && (
+            {/* Calendar Popup Modal - Mobile Only */}
+            {isMobile && calendarOpen && (
                 <div className="calendar-popup-overlay" onClick={() => setCalendarOpen(false)}>
                     <div className="calendar-popup-content" onClick={(e) => e.stopPropagation()}>
                         <div className="calendar-popup-header">
