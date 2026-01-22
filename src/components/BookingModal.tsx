@@ -974,33 +974,27 @@ const BookingModal = () => {
                                         {/* Left Column: Payment Method */}
                                         <div className="checkout-section payment-method">
                                             <div className="section-label">Payment Method</div>
-                                            <div className="payment-card-hero">
-                                                <div className="gcash-brand">
-                                                    <span className="brand-name">GCash</span>
-                                                    <span className="brand-tag">Official Merchant</span>
-                                                </div>
-
-                                                <div className="qr-hero">
-                                                    <img src={paymentQr} alt="Scan to Pay" />
-                                                </div>
-
-                                                <div className="payment-details-hero">
-                                                    <div className="detail-group">
-                                                        <span className="label">Send to</span>
-                                                        <div className="value-row">
-                                                            <span className="value number">0905 336 7103</span>
-                                                            <button type="button" className="copy-btn" onClick={() => copyToClipboard('09053367103', 'Number')}>
-                                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                                            </button>
+                                            <div className="payment-qr-card">
+                                                <img src={paymentQr} alt="Scan to Pay with GCash" className="qr-card-image" />
+                                                <div className="payment-info-overlay">
+                                                    <div className="payment-info-row">
+                                                        <div className="info-item">
+                                                            <span className="info-label">Send to</span>
+                                                            <div className="info-value-row">
+                                                                <span className="info-value">0905 336 7103</span>
+                                                                <button type="button" className="copy-btn-mini" onClick={() => copyToClipboard('09053367103', 'Number')}>
+                                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="detail-group">
-                                                        <span className="label">Amount Due</span>
-                                                        <div className="value-row">
-                                                            <span className="value amount">₱{downpayment}</span>
-                                                            <button type="button" className="copy-btn" onClick={() => copyToClipboard(downpayment.toString(), 'Amount')}>
-                                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                                            </button>
+                                                        <div className="info-item">
+                                                            <span className="info-label">Amount Due</span>
+                                                            <div className="info-value-row">
+                                                                <span className="info-value highlight">₱{downpayment}</span>
+                                                                <button type="button" className="copy-btn-mini" onClick={() => copyToClipboard(downpayment.toString(), 'Amount')}>
+                                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>

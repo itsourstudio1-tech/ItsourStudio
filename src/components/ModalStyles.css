@@ -263,6 +263,15 @@
     margin-bottom: 2rem;
 }
 
+.form-group.date-group,
+.form-group.extension-group {
+    background: #fff;
+    border: 1px solid rgba(191, 106, 57, 0.15);
+    border-radius: 18px;
+    padding: 1.25rem;
+    box-shadow: 0 6px 18px rgba(59, 44, 40, 0.08);
+}
+
 .form-group label {
     display: block;
     font-size: 0.9rem;
@@ -326,20 +335,24 @@
 
 /* Time Slots */
 .time-selection-container {
-    background: #f8fafc;
-    padding: 1.5rem;
-    border-radius: 16px;
+    background: #ffffff;
+    padding: 1.75rem;
+    border-radius: 18px;
     border: 1px solid #e2e8f0;
+    box-shadow: 0 8px 24px rgba(59, 44, 40, 0.06);
 }
 
 .empty-state-box {
     text-align: center;
     padding: 2rem;
-    color: #94a3b8;
+    color: var(--color-gray);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+    background: #ffffff;
+    border: 1px dashed rgba(191, 106, 57, 0.3);
+    border-radius: 16px;
 }
 
 .empty-state-box .icon {
@@ -356,12 +369,12 @@
 
 .time-slot-btn {
     padding: 0.75rem 0.5rem;
-    background: white;
+    background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 0.9rem;
     color: var(--color-dark);
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -369,7 +382,8 @@
 .time-slot-btn:hover:not(:disabled) {
     border-color: var(--color-terracotta);
     color: var(--color-terracotta);
-    background: #fffcf8;
+    background: #fffdf9;
+    box-shadow: 0 4px 10px rgba(191, 106, 57, 0.12);
 }
 
 .time-slot-btn.selected {
@@ -380,10 +394,10 @@
 }
 
 .time-slot-btn:disabled {
-    background: #f1f5f9;
+    background: #f8fafc;
     color: #cbd5e1;
     cursor: not-allowed;
-    border-color: transparent;
+    border-color: #f1f5f9;
 }
 
 .time-legend {
@@ -459,7 +473,7 @@ textarea::placeholder {
 }
 
 .form-group {
-    background: #f1f5f9;
+    background: #ffffff;
     margin: 2rem 0;
 }
 
@@ -578,6 +592,91 @@ textarea::placeholder {
     justify-content: space-between;
     padding-top: 2rem;
     border-top: 2px dashed #e2e8f0;
+}
+
+/* NEW: QR Card Design - Image as Card */
+.payment-qr-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.payment-qr-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.2);
+}
+
+.qr-card-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 20px;
+}
+
+.payment-info-overlay {
+    background: #ffffff;
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.payment-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.info-label {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+
+.info-value-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-value {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1e293b;
+    font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.info-value.highlight {
+    font-size: 1.25rem;
+    color: var(--color-terracotta);
+}
+
+.copy-btn-mini {
+    background: #f1f5f9;
+    border: none;
+    border-radius: 6px;
+    padding: 0.35rem;
+    cursor: pointer;
+    color: #64748b;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.copy-btn-mini:hover {
+    background: var(--color-terracotta);
+    color: white;
 }
 
 .detail-group {
@@ -936,6 +1035,19 @@ textarea::placeholder {
     .payment-card-hero {
         padding: 2rem;
     }
+
+    .payment-qr-card {
+        max-width: 100%;
+    }
+
+    .qr-card-image {
+        max-width: 100%;
+    }
+
+    .payment-info-row {
+        flex-direction: row;
+        justify-content: space-between;
+    }
 }
 
 /* Animations */
@@ -1106,12 +1218,12 @@ textarea::placeholder {
 
 /* Custom Calendar */
 .custom-calendar {
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    /* border: 1px solid rgba(191, 106, 57, 0.2); */
+    border-radius: 16px;
     background: #ffffff;
     padding: 1.25rem;
     user-select: none;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    /* box-shadow: 0 8px 24px rgba(59, 44, 40, 0.12); */
 }
 
 .calendar-header {
@@ -1140,7 +1252,7 @@ textarea::placeholder {
 }
 
 .calendar-header button:hover {
-    background: #f1f5f9;
+    background: var(--color-cream);
     color: var(--color-terracotta);
 }
 
@@ -1153,8 +1265,8 @@ textarea::placeholder {
 
 .calendar-weekday {
     font-size: 0.75rem;
-    color: #94a3b8;
-    font-weight: 600;
+    color: var(--color-gray);
+    font-weight: 700;
     text-transform: uppercase;
     margin-bottom: 0.5rem;
 }
@@ -1172,7 +1284,7 @@ textarea::placeholder {
 }
 
 .calendar-day:hover:not(.empty):not(.disabled) {
-    background: #fff7ed;
+    background: var(--color-cream);
     color: var(--color-terracotta);
     font-weight: 600;
 }
@@ -1184,7 +1296,7 @@ textarea::placeholder {
 }
 
 .calendar-day.disabled {
-    color: #cbd5e1;
+    color: #d7cfcf;
     cursor: not-allowed;
     background: transparent;
 }
@@ -1255,24 +1367,24 @@ textarea::placeholder {
     align-items: center;
     justify-content: space-between;
     padding: 1rem 1.25rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border: 1px solid rgba(191, 106, 57, 0.15);
+    border-radius: 14px;
     background: #ffffff;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 6px 16px rgba(59, 44, 40, 0.08);
 }
 
 .extension-card:hover {
-    border-color: #cbd5e1;
-    background: #f8fafc;
+    border-color: rgba(191, 106, 57, 0.4);
+    background: #fff8ee;
     transform: translateX(4px);
 }
 
 .extension-card.selected {
     border-color: var(--color-terracotta);
-    background: #fffcf8;
-    box-shadow: 0 4px 12px -2px rgba(191, 106, 57, 0.2);
+    background: #fff4e6;
+    box-shadow: 0 8px 20px -4px rgba(191, 106, 57, 0.3);
 }
 
 .extension-main {
@@ -1846,6 +1958,31 @@ textarea::placeholder {
         width: 180px;
         height: 180px;
         max-width: 100%;
+    }
+
+    /* New QR Card Mobile */
+    .payment-qr-card {
+        border-radius: 16px;
+    }
+
+    .qr-card-image {
+        border-radius: 16px 16px 0 0;
+    }
+
+    .payment-info-overlay {
+        padding: 1rem;
+    }
+
+    .payment-info-row {
+        gap: 0.75rem;
+    }
+
+    .info-value {
+        font-size: 0.9rem;
+    }
+
+    .info-value.highlight {
+        font-size: 1.1rem;
     }
 
     .booking-summary-box {
