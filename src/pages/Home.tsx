@@ -286,6 +286,39 @@ const Home = () => {
         return () => cancelAnimationFrame(animationRef.current);
     }, [animationLoop]);
 
+    // Add ref for carousel container to use native event listeners with passive option
+    const carouselContainerRef = useRef<HTMLDivElement>(null);
+    const mouseMoveRafRef = useRef<number>(0);
+
+    useEffect(() => {
+        const container = carouselContainerRef.current;
+        if (!container) return;
+
+        // Use passive listeners for better scroll performance
+        const passiveTouchMove = (e: TouchEvent) => {
+            if (!draggingRef.current) return;
+            e.preventDefault();
+            
+            const pageX = e.touches[0].pageX;
+            const diff = pageX - startX;
+            const newTranslate = prevTranslate + diff;
+            translateRef.current = newTranslate;
+            
+            if (trackRef.current) {
+                trackRef.current.style.transform = `translateX(${newTranslate}px)`;
+            }
+        };
+
+        container.addEventListener('touchmove', passiveTouchMove, { passive: false });
+
+        return () => {
+            container.removeEventListener('touchmove', passiveTouchMove);
+            if (mouseMoveRafRef.current) {
+                cancelAnimationFrame(mouseMoveRafRef.current);
+            }
+        };
+    }, [startX, prevTranslate]);
+
     const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
         setIsDragging(true);
         draggingRef.current = true;
@@ -304,13 +337,30 @@ const Home = () => {
 
     const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
         if (!isDragging) return;
+        
+        // Only handle mouse events here; touch events handled by native listener
+        if ('touches' in e) return;
+        
+        e.preventDefault();
 
-        const pageX = 'touches' in e ? e.touches[0].pageX : (e as React.MouseEvent).pageX;
-        const currentPosition = pageX;
-        const diff = currentPosition - startX;
+        // Throttle mouse move with requestAnimationFrame
+        if (mouseMoveRafRef.current) {
+            return;
+        }
 
-        translateRef.current = prevTranslate + diff;
-        setCurrentTranslate(translateRef.current);
+        mouseMoveRafRef.current = requestAnimationFrame(() => {
+            mouseMoveRafRef.current = 0;
+            
+            const pageX = (e as React.MouseEvent).pageX;
+            const diff = pageX - startX;
+            const newTranslate = prevTranslate + diff;
+            translateRef.current = newTranslate;
+            
+            // Use direct DOM manipulation for smoother dragging (no re-render on every move)
+            if (trackRef.current) {
+                trackRef.current.style.transform = `translateX(${newTranslate}px)`;
+            }
+        });
     };
 
     const handleDragEnd = () => {
@@ -331,6 +381,9 @@ const Home = () => {
                 translateRef.current = -halfWidth + translateRef.current;
             }
         }
+
+        // Update state once at the end
+        setCurrentTranslate(translateRef.current);
 
         // Restart loop
         cancelAnimationFrame(animationRef.current);
@@ -401,13 +454,13 @@ const Home = () => {
 
                     <div
                         className="gallery-carousel-container"
+                        ref={carouselContainerRef}
                         onMouseDown={handleDragStart}
                         onMouseUp={handleDragEnd}
                         onMouseLeave={handleDragEnd}
                         onMouseMove={handleDragMove}
                         onTouchStart={handleDragStart}
                         onTouchEnd={handleDragEnd}
-                        onTouchMove={handleDragMove}
                         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
                     >
                         <div
