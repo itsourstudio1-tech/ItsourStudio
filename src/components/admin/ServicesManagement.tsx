@@ -326,15 +326,7 @@ const ServicesManagement = ({ showToast }: ServicesManagementProps) => {
         });
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        // Basic validation
-        if (!formData.title || !formData.price || !formData.id) {
-            showToast('error', 'Validation', 'Please fill in required fields (ID, Title, Price)');
-            return;
-        }
-
+    const saveService = async () => {
         try {
             const serviceData = { ...formData };
 
@@ -356,6 +348,33 @@ const ServicesManagement = ({ showToast }: ServicesManagementProps) => {
             console.error("Error saving service:", error);
             showToast('error', 'Error', 'Failed to save service');
         }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // Basic validation
+        if (!formData.title || !formData.id) {
+            showToast('error', 'Validation', 'Please fill in required fields (ID, Title)');
+            return;
+        }
+
+        // Check for empty price
+        if (!formData.price || formData.price.trim() === '') {
+            setConfirmConfig({
+                isOpen: true,
+                title: 'No Price Specified',
+                message: 'You are about to save this package without a price. The price will be hidden on the public site. Do you want to continue?',
+                isDestructive: false,
+                onConfirm: async () => {
+                    await saveService();
+                    closeConfirm();
+                }
+            });
+            return;
+        }
+
+        await saveService();
     };
 
     const handleLoadDefaults = () => {

@@ -9,6 +9,8 @@ interface LazyImageProps {
 }
 
 const LazyImage = ({ src, alt, className = '', wrapperClassName = '' }: LazyImageProps) => {
+    if (!src) return null;
+
     const [isVisible, setIsVisible] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const imgRef = useRef<HTMLDivElement>(null);

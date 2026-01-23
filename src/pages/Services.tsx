@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { db } from '../firebase';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
-import LazyImage from '../components/LazyImage';
 
 interface Service {
     id: string;
@@ -205,7 +204,7 @@ const ServiceShowcase = ({ service }: { service: Service }) => {
         return (
             <div className="service-showcase">
                 <div className="showcase-single">
-                    <LazyImage src={service.imageMain} alt={`${service.title}`} />
+                    <img src={service.imageMain} alt={`${service.title}`} />
                 </div>
             </div>
         );
@@ -222,15 +221,52 @@ const ServiceShowcase = ({ service }: { service: Service }) => {
                 onTouchEnd={() => setIsPaused(false)}
             >
                 <div className="showcase-item main">
-                    <LazyImage src={service.imageMain} alt={`${service.title} main`} />
+                    <img src={service.imageMain} alt={`${service.title} main`} />
                 </div>
                 <div className="showcase-item">
-                    <LazyImage src={service.imageDetail} alt={`${service.title} detail`} />
+                    <img src={service.imageDetail} alt={`${service.title} detail`} />
                 </div>
                 <div className="showcase-item">
-                    <LazyImage src={service.imageAction} alt={`${service.title} action`} />
+                    <img src={service.imageAction} alt={`${service.title} action`} />
                 </div>
             </div>
+        </div>
+    );
+};
+
+const TextOnlyFeatures = ({ features }: { features: string[] }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const LIMIT = 6; // Adjusted for 3 rows x 2 columns
+
+    const visibleFeatures = isExpanded ? features : features.slice(0, LIMIT);
+    const hasMore = features.length > LIMIT;
+
+    return (
+        <div style={{ width: '100%' }}>
+            <ul className="service-features-large">
+                {visibleFeatures.map((feature, idx) => (
+                    <li key={idx}>{feature}</li>
+                ))}
+            </ul>
+            {hasMore && (
+                <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="btn-text-only-toggle"
+                    style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--color-terracotta)',
+                        fontSize: '1rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        display: 'block',
+                        margin: '1rem auto 2rem',
+                        textDecoration: 'underline'
+                    }}
+                >
+                    {isExpanded ? 'See Less' : 'See All +'}
+                </button>
+            )}
         </div>
     );
 };
@@ -276,7 +312,19 @@ const Services = () => {
 
 
     // Check if mobile for conditional rendering
-    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        // Initial check
+        checkMobile();
+
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         if (loading || services.length === 0) return;
@@ -406,38 +454,47 @@ const Services = () => {
             )}
 
             {/* Service Sections */}
-            {services.map((service, index) => (
-                <section
-                    key={service.id}
-                    id={service.id}
-                    className={`service-fullscreen ${index % 2 !== 0 ? 'alt-bg' : ''}`}
-                >
-                    <div className={`service-split ${index % 2 !== 0 ? 'reverse' : ''}`}>
-                        <div className="service-info">
-                            {service.isBestSelling && <div className="featured-badge">Best Selling</div>}
-                            <h2 className="service-title-large">{service.title}</h2>
-                            <div className="service-price-large">{service.price}</div>
-                            <div className="service-duration-large">{service.duration}</div>
-                            <p className="service-desc-large">{service.description}</p>
+            {services.map((service, index) => {
+                const hasImages = Boolean(service.imageMain || service.imageDetail || service.imageAction);
+                return (
+                    <section
+                        key={service.id}
+                        id={service.id}
+                        className={`service-fullscreen ${index % 2 !== 0 ? 'alt-bg' : ''}`}
+                    >
+                        <div className={`service-split ${index % 2 !== 0 ? 'reverse' : ''} ${!hasImages ? 'text-only' : ''}`}>
+                            <div className="service-info">
+                                {service.isBestSelling && <div className="featured-badge">Best Selling</div>}
+                                <h2 className="service-title-large">{service.title}</h2>
+                                {(service.price && service.price !== '0' && service.price !== '₱0') && (
+                                    <div className="service-price-large">{service.price}</div>
+                                )}
+                                <div className="service-duration-large">{service.duration}</div>
+                                <p className="service-desc-large">{service.description}</p>
 
-                            <ul className="service-features-large">
-                                {service.features.map((feature, idx) => (
-                                    <li key={idx}>{feature}</li>
-                                ))}
-                            </ul>
+                                {hasImages ? (
+                                    <ul className="service-features-large">
+                                        {service.features.map((feature, idx) => (
+                                            <li key={idx}>{feature}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <TextOnlyFeatures features={service.features} />
+                                )}
 
-                            <button
-                                onClick={() => openBooking(service.id)}
-                                className="btn btn-primary btn-large"
-                            >
-                                Book This Package
-                            </button>
+                                <button
+                                    onClick={() => openBooking(service.id)}
+                                    className="btn btn-primary btn-large"
+                                >
+                                    Book This Package
+                                </button>
+                            </div>
+
+                            {hasImages && <ServiceShowcase service={service} />}
                         </div>
-
-                        <ServiceShowcase service={service} />
-                    </div>
-                </section>
-            ))}
+                    </section>
+                );
+            })}
         </div>
     );
 };

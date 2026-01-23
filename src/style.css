@@ -2982,6 +2982,101 @@ section {
   position: relative;
 }
 
+/* Text-only layout (Premium Menu Style) */
+.service-split.text-only {
+  justify-content: center;
+}
+
+.service-split.text-only .service-info {
+  text-align: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+
+  /* Premium Card Styling */
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 4rem 3rem;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 25px 50px -12px rgba(59, 44, 40, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  transition: transform 0.3s ease;
+}
+
+.service-split.text-only .service-info:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 30px 60px -12px rgba(59, 44, 40, 0.12);
+}
+
+.service-split.text-only .service-title-large {
+  font-size: clamp(3rem, 5vw, 4.5rem);
+  color: var(--color-terracotta);
+  margin-bottom: 0.5rem;
+}
+
+.service-split.text-only .service-desc-large {
+  max-width: 700px;
+  margin: 0 auto 3rem;
+  font-size: 1.25rem;
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+/* Feature Grid for Text-Only */
+.service-split.text-only .service-features-large {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 3rem;
+}
+
+.service-split.text-only .service-features-large li {
+  background: white;
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(59, 44, 40, 0.05);
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: var(--color-dark);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  /* Reset default list styles */
+  list-style: none;
+}
+
+.service-split.text-only .service-features-large li::before {
+  /* Custom Checkmark */
+  content: '✦';
+  color: var(--color-terracotta);
+  font-size: 1.2rem;
+  margin-right: 12px;
+  position: static;
+  /* Override default positioning */
+}
+
+.service-split.text-only .service-features-large li:hover {
+  transform: translateY(-3px) scale(1.02);
+  border-color: var(--color-terracotta);
+  background: #fffcf9;
+  box-shadow: 0 10px 20px -5px rgba(191, 106, 57, 0.15);
+}
+
+.service-split.text-only .btn {
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+}
+
 .service-showcase {
   flex: 1;
   height: auto;
@@ -3561,7 +3656,7 @@ section {
 @media (max-width: 968px) {
   .services-page #solo {
     height: auto;
-    border-top: 80px solid transparent;
+    /* border-top: 80px solid transparent; */
   }
 
   .service-split,
@@ -3644,7 +3739,7 @@ section {
 
   /* Adjust first section spacing */
   .services-page #solo {
-    border-top: 80px solid transparent;
+    /* border-top: 80px solid transparent; */
     padding-top: 0;
     height: auto;
   }
@@ -5444,6 +5539,12 @@ section {
     scroll-snap-type: none !important;
   }
 
+  .service-split,
+  .service-split.reverse {
+    flex-direction: column !important;
+    gap: 1.5rem;
+  }
+
   .service-fullscreen {
     scroll-snap-align: none !important;
     scroll-snap-stop: normal !important;
@@ -5491,6 +5592,37 @@ section {
   .showcase-item:hover img,
   .showcase-item:hover .lazy-image {
     transform: none !important;
+  }
+
+  /* Optimized Text-Only Layout for Mobile */
+  .service-split.text-only .service-info {
+    padding: 2rem 1.5rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    /* More opaque for readability */
+    backdrop-filter: none;
+    /* Perf */
+  }
+
+  .service-split.text-only .service-title-large {
+    font-size: 2.25rem;
+    /* Smaller title */
+  }
+
+  .service-split.text-only .service-desc-large {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .service-split.text-only .service-features-large {
+    grid-template-columns: 1fr;
+    /* Single column stack */
+    gap: 0.75rem;
+  }
+
+  .service-split.text-only .service-features-large li {
+    padding: 1rem;
+    font-size: 0.95rem;
   }
 }
 
