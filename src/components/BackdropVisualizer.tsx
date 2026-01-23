@@ -93,14 +93,14 @@ const BackdropVisualizer = () => {
 
             <div className="container relative">
                 <div className="content-wrapper">
-                    <header className="visualizer-header">
-                        <span className="eyebrow" style={{ borderColor: activeColor.textColor }}>Select Your Vibe</span>
+                    <header className="visualizer-header" style={{ color: activeColor.accentColor }}>
+                        <span className="eyebrow" style={{ borderColor: activeColor.accentColor }}>Select Your Vibe</span>
                         <h2 className="title">Backdrop Collection</h2>
                     </header>
 
                     <div className="display-area">
                         <div className={`text-content ${isTransitioning ? 'out' : 'in'}`}>
-                            <h3 className="color-name">
+                            <h3 className="color-name" style={{ color: activeColor.accentColor }}>
                                 {visibleColor.name}
                             </h3>
                             <p className="color-description">

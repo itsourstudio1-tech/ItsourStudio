@@ -255,6 +255,12 @@ const PatchNotes = () => {
                                         <li>Instantly hide/show packages without deleting them.</li>
                                     </ul>
                                 </li>
+                                <li><strong>Backdrop Color Control</strong>
+                                    <ul>
+                                        <li>Enabled custom accent color styling for backdrop headers and titles.</li>
+                                        <li>Admins can now fine-tune text contrast via the Accent Color picker.</li>
+                                    </ul>
+                                </li>
                             </ul>
                         </FeatureCard>
 
