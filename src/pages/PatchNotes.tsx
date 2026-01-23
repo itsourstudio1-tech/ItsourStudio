@@ -191,6 +191,95 @@ const PatchNotes = () => {
 
                 <main className="patch-notes-main">
 
+
+                    {/* v1.2.2 - Sales & Operations Update */}
+                    <PatchVersion version="v1.2.2" date="January 23, 2026" defaultExpanded={true}>
+                        <FeatureCard
+                            title="Sales Ledger"
+                            isFeatured
+                            defaultExpanded
+                            icon={
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            }
+                            badges={[<span key="new" className="badge new">NEW</span>]}
+                        >
+                            <ul className="change-list">
+                                <li><strong>Automated Revenue Tracking</strong>
+                                    <ul>
+                                        <li>Real-time dashboard for daily, monthly, and yearly sales performance.</li>
+                                        <li>Split breakdown of Cash vs GCash payments.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Data Export</strong>
+                                    <ul>
+                                        <li>Downloadable CSV reports for external accounting and auditing.</li>
+                                        <li>Clean, table-based historical view of all transactions.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </FeatureCard>
+
+                        <FeatureCard
+                            title="Walk-in Manager"
+                            isFeatured
+                            icon={
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            }
+                            badges={[<span key="new" className="badge new">NEW</span>]}
+                        >
+                            <ul className="change-list">
+                                <li><strong>dedicated Timer System</strong>
+                                    <ul>
+                                        <li>Built-in countdown timer for walk-in sessions.</li>
+                                        <li>"Floating" minimized mode allows admins to navigate while keeping track of time.</li>
+                                        <li>Audio alerts when session time expires.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Quick Billing Integration</strong>
+                                    <ul>
+                                        <li>Instantly convert walk-in sessions into invoices.</li>
+                                        <li>Seamlessly add extra time or add-ons to the active bill.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </FeatureCard>
+
+                        <FeatureCard
+                            title="Invoice & Billing"
+                            icon={
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                            }
+                            badges={[<span key="new" className="badge new">NEW</span>]}
+                        >
+                            <ul className="change-list">
+                                <li><strong>Professional Invoicing</strong>
+                                    <ul>
+                                        <li>Split-screen layout: Digital Invoice Paper (Left) vs Control Panel (Right).</li>
+                                        <li>Auto-generated reference numbers and itemized breakdown.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Smart Payment Workflow</strong>
+                                    <ul>
+                                        <li><strong>Downpayment Verification:</strong> New "Confirm via Proof" workflow for online downpayments.</li>
+                                        <li><strong>Live Balance Tracking:</strong> Automatically calculates remaining balance based on partial payments.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </FeatureCard>
+                    </PatchVersion>
+
                     {/* v1.2.1 - The Visual & Dynamic Update */}
                     <PatchVersion version="v1.2.1" date="January 23, 2026" defaultExpanded={true}>
                         <FeatureCard
@@ -537,19 +626,7 @@ const PatchNotes = () => {
 
 
 
-                        <FeatureCard
-                            title="Audit & Walk-in System"
-                            isPlanned
-                            icon={
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                                </svg>
-                            }
-                            badges={[<span key="planned" className="badge planned">PLANNED</span>]}
-                        >
-                            <p className="planned-note">Comprehensive audit logging integrated with a walk-in customer portal to capture all studio activity and manual bookings in one place.</p>
-                        </FeatureCard>
+
                     </section>
                 </main>
 
