@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { db } from '../firebase';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import LazyImage from '../components/LazyImage';
 
 interface Service {
@@ -14,6 +14,7 @@ interface Service {
     imageDetail: string;
     imageAction: string;
     isBestSelling: boolean;
+    isVisible?: boolean;
     order?: number;
 }
 
@@ -34,7 +35,8 @@ const DEFAULT_SERVICES: Service[] = [
         imageMain: '/gallery/solo1.webp',
         imageDetail: '/gallery/solo2.webp',
         imageAction: '/gallery/solo3.webp',
-        isBestSelling: false
+        isBestSelling: false,
+        isVisible: true,
     },
     {
         id: 'basic',
@@ -53,7 +55,8 @@ const DEFAULT_SERVICES: Service[] = [
         imageMain: '/gallery/duo1.webp',
         imageDetail: '/gallery/duo2.webp',
         imageAction: '/gallery/duo3.webp',
-        isBestSelling: true
+        isBestSelling: true,
+        isVisible: true,
     },
     {
         id: 'transfer',
@@ -71,7 +74,8 @@ const DEFAULT_SERVICES: Service[] = [
         imageMain: '/gallery/solo4.webp',
         imageDetail: '/gallery/solo5.webp',
         imageAction: '/gallery/solo1.webp',
-        isBestSelling: false
+        isBestSelling: false,
+        isVisible: true,
     },
     {
         id: 'standard',
@@ -90,7 +94,8 @@ const DEFAULT_SERVICES: Service[] = [
         imageMain: '/gallery/group1.webp',
         imageDetail: '/gallery/group2.webp',
         imageAction: '/gallery/group3.webp',
-        isBestSelling: false
+        isBestSelling: false,
+        isVisible: true,
     },
     {
         id: 'birthday',
@@ -109,7 +114,8 @@ const DEFAULT_SERVICES: Service[] = [
         imageMain: '/gallery/solo2.webp',
         imageDetail: '/gallery/solo3.webp',
         imageAction: '/gallery/solo4.webp',
-        isBestSelling: false
+        isBestSelling: false,
+        isVisible: true,
     },
     {
         id: 'family',
@@ -128,7 +134,8 @@ const DEFAULT_SERVICES: Service[] = [
         imageMain: '/gallery/group4.webp',
         imageDetail: '/gallery/group5.webp',
         imageAction: '/gallery/group1.webp',
-        isBestSelling: false
+        isBestSelling: false,
+        isVisible: true,
     },
     {
         id: 'barkada',
@@ -147,7 +154,8 @@ const DEFAULT_SERVICES: Service[] = [
         imageMain: '/gallery/group2.webp',
         imageDetail: '/gallery/group3.webp',
         imageAction: '/gallery/group4.webp',
-        isBestSelling: false
+        isBestSelling: false,
+        isVisible: true,
     }
 ];
 
@@ -239,24 +247,30 @@ const Services = () => {
 
     // Initial load: Fetch services from Firestore
     useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                const q = query(collection(db, 'services'), orderBy('order', 'asc'));
-                const snapshot = await getDocs(q);
-                if (!snapshot.empty) {
-                    const fetchedServices = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data()
-                    })) as Service[];
-                    setServices(fetchedServices);
-                }
-            } catch (err) {
-                console.error("Failed to fetch services, using defaults:", err);
-            } finally {
-                setLoading(false);
+        const q = query(collection(db, 'services'), orderBy('order', 'asc'));
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            if (!snapshot.empty) {
+                const fetchedServices = snapshot.docs.map((doc: any) => ({
+                    id: doc.id,
+                    ...doc.data()
+                })) as Service[];
+
+                // Filter out hidden services
+                // If isVisible is undefined (legacy), default to true
+                const visibleServices = fetchedServices.filter(s => s.isVisible !== false);
+                setServices(visibleServices);
+            } else {
+                setServices(DEFAULT_SERVICES);
             }
-        };
-        fetchServices();
+            setLoading(false);
+        }, (error: any) => {
+            console.error("Failed to fetch services, using defaults:", error);
+            setLoading(false);
+            // setServices(DEFAULT_SERVICES); // Optional: fallback to defaults on error
+        });
+
+        return () => unsubscribe();
     }, []);
 
 
@@ -267,33 +281,26 @@ const Services = () => {
     useEffect(() => {
         if (loading || services.length === 0) return;
 
-        let scrollTimeout: ReturnType<typeof setTimeout>;
-
         const handleScroll = () => {
-            // Debounce scroll handler for performance
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                const windowHeight = window.innerHeight;
+            if (isDragging) return;
 
-                // Find the section that is currently most visible
-                services.forEach((service, index) => {
-                    const element = document.getElementById(service.id);
-                    if (element) {
-                        const rect = element.getBoundingClientRect();
-                        // If the top of the section is within the viewport
-                        if (rect.top >= -windowHeight / 2 && rect.top < windowHeight / 2) {
-                            if (!isDragging) {
-                                setSliderValue((index / (services.length - 1)) * 100);
-                            }
-                        }
-                    }
-                });
-            }, 100); // 100ms debounce
+            const viewportMiddle = window.innerHeight / 2;
+
+            // Find the section that currently occupies the middle of the screen
+            const activeIndex = services.findIndex(service => {
+                const element = document.getElementById(service.id);
+                if (!element) return false;
+                const rect = element.getBoundingClientRect();
+                return rect.top <= viewportMiddle && rect.bottom >= viewportMiddle;
+            });
+
+            if (activeIndex !== -1) {
+                setSliderValue((activeIndex / (services.length - 1)) * 100);
+            }
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => {
-            clearTimeout(scrollTimeout);
             window.removeEventListener('scroll', handleScroll);
         };
     }, [isDragging, loading, services]);

@@ -2948,13 +2948,14 @@ section {
 }
 
 .service-fullscreen {
-  height: 90svh;
+  min-height: 100vh;
+  height: auto;
   display: flex;
   align-items: center;
   position: relative;
-  padding: 0;
+  padding: 40px 0 40px;
   scroll-snap-align: start;
-  scroll-snap-stop: always;
+  scroll-snap-stop: normal;
 }
 
 .service-fullscreen.alt-bg {
@@ -2983,7 +2984,8 @@ section {
 
 .service-showcase {
   flex: 1;
-  height: 600px;
+  height: auto;
+  min-height: 500px;
   position: relative;
 }
 
@@ -3220,7 +3222,7 @@ section {
 
 .service-fullscreen {
   min-height: 90vh;
-  height: 90vh;
+  /* height: 90vh; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3549,7 +3551,7 @@ section {
 /* Structural styles for specific packages */
 @media (min-width: 969px) {
   .services-page #solo {
-    border-top: 100px solid transparent;
+    /* border-top: 100px solid transparent; */
     height: calc(90svh + 100px);
     box-sizing: border-box;
   }
@@ -4192,21 +4194,28 @@ section {
 
 /* Default state (transparent background) on Services Page */
 /* Default state (transparent background) on Services Page */
+.navbar.services-page-nav {
+  position: relative;
+  background: var(--color-terracotta) !important;
+  /* Force a background since it pushes content down */
+  padding: 0;
+}
+
 .navbar.services-page-nav:not(.scrolled) .nav-link,
 .navbar.services-page-nav:not(.scrolled) .logo {
-  color: var(--color-dark);
+  color: white;
 }
 
 .navbar.services-page-nav:not(.scrolled) .logo-image {
-  filter: none;
+  filter: brightness(0) invert(1);
 }
 
 .navbar.services-page-nav:not(.scrolled) .nav-link::after {
-  background: var(--color-primary);
+  background: white;
 }
 
 .navbar.services-page-nav:not(.scrolled) .mobile-menu-btn span {
-  background: var(--color-dark);
+  background: white;
 }
 
 
@@ -5466,6 +5475,11 @@ section {
   .service-info,
   .service-showcase {
     animation: none !important;
+  }
+
+  .service-showcase {
+    min-height: 300px;
+    height: auto;
   }
 
   /* Simplify showcase images */

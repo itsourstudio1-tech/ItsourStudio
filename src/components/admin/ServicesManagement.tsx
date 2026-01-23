@@ -17,6 +17,7 @@ interface Service {
     imageDetail: string;
     imageAction: string;
     isBestSelling: boolean;
+    isVisible: boolean;
     order: number;
 }
 
@@ -38,6 +39,7 @@ const DEFAULT_SERVICES_SEED: Service[] = [
         imageDetail: '/gallery/solo2.webp',
         imageAction: '/gallery/solo3.webp',
         isBestSelling: false,
+        isVisible: true,
         order: 1
     },
     {
@@ -58,6 +60,7 @@ const DEFAULT_SERVICES_SEED: Service[] = [
         imageDetail: '/gallery/duo2.webp',
         imageAction: '/gallery/duo3.webp',
         isBestSelling: true,
+        isVisible: true,
         order: 2
     },
     {
@@ -77,6 +80,7 @@ const DEFAULT_SERVICES_SEED: Service[] = [
         imageDetail: '/gallery/solo5.webp',
         imageAction: '/gallery/solo1.webp',
         isBestSelling: false,
+        isVisible: true,
         order: 3
     },
     {
@@ -97,6 +101,7 @@ const DEFAULT_SERVICES_SEED: Service[] = [
         imageDetail: '/gallery/group2.webp',
         imageAction: '/gallery/group3.webp',
         isBestSelling: false,
+        isVisible: true,
         order: 4
     },
     {
@@ -117,6 +122,7 @@ const DEFAULT_SERVICES_SEED: Service[] = [
         imageDetail: '/gallery/solo3.webp',
         imageAction: '/gallery/solo4.webp',
         isBestSelling: false,
+        isVisible: true,
         order: 5
     },
     {
@@ -137,6 +143,7 @@ const DEFAULT_SERVICES_SEED: Service[] = [
         imageDetail: '/gallery/group5.webp',
         imageAction: '/gallery/group1.webp',
         isBestSelling: false,
+        isVisible: true,
         order: 6
     },
     {
@@ -157,6 +164,7 @@ const DEFAULT_SERVICES_SEED: Service[] = [
         imageDetail: '/gallery/group3.webp',
         imageAction: '/gallery/group4.webp',
         isBestSelling: false,
+        isVisible: true,
         order: 7
     }
 ];
@@ -183,6 +191,7 @@ const ServicesManagement = ({ showToast }: ServicesManagementProps) => {
         imageDetail: '',
         imageAction: '',
         isBestSelling: false,
+        isVisible: true,
         order: 0
     });
 
@@ -289,6 +298,7 @@ const ServicesManagement = ({ showToast }: ServicesManagementProps) => {
             imageDetail: '',
             imageAction: '',
             isBestSelling: false,
+            isVisible: true,
             order: services.length
         });
         setEditingId(null);
@@ -475,6 +485,17 @@ const ServicesManagement = ({ showToast }: ServicesManagementProps) => {
                                     <span className="slider round"></span>
                                 </label>
                                 <span className="toggle-label" style={{ marginLeft: '10px' }}>Best Selling Badge</span>
+                            </div>
+                            <div className="form-group-toggle" style={{ display: 'flex', alignItems: 'center', marginTop: '2rem' }}>
+                                <label className="switch">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.isVisible}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, isVisible: e.target.checked }))}
+                                    />
+                                    <span className="slider round"></span>
+                                </label>
+                                <span className="toggle-label" style={{ marginLeft: '10px' }}>Visible (Show on Site)</span>
                             </div>
                         </div>
 
