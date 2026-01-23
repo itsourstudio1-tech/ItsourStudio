@@ -13,6 +13,9 @@ import ReportManagement from '../components/admin/ReportManagement';
 import NotificationHub from '../components/admin/NotificationHub';
 import NotificationHistory from '../components/admin/NotificationHistory';
 import SalesLedger from '../components/admin/SalesLedger';
+import WalkInModal from '../components/admin/WalkInModal';
+import { UserPlus } from 'lucide-react';
+import '../components/admin/FloatingTimer.css';
 
 
 interface Booking {
@@ -77,6 +80,35 @@ const AdminDashboard = () => {
         dayBookings: Booking[];
     }>({ show: false, date: null, type: null, dayBookings: [] });
     const [blockReason, setBlockReason] = useState('');
+    const [isWalkInOpen, setIsWalkInOpen] = useState(false);
+
+    // Global Timer State for Walk-Ins
+    const [activeTimer, setActiveTimer] = useState<{
+        endTime: number;
+        clientName: string;
+        isRunning: boolean;
+    } | null>(null);
+
+    // Minimize/Floating Timer Logic
+    const [timerString, setTimerString] = useState("00:00");
+    useEffect(() => {
+        let interval: any;
+        if (activeTimer && activeTimer.isRunning) {
+            interval = setInterval(() => {
+                const now = Date.now();
+                const diff = activeTimer.endTime - now;
+                if (diff <= 0) {
+                    setTimerString("00:00");
+                    // Optionally alert or stop
+                } else {
+                    const minutes = Math.floor(diff / 60000);
+                    const seconds = Math.floor((diff % 60000) / 1000);
+                    setTimerString(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+                }
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [activeTimer]);
 
     // Analytics Calculations
     const analyticsData = useMemo(() => {
@@ -978,7 +1010,27 @@ const AdminDashboard = () => {
                         <h1 className="admin-title">Admin Dashboard</h1>
                         <p className="admin-subtitle">Manage bookings, gallery, and site content</p>
                     </div>
-                    <NotificationHub onViewAll={() => handleTabChange('notifications')} onNavigate={handleTabChange} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <button
+                            onClick={() => setIsWalkInOpen(true)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                background: '#3b82f6',
+                                color: 'white',
+                                border: 'none',
+                                padding: '8px 16px',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                fontWeight: 600
+                            }}
+                        >
+                            <UserPlus size={18} />
+                            <span>Walk In</span>
+                        </button>
+                        <NotificationHub onViewAll={() => handleTabChange('notifications')} onNavigate={handleTabChange} />
+                    </div>
                 </header>
 
                 {activeTab === 'analytics' && (
@@ -1739,6 +1791,30 @@ const AdminDashboard = () => {
                         {selectedImage && <img src={selectedImage} alt="Payment Proof" />}
                     </div>
                 </div>
+
+                {/* Walk In Modal */}
+                <WalkInModal
+                    isOpen={isWalkInOpen}
+                    onClose={() => setIsWalkInOpen(false)}
+                    showToast={showToast}
+                    activeTimer={activeTimer}
+                    setActiveTimer={setActiveTimer}
+                />
+
+                {/* Minimized Floating Timer */}
+                {!isWalkInOpen && activeTimer && activeTimer.isRunning && (
+                    <div
+                        className="floating-timer-widget"
+                        onClick={() => setIsWalkInOpen(true)}
+                        title="Click to expand"
+                    >
+                        <div className="ft-loader"></div>
+                        <div className="ft-content">
+                            <span className="ft-time">{timerString}</span>
+                            <span className="ft-client">{activeTimer.clientName}</span>
+                        </div>
+                    </div>
+                )}
 
                 {/* Calendar Action Modal */}
                 <div className={`admin-modal-overlay ${calendarModal.show ? 'active' : ''}`} onClick={() => setCalendarModal({ ...calendarModal, show: false })}>
