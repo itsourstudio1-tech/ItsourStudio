@@ -1,3 +1,5 @@
+/* ... existing styles ... */
+
 .notification-hub {
     position: relative;
     display: flex;
@@ -108,6 +110,8 @@
     transition: background 0.2s;
     position: relative;
     text-align: left;
+    align-items: center;
+    /* Ensure alignment */
 }
 
 .notification-item:hover {
@@ -171,6 +175,12 @@
     right: 12px;
 }
 
+/* Move unread dot when delete button might appear */
+.notification-item:hover .unread-dot {
+    opacity: 0;
+    /* Hide dot on hover to show delete button clearly */
+}
+
 .delete-notification-btn {
     position: absolute;
     top: 50%;
@@ -196,12 +206,6 @@
     color: #ef4444;
 }
 
-/* Move unread dot when delete button might appear */
-.notification-item:hover .unread-dot {
-    opacity: 0;
-    /* Hide dot on hover to show delete button clearly */
-}
-
 .notification-footer {
     padding: 12px;
     text-align: center;
@@ -221,4 +225,137 @@
 
 .notification-footer button:hover {
     color: #1e293b;
+}
+
+/* Modal Styles */
+.notification-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+    animation: fadeIn 0.2s ease-out;
+}
+
+.notification-modal-content {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 16px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+    animation: scaleIn 0.2s ease-out;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.notification-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.notification-modal-close:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.notification-modal-header {
+    padding: 24px 24px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.notification-modal-icon {
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.notification-modal-title {
+    margin: 0 0 4px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    padding-right: 24px;
+}
+
+.notification-modal-time {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.notification-modal-body {
+    padding: 24px;
+    color: #334155;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.notification-modal-footer {
+    padding: 16px 24px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.notification-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.notification-action-btn:hover {
+    background: #1d4ed8;
+}
+
+/* Utility Colors (re-added if tool removed them, just in case) */
+.text-blue-500 {
+    color: #3b82f6;
+}
+
+.text-amber-500 {
+    color: #f59e0b;
+}
+
+.text-slate-500 {
+    color: #64748b;
 }
