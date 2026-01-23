@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, storage, auth } from '../firebase';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, where, getDocs } from 'firebase/firestore';
@@ -14,6 +14,7 @@ import NotificationHub from '../components/admin/NotificationHub';
 import NotificationHistory from '../components/admin/NotificationHistory';
 import SalesLedger from '../components/admin/SalesLedger';
 import WalkInModal from '../components/admin/WalkInModal';
+import InvoiceModal from '../components/admin/InvoiceModal';
 import { UserPlus } from 'lucide-react';
 import '../components/admin/FloatingTimer.css';
 
@@ -81,6 +82,22 @@ const AdminDashboard = () => {
     }>({ show: false, date: null, type: null, dayBookings: [] });
     const [blockReason, setBlockReason] = useState('');
     const [isWalkInOpen, setIsWalkInOpen] = useState(false);
+
+    // Invoice State
+    const [selectedInvoiceBooking, setSelectedInvoiceBooking] = useState<Booking | null>(null);
+
+    // Sync selectedInvoiceBooking with live bookings data
+    useEffect(() => {
+        if (selectedInvoiceBooking) {
+            const liveBooking = bookings.find(b => b.id === selectedInvoiceBooking.id);
+            if (liveBooking) {
+                // Check if meaningful data changed to avoid unnecessary re-renders (optional but good practice)
+                // For simplicity and ensuring updates, we just set it. React handles strict equality checks on primitives, 
+                // but for objects it will trigger update. That is what we want.
+                setSelectedInvoiceBooking(liveBooking);
+            }
+        }
+    }, [bookings]);
 
     // Global Timer State for Walk-Ins
     const [activeTimer, setActiveTimer] = useState<{
@@ -299,11 +316,11 @@ const AdminDashboard = () => {
     };
 
     // Toast Helper
-    const showToast = (type: 'success' | 'error', title: string, message: string) => {
+    const showToast = useCallback((type: 'success' | 'error', title: string, message: string) => {
         const id = Date.now() + Math.random();
         setToasts(prev => [...prev, { id, type, title, message }]);
         setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 5000);
-    };
+    }, []);
 
     // remove toast manually
     const removeToast = (id: number) => {
@@ -378,11 +395,14 @@ const AdminDashboard = () => {
 
 
     const processedBookings = bookings.filter(booking => {
+        if (!booking) return false;
         const term = searchTerm.toLowerCase();
-        const matchesSearch = booking.fullName.toLowerCase().includes(term) ||
-            booking.email.toLowerCase().includes(term) ||
-            booking.id.toLowerCase().includes(term) ||
-            (booking.referenceNumber?.toLowerCase().includes(term) ?? false);
+        const matchesSearch =
+            String(booking.fullName || '').toLowerCase().includes(term) ||
+            String(booking.email || '').toLowerCase().includes(term) ||
+            String(booking.id || '').toLowerCase().includes(term) ||
+            String(booking.referenceNumber || '').toLowerCase().includes(term);
+
         const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
         return matchesSearch && matchesStatus;
     }).sort((a, b) => {
@@ -1425,7 +1445,13 @@ const AdminDashboard = () => {
                                     </thead>
                                     <tbody>
                                         {paginatedBookings.map((booking) => (
-                                            <tr key={booking.id} className={`booking-row status-${booking.status}`}>
+                                            <tr
+                                                key={booking.id}
+                                                className={`booking-row status-${booking.status}`}
+                                                onClick={() => setSelectedInvoiceBooking(booking)}
+                                                style={{ cursor: 'pointer' }}
+                                                title="Click to view invoice"
+                                            >
                                                 <td data-label="Client">
                                                     <div style={{ fontWeight: 500 }}>{booking.fullName}</div>
                                                     {booking.referenceNumber && (
@@ -1799,6 +1825,21 @@ const AdminDashboard = () => {
                     showToast={showToast}
                     activeTimer={activeTimer}
                     setActiveTimer={setActiveTimer}
+                />
+
+                {/* Invoice Modal */}
+                <InvoiceModal
+                    isOpen={!!selectedInvoiceBooking}
+                    onClose={() => setSelectedInvoiceBooking(null)}
+                    booking={selectedInvoiceBooking}
+                    onUpdate={() => {
+                        // Refresh logic if needed, but onSnapshot handles it automatically?
+                        // Actually onSnapshot keeps 'bookings' fresh, but 'selectedInvoiceBooking' needs to be updated or re-fetched?
+                        // InvoiceModal updates Firestore directly, causing onSnapshot to fire.
+                        // But 'selectedInvoiceBooking' is local state copy. We should close it or update it.
+                        // Simple fix: Close it for now, or let onSnapshot update the list below.
+                        // Better: Since the modal closes after payment (based on my implementation), we are good.
+                    }}
                 />
 
                 {/* Minimized Floating Timer */}

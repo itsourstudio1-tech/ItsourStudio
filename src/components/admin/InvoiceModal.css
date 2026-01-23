@@ -1,0 +1,450 @@
+/* Invoice Modal Overlay */
+.invoice-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.85);
+    /* Darker, more premium backdrop */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1200;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease;
+    padding: 1rem;
+}
+
+/* Main Container */
+.invoice-container {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    /* Wide for desktop */
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.invoice-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* Desktop Landscape Mode */
+@media (min-width: 1024px) {
+    .invoice-layout {
+        flex-direction: row;
+        align-items: flex-start;
+        overflow-y: visible;
+    }
+
+    .invoice-paper {
+        flex: 1;
+        /* Scroll paper if it gets too long on small screens, but usually it fits */
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+
+    .invoice-sidebar {
+        width: 320px;
+        position: sticky;
+        top: 0;
+    }
+}
+
+/* Floating Close Button */
+.invoice-close-floating {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.invoice-close-floating:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+/* --- LEFT PANEL: The Invoice Paper --- */
+.invoice-paper {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 3rem;
+    /* Generous padding like real paper */
+    color: #334155;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Paper Header */
+.paper-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 2rem;
+}
+
+.brand-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.brand-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+}
+
+.brand-info h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.ref-number {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-family: monospace;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.invoice-meta {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.meta-group label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.meta-group span {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+/* Paper Body */
+.paper-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.client-section h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 0.75rem;
+}
+
+.client-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.client-contact,
+.service-date {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin: 0.25rem 0 0 0;
+}
+
+/* Items Table */
+.items-table-wrapper {
+    margin-top: 1rem;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.items-table th {
+    text-align: left;
+    padding: 1rem 0;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+    border-bottom: 1px solid #e2e8f0;
+    font-weight: 600;
+}
+
+.th-amount {
+    text-align: right !important;
+}
+
+.items-table td {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    vertical-align: top;
+}
+
+.items-table .item-name {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.items-table .item-sub {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+}
+
+.items-table .amount {
+    text-align: right;
+    font-weight: 600;
+    font-family: monospace;
+    /* Aligns numbers nicely */
+    font-size: 1rem;
+}
+
+.items-table tfoot td {
+    border-top: 2px solid #0f172a;
+    border-bottom: none;
+    padding-top: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.items-table tfoot td:last-child {
+    text-align: right;
+}
+
+/* Paper Footer */
+.paper-footer {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-top: auto;
+    padding-top: 2rem;
+}
+
+.contact-support {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* --- RIGHT PANEL: Sidebar Controls --- */
+.invoice-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.sidebar-card {
+    background: white;
+    /* OR #1e293b for dark sidebar? sticking to light for cleanliness */
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card h3,
+.actions-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    color: #0f172a;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    color: #64748b;
+}
+
+.divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 1rem 0;
+}
+
+.balance-row {
+    margin-bottom: 1.5rem;
+}
+
+.balance-row span:first-child {
+    font-weight: 600;
+    color: #334155;
+    font-size: 1.1rem;
+}
+
+.balance-row span:last-child {
+    font-weight: 800;
+    font-size: 1.5rem;
+}
+
+.text-success {
+    color: #10b981;
+}
+
+.text-danger {
+    color: #ef4444;
+}
+
+/* Status Badge */
+.status-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+}
+
+.status-badge.paid {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.status-badge.pending {
+    background: #fff7ed;
+    color: #ea580c;
+    border: 1px dashed #fdba74;
+}
+
+/* Actions Card */
+.actions-card p {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+
+.payment-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.btn-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s;
+    font-size: 0.95rem;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+}
+
+.btn-action.cash {
+    background: #0f172a;
+    color: white;
+}
+
+.btn-action.gcash {
+    background: #2563eb;
+    color: white;
+}
+
+/* Print Button */
+.btn-secondary {
+    width: 100%;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+/* PRINT STYLES */
+@media print {
+
+    /* Hide everything except print content */
+    body * {
+        visibility: hidden;
+    }
+
+    /* Target the printable area */
+    #printable-invoice,
+    #printable-invoice * {
+        visibility: visible;
+    }
+
+    /* Position the printable area */
+    #printable-invoice {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        /* Reset padding to default browser print margins or custom */
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    /* Hide the sidebar and overlay backgrounds */
+    .invoice-overlay {
+        background: none;
+        backdrop-filter: none;
+        position: static;
+        display: block;
+        width: auto;
+        height: auto;
+    }
+
+    .invoice-sidebar,
+    .invoice-close-floating,
+    .invoice-container {
+        display: none;
+    }
+}
