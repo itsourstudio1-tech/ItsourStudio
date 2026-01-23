@@ -1,0 +1,224 @@
+.notification-hub {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.notification-bell {
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    padding: 8px;
+    color: #64748b;
+    transition: color 0.2s;
+}
+
+.notification-bell:hover {
+    color: #1e293b;
+    background: #f1f5f9;
+    border-radius: 50%;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 99px;
+    border: 2px solid white;
+}
+
+.notification-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 380px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    z-index: 50;
+    margin-top: 10px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.notification-header {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.mark-read-btn {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.mark-read-btn:hover {
+    text-decoration: underline;
+}
+
+.notification-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.empty-notifications {
+    padding: 32px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.notification-item {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid #f8fafc;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+    text-align: left;
+}
+
+.notification-item:hover {
+    background: #f8fafc;
+}
+
+.notification-item.unread {
+    background: #f0f9ff;
+}
+
+.notification-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+    border: 1px solid #e2e8f0;
+}
+
+.notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.notification-message {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 4px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.notification-time {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.unread-dot {
+    width: 8px;
+    height: 8px;
+    background: #3b82f6;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 12px;
+}
+
+.delete-notification-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 8px;
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 1.25rem;
+    line-height: 1;
+    padding: 4px;
+    opacity: 0;
+    transition: opacity 0.2s, color 0.2s;
+    z-index: 10;
+}
+
+.notification-item:hover .delete-notification-btn {
+    opacity: 1;
+}
+
+.delete-notification-btn:hover {
+    color: #ef4444;
+}
+
+/* Move unread dot when delete button might appear */
+.notification-item:hover .unread-dot {
+    opacity: 0;
+    /* Hide dot on hover to show delete button clearly */
+}
+
+.notification-footer {
+    padding: 12px;
+    text-align: center;
+    border-top: 1px solid #f1f5f9;
+}
+
+.notification-footer button {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    padding: 4px;
+    font-size: 0.9rem;
+}
+
+.notification-footer button:hover {
+    color: #1e293b;
+}

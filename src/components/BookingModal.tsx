@@ -699,6 +699,17 @@ const BookingModal = () => {
                 createdAt: serverTimestamp()
             });
 
+            // Create Admin Notification
+            await addDoc(collection(db, 'notifications'), {
+                type: 'booking',
+                title: 'New Booking Received',
+                message: `${sanitizedFullName} booked ${selectedPackage?.name || formData.package} on ${formData.date} at ${formData.time}`,
+                relatedId: docRef.id,
+                timestamp: serverTimestamp(),
+                isRead: false,
+                link: 'bookings'
+            });
+
             // Send Email Notification
             try {
                 await fetch('/api/send-email', {
