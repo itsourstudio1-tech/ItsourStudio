@@ -64,7 +64,8 @@
     "react-colorful": "^5.6.1",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.6",
-    "use-sound": "^5.0.0"
+    "use-sound": "^5.0.0",
+    "xlsx": "^0.18.5"
   },
   "build": {
     "appId": "com.itsourstudio.admin",
