@@ -232,6 +232,39 @@ const PatchNotes = () => {
                         </FeatureCard>
 
                         <FeatureCard
+                            title="Centralized Notification Hub"
+                            isFeatured
+                            icon={
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                </svg>
+                            }
+                            badges={[<span key="new" className="badge new">NEW</span>]}
+                        >
+                            <ul className="change-list">
+                                <li><strong>Unified Alert Center</strong>
+                                    <ul>
+                                        <li>Aggregates all system alerts, booking updates, and reports in a single dropdown.</li>
+                                        <li>Real-time "unread" badge count and instant updates.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Interactive Details</strong>
+                                    <ul>
+                                        <li>Clicking any notification opens a detailed popup modal.</li>
+                                        <li>Smart redirection links (e.g., straight to the relevant Booking or Report).</li>
+                                    </ul>
+                                </li>
+                                <li><strong>History Management</strong>
+                                    <ul>
+                                        <li>Dedicated "See All" history page for full archives.</li>
+                                        <li>"Mark All Read" and deletion controls for easy cleanup.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </FeatureCard>
+
+                        <FeatureCard
                             title="Dynamic Admin Controls"
                             icon={
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -502,19 +535,7 @@ const PatchNotes = () => {
 
 
 
-                        <FeatureCard
-                            title="Unified Notification Center"
-                            isPlanned
-                            icon={
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                                </svg>
-                            }
-                            badges={[<span key="planned" className="badge planned">PLANNED</span>]}
-                        >
-                            <p className="planned-note">A centralized notification hub within the Admin Dashboard to aggregate all system alerts, booking updates, and reports in a single view.</p>
-                        </FeatureCard>
+
 
                         <FeatureCard
                             title="Audit & Walk-in System"

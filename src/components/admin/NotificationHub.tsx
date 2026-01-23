@@ -138,7 +138,7 @@ const NotificationHub = ({ onViewAll, onNavigate }: NotificationHubProps) => {
     return (
         <div className="notification-hub" ref={dropdownRef}>
             <button className="notification-bell" onClick={() => setIsOpen(!isOpen)}>
-                <Bell size={20} />
+                <Bell size={24} />
                 {unreadCount > 0 && <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
             </button>
 
