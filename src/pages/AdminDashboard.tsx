@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { db, storage, auth } from '../firebase';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -50,6 +51,7 @@ interface Toast {
 const ITEMS_PER_PAGE = 10;
 
 const AdminDashboard = () => {
+    const navigate = useNavigate();
     // Data States
     const [bookings, setBookings] = useState<Booking[]>([]);
 
@@ -255,8 +257,12 @@ const AdminDashboard = () => {
     }, []);
 
     const handleTabChange = (tab: any) => {
-        setActiveTab(tab);
-        setIsSidebarOpen(false);
+        if (tab === 'patch-notes') {
+            navigate('/patch-notes');
+        } else {
+            setActiveTab(tab);
+            setIsSidebarOpen(false);
+        }
     };
 
     // Toast Helper

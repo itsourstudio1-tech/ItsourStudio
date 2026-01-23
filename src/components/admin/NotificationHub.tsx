@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { db } from '../../firebase';
 import { collection, query, orderBy, onSnapshot, limit, where, writeBatch, doc } from 'firebase/firestore';
 import { Bell, Calendar, AlertTriangle } from 'lucide-react';
+import NotificationDetailsModal from './NotificationDetailsModal';
 import './NotificationHub.css'; // We'll create this CSS
 
 interface Notification {
@@ -24,6 +25,7 @@ const NotificationHub = ({ onViewAll, onNavigate }: NotificationHubProps) => {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
+    const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Fetch notifications
@@ -106,11 +108,9 @@ const NotificationHub = ({ onViewAll, onNavigate }: NotificationHubProps) => {
             }
         }
 
-        // Navigation logic if needed
-        if (notification.link) {
-            onNavigate(notification.link);
-            setIsOpen(false);
-        }
+        // Open details modal
+        setSelectedNotification(notification);
+        setIsOpen(false);
     };
 
     const formatTime = (timestamp: any) => {
@@ -174,6 +174,12 @@ const NotificationHub = ({ onViewAll, onNavigate }: NotificationHubProps) => {
                     </div>
                 </div>
             )}
+
+            <NotificationDetailsModal
+                notification={selectedNotification}
+                onClose={() => setSelectedNotification(null)}
+                onNavigate={onNavigate}
+            />
         </div>
     );
 };

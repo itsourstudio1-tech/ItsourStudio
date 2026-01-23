@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { db } from '../../firebase';
 import { collection, query, orderBy, limit, startAfter, getDocs, doc, updateDoc, writeBatch, where, deleteDoc } from 'firebase/firestore';
 import { Bell, Calendar, AlertTriangle, Trash2 } from 'lucide-react';
+import NotificationDetailsModal from './NotificationDetailsModal';
 import './NotificationHub.css'; // Reusing hub styles where applicable + custom styles
 
 interface Notification {
@@ -23,6 +24,7 @@ const NotificationHistory = ({ onNavigate }: NotificationHistoryProps) => {
     const [loading, setLoading] = useState(true);
     const [lastDoc, setLastDoc] = useState<any>(null);
     const [hasMore, setHasMore] = useState(true);
+    const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
 
     // Initial Load - Realtime? Or just one-off?
     // History pages are usually fine to be one-off, but realtime is nicer.
@@ -178,7 +180,7 @@ const NotificationHistory = ({ onNavigate }: NotificationHistoryProps) => {
                                 }}
                                 onClick={() => {
                                     if (!n.isRead) handleMarkAsRead(n.id);
-                                    if (n.link) onNavigate(n.link);
+                                    setSelectedNotification(n);
                                 }}
                             >
                                 <div style={{
@@ -239,27 +241,32 @@ const NotificationHistory = ({ onNavigate }: NotificationHistoryProps) => {
             )
             }
 
-            {
-                hasMore && !loading && (
-                    <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-                        <button
-                            onClick={fetchMore}
-                            style={{
-                                padding: '0.75rem 2rem',
-                                background: '#f8fafc',
-                                border: '1px solid #cbd5e1',
-                                borderRadius: '6px',
-                                color: '#475569',
-                                cursor: 'pointer',
-                                fontWeight: 500
-                            }}
-                        >
-                            Load More
-                        </button>
-                    </div>
-                )
+            {hasMore && !loading && (
+                <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                    <button
+                        onClick={fetchMore}
+                        style={{
+                            padding: '0.75rem 2rem',
+                            background: '#f8fafc',
+                            border: '1px solid #cbd5e1',
+                            borderRadius: '6px',
+                            color: '#475569',
+                            cursor: 'pointer',
+                            fontWeight: 500
+                        }}
+                    >
+                        Load More
+                    </button>
+                </div>
+            )
             }
-        </div >
+
+            <NotificationDetailsModal
+                notification={selectedNotification}
+                onClose={() => setSelectedNotification(null)}
+                onNavigate={onNavigate}
+            />
+        </div>
     );
 };
 
