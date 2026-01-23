@@ -114,7 +114,7 @@ function renderGallery(filter = 'all') {
     galleryItem.style.animationDelay = `${index * 0.1}s`;
 
     galleryItem.innerHTML = `
-            <img src="${item.image}" alt="${item.title}" loading="lazy">
+            <img src="${item.image}" alt="${item.title}">
             <div class="gallery-overlay">
                 <div class="gallery-info">
                     <p class="gallery-category">${item.category}</p>
@@ -360,19 +360,6 @@ if (footerText) {
 // PERFORMANCE OPTIMIZATIONS
 // ===================================
 
-// Lazy loading images
-if ('loading' in HTMLImageElement.prototype) {
-  const images = document.querySelectorAll('img[loading="lazy"]');
-  images.forEach(img => {
-    const imgEl = img as HTMLImageElement;
-    imgEl.src = imgEl.src;
-  });
-} else {
-  // Fallback for browsers that don't support lazy loading
-  const script = document.createElement('script');
-  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js';
-  document.body.appendChild(script);
-}
 
 // Debounce scroll events
 function debounce(func: Function, wait: number) {

@@ -455,7 +455,7 @@ const GalleryManagement = ({ showToast }: GalleryManagementProps) => {
                                     <div className="gallery-grid-content">
                                         {items.map(item => (
                                             <div key={item.id} className="gallery-grid-item">
-                                                <img src={item.src} alt={item.alt} loading="lazy" />
+                                                <img src={item.src} alt={item.alt} />
                                                 <div className={`gallery-item-status ${item.showInCarousel ? 'active' : ''}`}>
                                                     {item.showInCarousel ? 'In Carousel' : 'Hidden'}
                                                 </div>
