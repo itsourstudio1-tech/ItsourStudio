@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { db } from '../firebase';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import LazyImage from '../components/LazyImage';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 
 interface Service {
     id: string;
@@ -14,6 +13,7 @@ interface Service {
     imageDetail: string;
     imageAction: string;
     isBestSelling: boolean;
+    isVisible?: boolean;
     order?: number;
 }
 
@@ -34,7 +34,8 @@ const DEFAULT_SERVICES: Service[] = [
         imageMain: '/gallery/solo1.webp',
         imageDetail: '/gallery/solo2.webp',
         imageAction: '/gallery/solo3.webp',
-        isBestSelling: false
+        isBestSelling: false,
+        isVisible: true,
     },
     {
         id: 'basic',
@@ -53,7 +54,8 @@ const DEFAULT_SERVICES: Service[] = [
         imageMain: '/gallery/duo1.webp',
         imageDetail: '/gallery/duo2.webp',
         imageAction: '/gallery/duo3.webp',
-        isBestSelling: true
+        isBestSelling: true,
+        isVisible: true,
     },
     {
         id: 'transfer',
@@ -71,7 +73,8 @@ const DEFAULT_SERVICES: Service[] = [
         imageMain: '/gallery/solo4.webp',
         imageDetail: '/gallery/solo5.webp',
         imageAction: '/gallery/solo1.webp',
-        isBestSelling: false
+        isBestSelling: false,
+        isVisible: true,
     },
     {
         id: 'standard',
@@ -90,7 +93,8 @@ const DEFAULT_SERVICES: Service[] = [
         imageMain: '/gallery/group1.webp',
         imageDetail: '/gallery/group2.webp',
         imageAction: '/gallery/group3.webp',
-        isBestSelling: false
+        isBestSelling: false,
+        isVisible: true,
     },
     {
         id: 'birthday',
@@ -109,7 +113,8 @@ const DEFAULT_SERVICES: Service[] = [
         imageMain: '/gallery/solo2.webp',
         imageDetail: '/gallery/solo3.webp',
         imageAction: '/gallery/solo4.webp',
-        isBestSelling: false
+        isBestSelling: false,
+        isVisible: true,
     },
     {
         id: 'family',
@@ -128,7 +133,8 @@ const DEFAULT_SERVICES: Service[] = [
         imageMain: '/gallery/group4.webp',
         imageDetail: '/gallery/group5.webp',
         imageAction: '/gallery/group1.webp',
-        isBestSelling: false
+        isBestSelling: false,
+        isVisible: true,
     },
     {
         id: 'barkada',
@@ -147,7 +153,8 @@ const DEFAULT_SERVICES: Service[] = [
         imageMain: '/gallery/group2.webp',
         imageDetail: '/gallery/group3.webp',
         imageAction: '/gallery/group4.webp',
-        isBestSelling: false
+        isBestSelling: false,
+        isVisible: true,
     }
 ];
 
@@ -197,7 +204,7 @@ const ServiceShowcase = ({ service }: { service: Service }) => {
         return (
             <div className="service-showcase">
                 <div className="showcase-single">
-                    <LazyImage src={service.imageMain} alt={`${service.title}`} />
+                    <img src={service.imageMain} alt={`${service.title}`} />
                 </div>
             </div>
         );
@@ -214,15 +221,52 @@ const ServiceShowcase = ({ service }: { service: Service }) => {
                 onTouchEnd={() => setIsPaused(false)}
             >
                 <div className="showcase-item main">
-                    <LazyImage src={service.imageMain} alt={`${service.title} main`} />
+                    <img src={service.imageMain} alt={`${service.title} main`} />
                 </div>
                 <div className="showcase-item">
-                    <LazyImage src={service.imageDetail} alt={`${service.title} detail`} />
+                    <img src={service.imageDetail} alt={`${service.title} detail`} />
                 </div>
                 <div className="showcase-item">
-                    <LazyImage src={service.imageAction} alt={`${service.title} action`} />
+                    <img src={service.imageAction} alt={`${service.title} action`} />
                 </div>
             </div>
+        </div>
+    );
+};
+
+const TextOnlyFeatures = ({ features }: { features: string[] }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const LIMIT = 6; // Adjusted for 3 rows x 2 columns
+
+    const visibleFeatures = isExpanded ? features : features.slice(0, LIMIT);
+    const hasMore = features.length > LIMIT;
+
+    return (
+        <div style={{ width: '100%' }}>
+            <ul className="service-features-large">
+                {visibleFeatures.map((feature, idx) => (
+                    <li key={idx}>{feature}</li>
+                ))}
+            </ul>
+            {hasMore && (
+                <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="btn-text-only-toggle"
+                    style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--color-terracotta)',
+                        fontSize: '1rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        display: 'block',
+                        margin: '1rem auto 2rem',
+                        textDecoration: 'underline'
+                    }}
+                >
+                    {isExpanded ? 'See Less' : 'See All +'}
+                </button>
+            )}
         </div>
     );
 };
@@ -239,61 +283,72 @@ const Services = () => {
 
     // Initial load: Fetch services from Firestore
     useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                const q = query(collection(db, 'services'), orderBy('order', 'asc'));
-                const snapshot = await getDocs(q);
-                if (!snapshot.empty) {
-                    const fetchedServices = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data()
-                    })) as Service[];
-                    setServices(fetchedServices);
-                }
-            } catch (err) {
-                console.error("Failed to fetch services, using defaults:", err);
-            } finally {
-                setLoading(false);
+        const q = query(collection(db, 'services'), orderBy('order', 'asc'));
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            if (!snapshot.empty) {
+                const fetchedServices = snapshot.docs.map((doc: any) => ({
+                    id: doc.id,
+                    ...doc.data()
+                })) as Service[];
+
+                // Filter out hidden services
+                // If isVisible is undefined (legacy), default to true
+                const visibleServices = fetchedServices.filter(s => s.isVisible !== false);
+                setServices(visibleServices);
+            } else {
+                setServices(DEFAULT_SERVICES);
             }
-        };
-        fetchServices();
+            setLoading(false);
+        }, (error: any) => {
+            console.error("Failed to fetch services, using defaults:", error);
+            setLoading(false);
+            // setServices(DEFAULT_SERVICES); // Optional: fallback to defaults on error
+        });
+
+        return () => unsubscribe();
     }, []);
 
 
 
     // Check if mobile for conditional rendering
-    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        // Initial check
+        checkMobile();
+
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         if (loading || services.length === 0) return;
 
-        let scrollTimeout: ReturnType<typeof setTimeout>;
-
         const handleScroll = () => {
-            // Debounce scroll handler for performance
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                const windowHeight = window.innerHeight;
+            if (isDragging) return;
 
-                // Find the section that is currently most visible
-                services.forEach((service, index) => {
-                    const element = document.getElementById(service.id);
-                    if (element) {
-                        const rect = element.getBoundingClientRect();
-                        // If the top of the section is within the viewport
-                        if (rect.top >= -windowHeight / 2 && rect.top < windowHeight / 2) {
-                            if (!isDragging) {
-                                setSliderValue((index / (services.length - 1)) * 100);
-                            }
-                        }
-                    }
-                });
-            }, 100); // 100ms debounce
+            const viewportMiddle = window.innerHeight / 2;
+
+            // Find the section that currently occupies the middle of the screen
+            const activeIndex = services.findIndex(service => {
+                const element = document.getElementById(service.id);
+                if (!element) return false;
+                const rect = element.getBoundingClientRect();
+                return rect.top <= viewportMiddle && rect.bottom >= viewportMiddle;
+            });
+
+            if (activeIndex !== -1) {
+                setSliderValue((activeIndex / (services.length - 1)) * 100);
+            }
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => {
-            clearTimeout(scrollTimeout);
             window.removeEventListener('scroll', handleScroll);
         };
     }, [isDragging, loading, services]);
@@ -399,38 +454,47 @@ const Services = () => {
             )}
 
             {/* Service Sections */}
-            {services.map((service, index) => (
-                <section
-                    key={service.id}
-                    id={service.id}
-                    className={`service-fullscreen ${index % 2 !== 0 ? 'alt-bg' : ''}`}
-                >
-                    <div className={`service-split ${index % 2 !== 0 ? 'reverse' : ''}`}>
-                        <div className="service-info">
-                            {service.isBestSelling && <div className="featured-badge">Best Selling</div>}
-                            <h2 className="service-title-large">{service.title}</h2>
-                            <div className="service-price-large">{service.price}</div>
-                            <div className="service-duration-large">{service.duration}</div>
-                            <p className="service-desc-large">{service.description}</p>
+            {services.map((service, index) => {
+                const hasImages = Boolean(service.imageMain || service.imageDetail || service.imageAction);
+                return (
+                    <section
+                        key={service.id}
+                        id={service.id}
+                        className={`service-fullscreen ${index % 2 !== 0 ? 'alt-bg' : ''}`}
+                    >
+                        <div className={`service-split ${index % 2 !== 0 ? 'reverse' : ''} ${!hasImages ? 'text-only' : ''}`}>
+                            <div className="service-info">
+                                {service.isBestSelling && <div className="featured-badge">Best Selling</div>}
+                                <h2 className="service-title-large">{service.title}</h2>
+                                {(service.price && service.price !== '0' && service.price !== '₱0') && (
+                                    <div className="service-price-large">{service.price}</div>
+                                )}
+                                <div className="service-duration-large">{service.duration}</div>
+                                <p className="service-desc-large">{service.description}</p>
 
-                            <ul className="service-features-large">
-                                {service.features.map((feature, idx) => (
-                                    <li key={idx}>{feature}</li>
-                                ))}
-                            </ul>
+                                {hasImages ? (
+                                    <ul className="service-features-large">
+                                        {service.features.map((feature, idx) => (
+                                            <li key={idx}>{feature}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <TextOnlyFeatures features={service.features} />
+                                )}
 
-                            <button
-                                onClick={() => openBooking(service.id)}
-                                className="btn btn-primary btn-large"
-                            >
-                                Book This Package
-                            </button>
+                                <button
+                                    onClick={() => openBooking(service.id)}
+                                    className="btn btn-primary btn-large"
+                                >
+                                    Book This Package
+                                </button>
+                            </div>
+
+                            {hasImages && <ServiceShowcase service={service} />}
                         </div>
-
-                        <ServiceShowcase service={service} />
-                    </div>
-                </section>
-            ))}
+                    </section>
+                );
+            })}
         </div>
     );
 };
