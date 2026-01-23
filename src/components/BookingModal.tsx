@@ -647,12 +647,14 @@ const BookingModal = () => {
         try {
             let paymentProofUrl = '';
             if (paymentFile) {
-                // Upload directly to Firebase Storage
+                // Compress and upload to Firebase Storage
                 const { storage } = await import('../firebase');
                 const { ref, uploadBytes, getDownloadURL } = await import('firebase/storage');
+                const { compressImage } = await import('../utils/compressImage');
 
+                const compressedBlob = await compressImage(paymentFile);
                 const storageRef = ref(storage, `payment-proofs/${Date.now()}_${paymentFile.name}`);
-                await uploadBytes(storageRef, paymentFile);
+                await uploadBytes(storageRef, compressedBlob);
                 paymentProofUrl = await getDownloadURL(storageRef);
                 console.log(`File uploaded to Firebase Storage: ${paymentProofUrl}`);
             }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, storage, auth } from '../firebase';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, where, getDocs } from 'firebase/firestore';
@@ -12,6 +12,11 @@ import ContentManagement from '../components/admin/ContentManagement';
 import ReportManagement from '../components/admin/ReportManagement';
 import NotificationHub from '../components/admin/NotificationHub';
 import NotificationHistory from '../components/admin/NotificationHistory';
+import SalesLedger from '../components/admin/SalesLedger';
+import WalkInModal from '../components/admin/WalkInModal';
+import InvoiceModal from '../components/admin/InvoiceModal';
+import { UserPlus } from 'lucide-react';
+import '../components/admin/FloatingTimer.css';
 
 
 interface Booking {
@@ -65,7 +70,7 @@ const AdminDashboard = () => {
         revenue: 0
     });
 
-    const [activeTab, setActiveTab] = useState<'bookings' | 'feedbacks' | 'content' | 'users' | 'gallery' | 'calendar' | 'analytics' | 'bio_links' | 'reports' | 'notifications'>('analytics');
+    const [activeTab, setActiveTab] = useState<'bookings' | 'feedbacks' | 'content' | 'users' | 'gallery' | 'calendar' | 'analytics' | 'bio_links' | 'reports' | 'notifications' | 'sales'>('analytics');
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     const [unavailableDates, setUnavailableDates] = useState<Record<string, string>>({}); // date -> reason map
@@ -76,6 +81,51 @@ const AdminDashboard = () => {
         dayBookings: Booking[];
     }>({ show: false, date: null, type: null, dayBookings: [] });
     const [blockReason, setBlockReason] = useState('');
+    const [isWalkInOpen, setIsWalkInOpen] = useState(false);
+
+    // Invoice State
+    const [selectedInvoiceBooking, setSelectedInvoiceBooking] = useState<Booking | null>(null);
+
+    // Sync selectedInvoiceBooking with live bookings data
+    useEffect(() => {
+        if (selectedInvoiceBooking) {
+            const liveBooking = bookings.find(b => b.id === selectedInvoiceBooking.id);
+            if (liveBooking) {
+                // Check if meaningful data changed to avoid unnecessary re-renders (optional but good practice)
+                // For simplicity and ensuring updates, we just set it. React handles strict equality checks on primitives, 
+                // but for objects it will trigger update. That is what we want.
+                setSelectedInvoiceBooking(liveBooking);
+            }
+        }
+    }, [bookings]);
+
+    // Global Timer State for Walk-Ins
+    const [activeTimer, setActiveTimer] = useState<{
+        endTime: number;
+        clientName: string;
+        isRunning: boolean;
+    } | null>(null);
+
+    // Minimize/Floating Timer Logic
+    const [timerString, setTimerString] = useState("00:00");
+    useEffect(() => {
+        let interval: any;
+        if (activeTimer && activeTimer.isRunning) {
+            interval = setInterval(() => {
+                const now = Date.now();
+                const diff = activeTimer.endTime - now;
+                if (diff <= 0) {
+                    setTimerString("00:00");
+                    // Optionally alert or stop
+                } else {
+                    const minutes = Math.floor(diff / 60000);
+                    const seconds = Math.floor((diff % 60000) / 1000);
+                    setTimerString(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+                }
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [activeTimer]);
 
     // Analytics Calculations
     const analyticsData = useMemo(() => {
@@ -151,9 +201,25 @@ const AdminDashboard = () => {
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [reportSubject, setReportSubject] = useState('');
     const [reportMessage, setReportMessage] = useState('');
-    const [isSubmittingReport, setIsSubmittingReport] = useState(false);
     const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
     const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
+    const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+
+    // Welcome Popup / Patch Notification State
+    const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+
+    useEffect(() => {
+        const hasSeenUpdate = localStorage.getItem('admin_welcome_v1.2.2');
+        if (!hasSeenUpdate) {
+            setShowWelcomePopup(true);
+        }
+    }, []);
+
+    const handleCloseWelcome = () => {
+        localStorage.setItem('admin_welcome_v1.2.2', 'true');
+        setShowWelcomePopup(false);
+    };
+
 
     // Notification states
     const previousBookingCount = useRef<number>(0);
@@ -266,11 +332,11 @@ const AdminDashboard = () => {
     };
 
     // Toast Helper
-    const showToast = (type: 'success' | 'error', title: string, message: string) => {
+    const showToast = useCallback((type: 'success' | 'error', title: string, message: string) => {
         const id = Date.now() + Math.random();
         setToasts(prev => [...prev, { id, type, title, message }]);
         setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 5000);
-    };
+    }, []);
 
     // remove toast manually
     const removeToast = (id: number) => {
@@ -345,11 +411,14 @@ const AdminDashboard = () => {
 
 
     const processedBookings = bookings.filter(booking => {
+        if (!booking) return false;
         const term = searchTerm.toLowerCase();
-        const matchesSearch = booking.fullName.toLowerCase().includes(term) ||
-            booking.email.toLowerCase().includes(term) ||
-            booking.id.toLowerCase().includes(term) ||
-            (booking.referenceNumber?.toLowerCase().includes(term) ?? false);
+        const matchesSearch =
+            String(booking.fullName || '').toLowerCase().includes(term) ||
+            String(booking.email || '').toLowerCase().includes(term) ||
+            String(booking.id || '').toLowerCase().includes(term) ||
+            String(booking.referenceNumber || '').toLowerCase().includes(term);
+
         const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
         return matchesSearch && matchesStatus;
     }).sort((a, b) => {
@@ -913,6 +982,12 @@ const AdminDashboard = () => {
                         </button>
                     )}
                     {((sessionStorage.getItem('userRole') || localStorage.getItem('userRole')) === 'admin' || !(sessionStorage.getItem('userRole') || localStorage.getItem('userRole'))) && (
+                        <button className={`nav-item ${activeTab === 'sales' ? 'active' : ''}`} onClick={() => handleTabChange('sales')}>
+                            <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                            <span className="nav-label">Sales</span>
+                        </button>
+                    )}
+                    {((sessionStorage.getItem('userRole') || localStorage.getItem('userRole')) === 'admin' || !(sessionStorage.getItem('userRole') || localStorage.getItem('userRole'))) && (
                         <button className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => handleTabChange('calendar')}>
                             <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                             <span className="nav-label">Calendar</span>
@@ -971,7 +1046,27 @@ const AdminDashboard = () => {
                         <h1 className="admin-title">Admin Dashboard</h1>
                         <p className="admin-subtitle">Manage bookings, gallery, and site content</p>
                     </div>
-                    <NotificationHub onViewAll={() => handleTabChange('notifications')} onNavigate={handleTabChange} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <button
+                            onClick={() => setIsWalkInOpen(true)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                background: '#3b82f6',
+                                color: 'white',
+                                border: 'none',
+                                padding: '8px 16px',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                fontWeight: 600
+                            }}
+                        >
+                            <UserPlus size={18} />
+                            <span>Walk In</span>
+                        </button>
+                        <NotificationHub onViewAll={() => handleTabChange('notifications')} onNavigate={handleTabChange} />
+                    </div>
                 </header>
 
                 {activeTab === 'analytics' && (
@@ -1114,6 +1209,8 @@ const AdminDashboard = () => {
                 {activeTab === 'reports' && <ReportManagement showToast={showToast} />}
 
                 {activeTab === 'notifications' && <NotificationHistory onNavigate={handleTabChange} />}
+
+                {activeTab === 'sales' && <SalesLedger showToast={showToast} />}
 
 
                 {activeTab === 'calendar' && (
@@ -1364,7 +1461,13 @@ const AdminDashboard = () => {
                                     </thead>
                                     <tbody>
                                         {paginatedBookings.map((booking) => (
-                                            <tr key={booking.id} className={`booking-row status-${booking.status}`}>
+                                            <tr
+                                                key={booking.id}
+                                                className={`booking-row status-${booking.status}`}
+                                                onClick={() => setSelectedInvoiceBooking(booking)}
+                                                style={{ cursor: 'pointer' }}
+                                                title="Click to view invoice"
+                                            >
                                                 <td data-label="Client">
                                                     <div style={{ fontWeight: 500 }}>{booking.fullName}</div>
                                                     {booking.referenceNumber && (
@@ -1731,6 +1834,45 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
+                {/* Walk In Modal */}
+                <WalkInModal
+                    isOpen={isWalkInOpen}
+                    onClose={() => setIsWalkInOpen(false)}
+                    showToast={showToast}
+                    activeTimer={activeTimer}
+                    setActiveTimer={setActiveTimer}
+                />
+
+                {/* Invoice Modal */}
+                <InvoiceModal
+                    isOpen={!!selectedInvoiceBooking}
+                    onClose={() => setSelectedInvoiceBooking(null)}
+                    booking={selectedInvoiceBooking}
+                    onUpdate={() => {
+                        // Refresh logic if needed, but onSnapshot handles it automatically?
+                        // Actually onSnapshot keeps 'bookings' fresh, but 'selectedInvoiceBooking' needs to be updated or re-fetched?
+                        // InvoiceModal updates Firestore directly, causing onSnapshot to fire.
+                        // But 'selectedInvoiceBooking' is local state copy. We should close it or update it.
+                        // Simple fix: Close it for now, or let onSnapshot update the list below.
+                        // Better: Since the modal closes after payment (based on my implementation), we are good.
+                    }}
+                />
+
+                {/* Minimized Floating Timer */}
+                {!isWalkInOpen && activeTimer && activeTimer.isRunning && (
+                    <div
+                        className="floating-timer-widget"
+                        onClick={() => setIsWalkInOpen(true)}
+                        title="Click to expand"
+                    >
+                        <div className="ft-loader"></div>
+                        <div className="ft-content">
+                            <span className="ft-time">{timerString}</span>
+                            <span className="ft-client">{activeTimer.clientName}</span>
+                        </div>
+                    </div>
+                )}
+
                 {/* Calendar Action Modal */}
                 <div className={`admin-modal-overlay ${calendarModal.show ? 'active' : ''}`} onClick={() => setCalendarModal({ ...calendarModal, show: false })}>
                     <div className="admin-modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
@@ -1968,6 +2110,148 @@ const AdminDashboard = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Version 1.2.2 Welcome Popup */}
+            {showWelcomePopup && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    background: 'rgba(0,0,0,0.6)',
+                    zIndex: 100001,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backdropFilter: 'blur(4px)'
+                }} onClick={() => { }}>
+                    <div style={{
+                        background: '#fff',
+                        borderRadius: '20px',
+                        width: '100%',
+                        maxWidth: '900px', // Wider implementation
+                        minHeight: isMobile ? 'auto' : '450px',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        flexDirection: isMobile ? 'column' : 'row',
+                        animation: 'confirmPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                    }}>
+                        {/* Left Panel - Branding */}
+                        <div style={{
+                            flex: isMobile ? '0 0 auto' : '0 0 40%',
+                            background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+                            padding: '3rem 2rem',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            color: 'white',
+                            position: 'relative',
+                            overflow: 'hidden'
+                        }}>
+                            {/* Decorative Circle */}
+                            <div style={{
+                                position: 'absolute',
+                                top: '-20%',
+                                left: '-20%',
+                                width: '200px',
+                                height: '200px',
+                                background: 'rgba(255,255,255,0.05)',
+                                borderRadius: '50%'
+                            }} />
+
+                            <h2 style={{ fontSize: isMobile ? '1.75rem' : '2.5rem', fontWeight: '800', margin: '0 0 1rem 0', lineHeight: '1.2', color: 'white' }}>
+                                Welcome to Your Dashboard
+                            </h2>
+                            <p style={{ opacity: 0.9, fontSize: '1.1rem', margin: 0, lineHeight: '1.6', color: '#e2e8f0' }}>
+                                We've added new features to help streamline your studio operations.
+                            </p>
+                            <div style={{ marginTop: '2rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                <span style={{ background: 'rgba(255,255,255,0.15)', padding: '0.25rem 0.75rem', borderRadius: '100px', fontSize: '0.85rem', border: '1px solid rgba(255,255,255,0.1)' }}>Finance</span>
+                                <span style={{ background: 'rgba(255,255,255,0.15)', padding: '0.25rem 0.75rem', borderRadius: '100px', fontSize: '0.85rem', border: '1px solid rgba(255,255,255,0.1)' }}>Operations</span>
+                                <span style={{ background: 'rgba(255,255,255,0.15)', padding: '0.25rem 0.75rem', borderRadius: '100px', fontSize: '0.85rem', border: '1px solid rgba(255,255,255,0.1)' }}>Management</span>
+                            </div>
+                        </div>
+
+                        {/* Right Panel - Content */}
+                        <div style={{
+                            flex: '1',
+                            padding: isMobile ? '2rem' : '3rem',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center'
+                        }}>
+                            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.5rem', color: '#0f172a' }}>Comprehensive Updates</h3>
+                            <p style={{ color: '#334155', lineHeight: '1.6', marginBottom: '2rem', fontSize: '1rem' }}>
+                                We have introduced major improvements to streamlining your workflow. From real-time revenue tracking to a dedicated walk-in manager and invoice system, the dashboard is now more powerful than ever.
+                            </p>
+
+                            <a
+                                href="/patch-notes"
+                                target="_blank"
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                    color: '#2563eb',
+                                    fontWeight: '600',
+                                    textDecoration: 'none',
+                                    fontSize: '1rem',
+                                    marginBottom: '2rem',
+                                    width: 'fit-content'
+                                }}
+                            >
+                                Read full Patch Notes <span style={{ fontSize: '1.25rem' }}>→</span>
+                            </a>
+
+                            <div style={{
+                                background: '#f8fafc',
+                                padding: '1.25rem',
+                                borderRadius: '12px',
+                                fontSize: '0.9rem',
+                                color: '#334155',
+                                border: '1px solid #e2e8f0',
+                                marginBottom: '2rem',
+                                display: 'grid',
+                                gap: '0.75rem'
+                            }}>
+                                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                    <span style={{ fontSize: '1.25rem' }}>🔍</span>
+                                    <div><strong>Search Indexing:</strong> Google Search Console processing is ongoing. Site visibility may take time.</div>
+                                </div>
+                                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                    <span style={{ fontSize: '1.25rem' }}>🐛</span>
+                                    <div><strong>Beta Features:</strong> Please report any bugs via the report tool.</div>
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <button
+                                    onClick={handleCloseWelcome}
+                                    style={{
+                                        padding: '0.875rem 2rem',
+                                        background: '#0f172a',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '10px',
+                                        fontSize: '1rem',
+                                        fontWeight: '600',
+                                        cursor: 'pointer',
+                                        transition: 'transform 0.2s',
+                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                        width: isMobile ? '100%' : 'auto'
+                                    }}
+                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                >
+                                    Explore Dashboard
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

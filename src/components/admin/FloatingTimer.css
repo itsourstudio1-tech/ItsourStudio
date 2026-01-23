@@ -1,0 +1,76 @@
+.floating-timer-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 50px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    z-index: 1000;
+    border: 2px solid var(--color-primary);
+    animation: slideInUp 0.3s ease-out;
+    transition: transform 0.2s;
+}
+
+.floating-timer-widget:hover {
+    transform: translateY(-2px) scale(1.02);
+}
+
+.ft-loader {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    animation: timerPulse 1s infinite;
+}
+
+@keyframes timerPulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+}
+
+.ft-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.ft-time {
+    font-weight: 700;
+    font-family: monospace;
+    font-size: 1.1rem;
+    color: var(--color-primary);
+    line-height: 1;
+}
+
+.ft-client {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

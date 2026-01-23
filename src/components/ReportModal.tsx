@@ -50,10 +50,12 @@ const ReportModal = ({ isOpen, onClose }: ReportModalProps) => {
                 link: 'reports'
             });
 
-            // 2. If there is a file, upload it
+            // 2. If there is a file, compress and upload it
             if (file) {
+                const { compressImage } = await import('../utils/compressImage');
+                const compressedBlob = await compressImage(file);
                 const storageRef = ref(storage, `reports/${docRef.id}_${file.name}`);
-                await uploadBytes(storageRef, file);
+                await uploadBytes(storageRef, compressedBlob);
                 const downloadURL = await getDownloadURL(storageRef);
 
                 // Update doc with screenshot URL
