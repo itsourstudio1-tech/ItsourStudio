@@ -39,6 +39,17 @@ const ReportModal = ({ isOpen, onClose }: ReportModalProps) => {
                 timestamp: serverTimestamp()
             });
 
+            // Create Admin Notification
+            await addDoc(collection(db, 'notifications'), {
+                type: 'report',
+                title: `New Report: ${type}`,
+                message: description.substring(0, 100) + (description.length > 100 ? '...' : ''),
+                relatedId: docRef.id,
+                timestamp: serverTimestamp(),
+                isRead: false,
+                link: 'reports'
+            });
+
             // 2. If there is a file, upload it
             if (file) {
                 const storageRef = ref(storage, `reports/${docRef.id}_${file.name}`);

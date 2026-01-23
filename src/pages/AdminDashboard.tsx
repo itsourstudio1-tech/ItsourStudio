@@ -9,6 +9,8 @@ import UserManagement from '../components/admin/UserManagement';
 import FeedbackManagement from '../components/admin/FeedbackManagement';
 import ContentManagement from '../components/admin/ContentManagement';
 import ReportManagement from '../components/admin/ReportManagement';
+import NotificationHub from '../components/admin/NotificationHub';
+import NotificationHistory from '../components/admin/NotificationHistory';
 
 
 interface Booking {
@@ -61,7 +63,7 @@ const AdminDashboard = () => {
         revenue: 0
     });
 
-    const [activeTab, setActiveTab] = useState<'bookings' | 'feedbacks' | 'content' | 'users' | 'gallery' | 'calendar' | 'analytics' | 'bio_links' | 'reports'>('analytics');
+    const [activeTab, setActiveTab] = useState<'bookings' | 'feedbacks' | 'content' | 'users' | 'gallery' | 'calendar' | 'analytics' | 'bio_links' | 'reports' | 'notifications'>('analytics');
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     const [unavailableDates, setUnavailableDates] = useState<Record<string, string>>({}); // date -> reason map
@@ -958,11 +960,12 @@ const AdminDashboard = () => {
             </aside>
 
             <main className="admin-main">
-                <header className="admin-header">
+                <header className="admin-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                         <h1 className="admin-title">Admin Dashboard</h1>
                         <p className="admin-subtitle">Manage bookings, gallery, and site content</p>
                     </div>
+                    <NotificationHub onViewAll={() => handleTabChange('notifications')} onNavigate={handleTabChange} />
                 </header>
 
                 {activeTab === 'analytics' && (
@@ -1103,6 +1106,8 @@ const AdminDashboard = () => {
 
 
                 {activeTab === 'reports' && <ReportManagement showToast={showToast} />}
+
+                {activeTab === 'notifications' && <NotificationHistory onNavigate={handleTabChange} />}
 
 
                 {activeTab === 'calendar' && (
