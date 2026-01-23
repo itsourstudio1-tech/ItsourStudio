@@ -74,7 +74,7 @@ const TIMESLOTS = GENERATE_TIMESLOTS();
 
 const SalesLedger = ({ showToast }: SalesLedgerProps) => {
     const [bookings, setBookings] = useState<Booking[]>([]);
-    const [loading, setLoading] = useState(true);
+
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<Partial<Booking>>({});
 
@@ -82,7 +82,7 @@ const SalesLedger = ({ showToast }: SalesLedgerProps) => {
     const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
     useEffect(() => {
-        setLoading(true);
+
         // Fetch bookings ONLY for the selected date
         // Note: This relies on your 'date' field in Firestore being "YYYY-MM-DD"
         const q = query(collection(db, 'bookings'), where('date', '==', selectedDate));
@@ -93,11 +93,11 @@ const SalesLedger = ({ showToast }: SalesLedgerProps) => {
                 ...doc.data()
             })) as Booking[];
             setBookings(data);
-            setLoading(false);
+
         }, (err) => {
             console.error("Error fetching ledger data:", err);
             showToast('error', 'Error', 'Failed to load sales data');
-            setLoading(false);
+
         });
         return () => unsubscribe();
     }, [selectedDate, showToast]);
@@ -360,7 +360,7 @@ const SalesLedger = ({ showToast }: SalesLedgerProps) => {
 
                 if (bookingsToAdd.length > 0) {
                     if (confirm(`Found ${bookingsToAdd.length} bookings for ${selectedDate}. Import them?`)) {
-                        setLoading(true);
+
                         // Batch write
                         const batch = writeBatch(db);
                         // Firestore batch limit is 500. Secure loop.
@@ -381,7 +381,7 @@ const SalesLedger = ({ showToast }: SalesLedgerProps) => {
 
                         await batch.commit();
                         showToast('success', 'Import Successful', `${bookingsToAdd.length} records imported.`);
-                        setLoading(false);
+
                     }
                 } else {
                     showToast('error', 'No Data Found', 'No valid booking rows found in file.');
