@@ -167,13 +167,24 @@ const BookingModal = () => {
             if (savedData) {
                 try {
                     const parsed = JSON.parse(savedData);
+                    // Critical: If user explicitly selected a package via 'Book' button (selectedPackageId exists),
+                    // do NOT let the session storage overwrite it with an old package.
+                    if (selectedPackageId) {
+                        delete parsed.package;
+
+                        // Also reset date/time if switching packages to prevent invalid duration slots
+                        if (parsed.package !== selectedPackageId) {
+                            delete parsed.date;
+                            delete parsed.time;
+                        }
+                    }
                     setFormData(prev => ({ ...prev, ...parsed }));
                 } catch (e) {
                     console.error("Failed to load saved progress", e);
                 }
             }
         }
-    }, [isBookingOpen]);
+    }, [isBookingOpen, selectedPackageId]);
 
     useEffect(() => {
         if (isBookingOpen) {

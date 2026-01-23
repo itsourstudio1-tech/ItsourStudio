@@ -191,8 +191,101 @@ const PatchNotes = () => {
 
                 <main className="patch-notes-main">
 
+                    {/* v1.2.1 - The Visual & Dynamic Update */}
+                    <PatchVersion version="v1.2.1" date="January 23, 2026" defaultExpanded={true}>
+                        <FeatureCard
+                            title="Services Page Revamp"
+                            isFeatured
+                            defaultExpanded
+                            icon={
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <image x="2" y="2" width="20" height="20" href="/favicon.ico" />
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                                </svg>
+                            }
+                            badges={[<span key="new" className="badge new">NEW</span>]}
+                        >
+                            <ul className="change-list">
+                                <li><strong>Adaptive "Menu Mode" Layout</strong>
+                                    <ul>
+                                        <li>Automatically detects packages without photos (e.g. Add-Ons).</li>
+                                        <li>Switches to a premium "Frosted Glass" card design centered on screen.</li>
+                                        <li>Features a grid-based layout with "See All / See Less" collapse toggle.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Mobile Experience Overhaul</strong>
+                                    <ul>
+                                        <li>Optimized single-column stacking for small screens.</li>
+                                        <li>Improved touch targets and spacing (3rem padding).</li>
+                                        <li>Reduced motion and complexity for better mobile performance.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Visual Polish</strong>
+                                    <ul>
+                                        <li><strong>Navigation:</strong> Non-sticky, terracotta-colored navbar for better contrast.</li>
+                                        <li><strong>Scroll Tracker:</strong> Now accurately detects the middle of the viewport for active sections.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </FeatureCard>
+
+                        <FeatureCard
+                            title="Dynamic Admin Controls"
+                            icon={
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M12 20h9"></path>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                </svg>
+                            }
+                            badges={[<span key="new" className="badge new">NEW</span>]}
+                        >
+                            <ul className="change-list">
+                                <li><strong>Flexible Pricing</strong>
+                                    <ul>
+                                        <li>Admins can now save services with empty prices (e.g. for custom quotes).</li>
+                                        <li>Public site automatically hides the price tag if not set.</li>
+                                        <li>Added safety confirmation popup for missing prices.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Visibility Toggle</strong>
+                                    <ul>
+                                        <li>New "Visible" switch in Admin Dashboard.</li>
+                                        <li>Instantly hide/show packages without deleting them.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </FeatureCard>
+
+                        <FeatureCard
+                            title="Performance & UX"
+                            icon={
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                    <polyline points="17 6 23 6 23 12"></polyline>
+                                </svg>
+                            }
+                            badges={[<span key="improved" className="badge improved">IMPROVED</span>]}
+                        >
+                            <ul className="change-list">
+                                <li><strong>Instant Image Loading</strong>
+                                    <ul>
+                                        <li>Switched to eager-loading for service images to eliminate "pop-in" delay.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Booking Flow</strong>
+                                    <ul>
+                                        <li>Smart package auto-selection: Clicking "Book" now correctly pre-selects the specific package, overriding previous session data.</li>
+                                        <li>Repositioned "Next Step" button for better intuitive mobile flow.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </FeatureCard>
+                    </PatchVersion>
+
                     {/* v1.2.0 - The Reminder & IT Update */}
-                    <PatchVersion version="v1.2.0" date="January 21, 2026" defaultExpanded={true}>
+                    <PatchVersion version="v1.2.0" date="January 21, 2026" defaultExpanded={false}>
                         <FeatureCard
                             title="Session Reminders"
                             isFeatured
