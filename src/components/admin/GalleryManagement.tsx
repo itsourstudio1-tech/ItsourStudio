@@ -388,6 +388,9 @@ const GalleryManagement = ({ showToast }: GalleryManagementProps) => {
                                                     />
                                                     <span className="slider"></span>
                                                 </label>
+                                                <span className="toggle-label" style={{ fontSize: '0.75rem', color: item.showInCarousel ? 'var(--color-primary)' : '#94a3b8', display: 'none' }}>
+                                                    {item.showInCarousel ? 'In Carousel' : 'Hidden'}
+                                                </span>
                                             </div>
                                             <button
                                                 className="btn btn-sm"

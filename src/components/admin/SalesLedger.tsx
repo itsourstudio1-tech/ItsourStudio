@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { db } from '../../firebase';
 import { collection, query, where, onSnapshot, doc, updateDoc, writeBatch, serverTimestamp, addDoc, deleteDoc } from 'firebase/firestore';
 import * as XLSX from 'xlsx';
-import { Pencil, Save, X, Trash2, PlusCircle } from 'lucide-react';
+import { Pencil, Save, X, Trash2, PlusCircle, Monitor } from 'lucide-react';
 import './SalesLedger.css';
 
 interface Booking {
@@ -80,6 +80,19 @@ const SalesLedger = ({ showToast }: SalesLedgerProps) => {
 
     // Default to today
     const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+
+    // Mobile detection
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 1024);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
 
@@ -419,172 +432,229 @@ const SalesLedger = ({ showToast }: SalesLedgerProps) => {
 
     return (
         <div className="sales-ledger-container">
-            <div className="ledger-header">
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <h3 style={{ color: '#ef4444', fontFamily: 'monospace', fontSize: '1.5rem', fontWeight: 'bold' }}>
-                        {new Date(selectedDate).toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }).toUpperCase()}
-                    </h3>
-                    <span style={{ color: '#000', fontWeight: 'bold' }}>
-                        {new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase()}
-                    </span>
+            {/* Mobile Detection - Show desktop-only message */}
+            {isMobile ? (
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '60vh',
+                    padding: '40px 20px',
+                    textAlign: 'center',
+                    background: 'linear-gradient(135deg, #fff4e6 0%, #f9efe0 100%)',
+                    borderRadius: '16px',
+                    margin: '20px'
+                }}>
+                    <div style={{
+                        width: '80px',
+                        height: '80px',
+                        background: 'linear-gradient(135deg, #bf6a39 0%, #8b5e3b 100%)',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '24px',
+                        boxShadow: '0 8px 24px rgba(191, 106, 57, 0.3)'
+                    }}>
+                        <Monitor size={40} color="white" />
+                    </div>
+                    <h2 style={{
+                        color: '#3b2c28',
+                        fontSize: '24px',
+                        fontWeight: '700',
+                        marginBottom: '12px',
+                        fontFamily: 'var(--font-display)'
+                    }}>
+                        Desktop Only
+                    </h2>
+                    <p style={{
+                        color: '#8b5e3b',
+                        fontSize: '16px',
+                        lineHeight: '1.6',
+                        maxWidth: '400px',
+                        marginBottom: '8px'
+                    }}>
+                        The Sales Ledger requires a larger screen to display all columns and data properly.
+                    </p>
+                    <p style={{
+                        color: '#ada3a4',
+                        fontSize: '14px',
+                        fontWeight: '600'
+                    }}>
+                        Please open this page on a desktop or laptop computer.
+                    </p>
                 </div>
-                <div className="ledger-controls">
-                    <button onClick={() => {
-                        const d = new Date(selectedDate);
-                        d.setDate(d.getDate() - 1);
-                        setSelectedDate(d.toISOString().split('T')[0]);
-                    }} className="btn-nav">◀</button>
+            ) : (
+                <>
+                    <div className="ledger-header">
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <h3 style={{ color: '#ef4444', fontFamily: 'monospace', fontSize: '1.5rem', fontWeight: 'bold' }}>
+                                {new Date(selectedDate).toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }).toUpperCase()}
+                            </h3>
+                            <span style={{ color: '#000', fontWeight: 'bold' }}>
+                                {new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase()}
+                            </span>
+                        </div>
+                        <div className="ledger-controls">
+                            <button onClick={() => {
+                                const d = new Date(selectedDate);
+                                d.setDate(d.getDate() - 1);
+                                setSelectedDate(d.toISOString().split('T')[0]);
+                            }} className="btn-nav">◀</button>
 
-                    <input
-                        type="date"
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        className="ledger-filter"
-                        style={{ fontWeight: 'bold' }}
-                    />
+                            <input
+                                type="date"
+                                value={selectedDate}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                                className="ledger-filter"
+                                style={{ fontWeight: 'bold' }}
+                            />
 
-                    <button onClick={() => {
-                        const d = new Date(selectedDate);
-                        d.setDate(d.getDate() + 1);
-                        setSelectedDate(d.toISOString().split('T')[0]);
-                    }} className="btn-nav">▶</button>
+                            <button onClick={() => {
+                                const d = new Date(selectedDate);
+                                d.setDate(d.getDate() + 1);
+                                setSelectedDate(d.toISOString().split('T')[0]);
+                            }} className="btn-nav">▶</button>
 
-                    <label className="btn-import-excel">
-                        Import Excel
-                        <input
-                            type="file"
-                            accept=".xlsx, .xls, .csv"
-                            style={{ display: 'none' }}
-                            onChange={handleImportExcel}
-                        />
-                    </label>
+                            <label className="btn-import-excel">
+                                Import Excel
+                                <input
+                                    type="file"
+                                    accept=".xlsx, .xls, .csv"
+                                    style={{ display: 'none' }}
+                                    onChange={handleImportExcel}
+                                />
+                            </label>
 
-                    <button className="btn-export-excel" onClick={() => alert("Excel Export coming soon!")}>
-                        Export Daily Log
-                    </button>
-                </div>
-            </div>
+                            <button className="btn-export-excel" onClick={() => alert("Excel Export coming soon!")}>
+                                Export Daily Log
+                            </button>
+                        </div>
+                    </div>
 
-            <div className="ledger-table-wrapper">
-                <table className="ledger-table" style={{ fontSize: '0.75rem' }}>
-                    <thead>
-                        <tr>
-                            <th rowSpan={2} style={{ width: '30px' }}>NO.</th>
-                            <th rowSpan={2} style={{ width: '80px' }}>DATE OF RESERVATION</th>
-                            <th rowSpan={2} style={{ width: '120px' }}>NAME</th>
-                            <th rowSpan={2} style={{ width: '40px' }}>PAX</th>
-                            <th rowSpan={2} style={{ width: '90px' }}>CONTACT NO.</th>
-                            <th rowSpan={2} style={{ width: '100px' }}>TIME</th>
-                            <th rowSpan={2} style={{ width: '100px' }}>PACKAGE</th>
-                            <th rowSpan={2} style={{ width: '70px' }}>AMOUNT</th>
-                            <th rowSpan={2} style={{ width: '100px' }}>ADD-ONS</th>
-                            <th rowSpan={2} style={{ width: '70px' }}>AMOUNT</th>
-                            <th rowSpan={2} style={{ width: '70px', background: 'red', color: 'white' }}>DISCOUNT</th>
-                            <th rowSpan={2} style={{ width: '80px' }}>TOTAL AMOUNT</th>
+                    <div className="ledger-table-wrapper">
+                        <table className="ledger-table" style={{ fontSize: '0.75rem' }}>
+                            <thead>
+                                <tr>
+                                    <th rowSpan={2} style={{ width: '30px' }}>NO.</th>
+                                    <th rowSpan={2} style={{ width: '80px' }}>DATE OF RESERVATION</th>
+                                    <th rowSpan={2} style={{ width: '120px' }}>NAME</th>
+                                    <th rowSpan={2} style={{ width: '40px' }}>PAX</th>
+                                    <th rowSpan={2} style={{ width: '90px' }}>CONTACT NO.</th>
+                                    <th rowSpan={2} style={{ width: '100px' }}>TIME</th>
+                                    <th rowSpan={2} style={{ width: '100px' }}>PACKAGE</th>
+                                    <th rowSpan={2} style={{ width: '70px' }}>AMOUNT</th>
+                                    <th rowSpan={2} style={{ width: '100px' }}>ADD-ONS</th>
+                                    <th rowSpan={2} style={{ width: '70px' }}>AMOUNT</th>
+                                    <th rowSpan={2} style={{ width: '70px', background: 'red', color: 'white' }}>DISCOUNT</th>
+                                    <th rowSpan={2} style={{ width: '80px' }}>TOTAL AMOUNT</th>
 
-                            <th colSpan={3} style={{ textAlign: 'center', background: '#fef3c7' }}>DOWNPAYMENT</th>
-                            <th colSpan={3} style={{ textAlign: 'center', background: '#dcfce7' }}>FULL PAYMENT</th>
-                            <th rowSpan={2} style={{ width: '60px' }}>ACTION</th>
-                        </tr>
-                        <tr>
-                            {/* DP Headers */}
-                            <th style={{ background: '#fef3c7' }}>DATE</th>
-                            <th style={{ background: '#fef3c7' }}>50% GCASH</th>
-                            <th style={{ background: '#fef3c7' }}>REF. NO</th>
-
-                            {/* Full Payment Headers */}
-                            <th style={{ background: '#dcfce7' }}>GCASH</th>
-                            <th style={{ background: '#dcfce7' }}>REF. NO</th>
-                            <th style={{ background: '#dcfce7' }}>CASH</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {dailyRows.map((row, index) => {
-                            const { booking } = row;
-                            const isEditing = booking && editingId === booking.id;
-
-                            return (
-                                <tr key={index} className={booking ? (isEditing ? 'editing-row' : 'booked-row') : 'empty-row'}>
-                                    <td style={{ textAlign: 'center' }}>{index + 1}</td>
-
-                                    {/* Date of Reservation (When they booked) */}
-                                    <td style={{ textAlign: 'center' }}>{booking ? getResDate(booking) : ''}</td>
-
-                                    <td style={{ fontWeight: 'bold' }}>{booking?.fullName}</td>
-                                    <td style={{ textAlign: 'center' }}>{renderCell(booking, 'pax', 'number')}</td>
-                                    <td>{booking?.phone}</td>
-
-                                    {/* TIME SLOT LABEL - Always matched to fixed array */}
-                                    <td style={{ fontWeight: '600', background: '#f0f9ff' }}>{row.timeLabel}</td>
-
-                                    <td>{booking?.package}</td>
-                                    <td>{booking ? `₱${Number(booking.totalPrice).toLocaleString()}` : ''}</td>
-
-                                    <td>{renderCell(booking, 'addOns', 'text')}</td>
-                                    <td>{renderCell(booking, 'addOnsAmount', 'number')}</td>
-                                    <td style={{ color: 'red' }}>{renderCell(booking, 'discount', 'number')}</td>
-
-                                    <td style={{ fontWeight: 'bold' }}>
-                                        {booking && `₱${((Number(booking.totalPrice) || 0) + (Number(booking.addOnsAmount) || 0) - (Number(booking.discount) || 0)).toLocaleString()}`}
-                                    </td>
-
-                                    {/* Downpayment */}
-                                    <td style={{ background: '#fffbeb' }}>{renderCell(booking, 'downpaymentDate', 'date')}</td>
-                                    <td style={{ background: '#fffbeb' }}>{renderCell(booking, 'downpaymentAmount', 'number')}</td>
-                                    <td style={{ background: '#fffbeb' }}>{renderCell(booking, 'downpaymentRef', 'text')}</td>
-
-                                    {/* Full Payment */}
-                                    <td style={{ background: '#f0fdf4' }}>{renderCell(booking, 'fullPaymentGcash', 'number')}</td>
-                                    <td style={{ background: '#f0fdf4' }}>{renderCell(booking, 'fullPaymentRef', 'text')}</td>
-                                    <td style={{ background: '#f0fdf4' }}>{renderCell(booking, 'fullPaymentCash', 'number')}</td>
-
-                                    <td>
-                                        {booking && (
-                                            isEditing ? (
-                                                <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
-                                                    <button className="btn-save-mini" onClick={saveEdit} title="Save">
-                                                        <Save size={16} />
-                                                    </button>
-                                                    <button className="btn-cancel-mini" onClick={cancelEdit} title="Cancel">
-                                                        <X size={16} />
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
-                                                    <button className="btn-edit-mini" onClick={() => startEdit(booking)} title="Edit">
-                                                        <Pencil size={16} />
-                                                    </button>
-                                                    <button className="btn-delete-mini" onClick={() => handleDelete(booking.id)} title="Delete" style={{ color: '#ef4444' }}>
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </div>
-                                            )
-                                        )}
-                                        {!booking && (
-                                            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                                <button className="btn-add-mini" onClick={() => createEmptyBooking(row.timeLabel)} title="Add Booking" style={{ color: '#10b981' }}>
-                                                    <PlusCircle size={18} />
-                                                </button>
-                                            </div>
-                                        )}
-                                    </td>
+                                    <th colSpan={3} style={{ textAlign: 'center', background: '#fef3c7' }}>DOWNPAYMENT</th>
+                                    <th colSpan={3} style={{ textAlign: 'center', background: '#dcfce7' }}>FULL PAYMENT</th>
+                                    <th rowSpan={2} style={{ width: '60px' }}>ACTION</th>
                                 </tr>
-                            );
-                        })}
+                                <tr>
+                                    {/* DP Headers */}
+                                    <th style={{ background: '#fef3c7' }}>DATE</th>
+                                    <th style={{ background: '#fef3c7' }}>50% GCASH</th>
+                                    <th style={{ background: '#fef3c7' }}>REF. NO</th>
 
-                        {/* Summary Footer for the Day */}
-                        <tr className="totals-row">
-                            <td colSpan={7} style={{ textAlign: 'right', fontWeight: 'bold' }}>DAILY TOTAL:</td>
-                            <td>₱{totals.amount.toLocaleString()}</td>
-                            <td></td>
-                            <td>₱{totals.addOns.toLocaleString()}</td>
-                            <td style={{ color: 'red' }}>₱{totals.discount.toLocaleString()}</td>
-                            <td style={{ fontWeight: 'bold' }}>₱{totals.totalParams.toLocaleString()}</td>
-                            <td colSpan={7}></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                                    {/* Full Payment Headers */}
+                                    <th style={{ background: '#dcfce7' }}>GCASH</th>
+                                    <th style={{ background: '#dcfce7' }}>REF. NO</th>
+                                    <th style={{ background: '#dcfce7' }}>CASH</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {dailyRows.map((row, index) => {
+                                    const { booking } = row;
+                                    const isEditing = booking && editingId === booking.id;
+
+                                    return (
+                                        <tr key={index} className={booking ? (isEditing ? 'editing-row' : 'booked-row') : 'empty-row'}>
+                                            <td style={{ textAlign: 'center' }}>{index + 1}</td>
+
+                                            {/* Date of Reservation (When they booked) */}
+                                            <td style={{ textAlign: 'center' }}>{booking ? getResDate(booking) : ''}</td>
+
+                                            <td style={{ fontWeight: 'bold' }}>{booking?.fullName}</td>
+                                            <td style={{ textAlign: 'center' }}>{renderCell(booking, 'pax', 'number')}</td>
+                                            <td>{booking?.phone}</td>
+
+                                            {/* TIME SLOT LABEL - Always matched to fixed array */}
+                                            <td style={{ fontWeight: '600', background: '#f0f9ff' }}>{row.timeLabel}</td>
+
+                                            <td>{booking?.package}</td>
+                                            <td>{booking ? `₱${Number(booking.totalPrice).toLocaleString()}` : ''}</td>
+
+                                            <td>{renderCell(booking, 'addOns', 'text')}</td>
+                                            <td>{renderCell(booking, 'addOnsAmount', 'number')}</td>
+                                            <td style={{ color: 'red' }}>{renderCell(booking, 'discount', 'number')}</td>
+
+                                            <td style={{ fontWeight: 'bold' }}>
+                                                {booking && `₱${((Number(booking.totalPrice) || 0) + (Number(booking.addOnsAmount) || 0) - (Number(booking.discount) || 0)).toLocaleString()}`}
+                                            </td>
+
+                                            {/* Downpayment */}
+                                            <td style={{ background: '#fffbeb' }}>{renderCell(booking, 'downpaymentDate', 'date')}</td>
+                                            <td style={{ background: '#fffbeb' }}>{renderCell(booking, 'downpaymentAmount', 'number')}</td>
+                                            <td style={{ background: '#fffbeb' }}>{renderCell(booking, 'downpaymentRef', 'text')}</td>
+
+                                            {/* Full Payment */}
+                                            <td style={{ background: '#f0fdf4' }}>{renderCell(booking, 'fullPaymentGcash', 'number')}</td>
+                                            <td style={{ background: '#f0fdf4' }}>{renderCell(booking, 'fullPaymentRef', 'text')}</td>
+                                            <td style={{ background: '#f0fdf4' }}>{renderCell(booking, 'fullPaymentCash', 'number')}</td>
+
+                                            <td>
+                                                {booking && (
+                                                    isEditing ? (
+                                                        <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
+                                                            <button className="btn-save-mini" onClick={saveEdit} title="Save">
+                                                                <Save size={16} />
+                                                            </button>
+                                                            <button className="btn-cancel-mini" onClick={cancelEdit} title="Cancel">
+                                                                <X size={16} />
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
+                                                            <button className="btn-edit-mini" onClick={() => startEdit(booking)} title="Edit">
+                                                                <Pencil size={16} />
+                                                            </button>
+                                                            <button className="btn-delete-mini" onClick={() => handleDelete(booking.id)} title="Delete" style={{ color: '#ef4444' }}>
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
+                                                    )
+                                                )}
+                                                {!booking && (
+                                                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                                        <button className="btn-add-mini" onClick={() => createEmptyBooking(row.timeLabel)} title="Add Booking" style={{ color: '#10b981' }}>
+                                                            <PlusCircle size={18} />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+
+                                {/* Summary Footer for the Day */}
+                                <tr className="totals-row">
+                                    <td colSpan={7} style={{ textAlign: 'right', fontWeight: 'bold' }}>DAILY TOTAL:</td>
+                                    <td>₱{totals.amount.toLocaleString()}</td>
+                                    <td></td>
+                                    <td>₱{totals.addOns.toLocaleString()}</td>
+                                    <td style={{ color: 'red' }}>₱{totals.discount.toLocaleString()}</td>
+                                    <td style={{ fontWeight: 'bold' }}>₱{totals.totalParams.toLocaleString()}</td>
+                                    <td colSpan={7}></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </>
+            )}
         </div >
     );
 };

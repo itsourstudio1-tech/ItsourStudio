@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { db } from '../../firebase';
 import { collection, query, orderBy, limit, startAfter, getDocs, doc, updateDoc, writeBatch, where, deleteDoc } from 'firebase/firestore';
-import { Bell, Calendar, AlertTriangle, Trash2 } from 'lucide-react';
+import { Bell, Calendar, AlertTriangle, Trash2, ArrowLeft } from 'lucide-react';
 import NotificationDetailsModal from './NotificationDetailsModal';
-import './NotificationHub.css'; // Reusing hub styles where applicable + custom styles
+import './NotificationHistory.css';
 
 interface Notification {
     id: string;
@@ -21,17 +21,12 @@ interface NotificationHistoryProps {
 
 const NotificationHistory = ({ onNavigate }: NotificationHistoryProps) => {
     const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [filteredNotifications, setFilteredNotifications] = useState<Notification[]>([]);
     const [loading, setLoading] = useState(true);
     const [lastDoc, setLastDoc] = useState<any>(null);
     const [hasMore, setHasMore] = useState(true);
     const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
-
-    // Initial Load - Realtime? Or just one-off?
-    // History pages are usually fine to be one-off, but realtime is nicer.
-    // However, pagination with realtime is tricky.
-    // Let's stick to simple realtime for the first 50, then load more if needed? 
-    // Or just fetch all (if not too many) or paginate.
-    // Let's implement simple pagination.
+    const [filterType, setFilterType] = useState<'all' | 'booking' | 'report' | 'system' | 'unread'>('all');
 
     const PAGE_SIZE = 20;
 
@@ -53,12 +48,20 @@ const NotificationHistory = ({ onNavigate }: NotificationHistoryProps) => {
 
     useEffect(() => {
         fetchFirstPage();
-
-        // Mark current page as read automatically when viewing history?
-        // Maybe "Mark all displayed as read"?
-        // The user asked for "mark all as read" button specifically on the hub.
-        // Let's keep it manual or specific.
     }, []);
+
+    // Apply filters
+    useEffect(() => {
+        let filtered = [...notifications];
+
+        if (filterType === 'unread') {
+            filtered = filtered.filter(n => !n.isRead);
+        } else if (filterType !== 'all') {
+            filtered = filtered.filter(n => n.type === filterType);
+        }
+
+        setFilteredNotifications(filtered);
+    }, [notifications, filterType]);
 
     const fetchMore = async () => {
         if (!lastDoc) return;
@@ -92,8 +95,6 @@ const NotificationHistory = ({ onNavigate }: NotificationHistoryProps) => {
     const handleMarkAllRead = async () => {
         try {
             const batch = writeBatch(db);
-            // Query only unread to avoid writing unnecessary docs
-            // Limit to 400 (batch limit is 500) just in case
             const unreadQ = query(collection(db, 'notifications'), where('isRead', '==', false), limit(400));
             const snapshot = await getDocs(unreadQ);
 
@@ -104,10 +105,7 @@ const NotificationHistory = ({ onNavigate }: NotificationHistoryProps) => {
             });
 
             await batch.commit();
-
-            // Optimistic update
             setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-
         } catch (error) {
             console.error("Error marking all read:", error);
         }
@@ -132,134 +130,155 @@ const NotificationHistory = ({ onNavigate }: NotificationHistoryProps) => {
         }
     };
 
+    const formatTime = (timestamp: any) => {
+        if (!timestamp) return '';
+        const date = timestamp.toDate();
+        const now = new Date();
+        const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+        if (diffInSeconds < 60) return 'Just now';
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+        if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    };
+
+    const unreadCount = notifications.filter(n => !n.isRead).length;
+    const bookingCount = notifications.filter(n => n.type === 'booking').length;
+    const reportCount = notifications.filter(n => n.type === 'report').length;
+    const systemCount = notifications.filter(n => n.type === 'system').length;
+
     return (
-        <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <div>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1e293b', margin: 0 }}>Notification History</h2>
-                    <p style={{ color: '#64748b', margin: '0.5rem 0 0' }}>View past alerts and updates</p>
-                </div>
-                <button
-                    onClick={handleMarkAllRead}
-                    style={{
-                        padding: '0.5rem 1rem',
-                        background: 'white',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        color: '#3b82f6',
-                        fontWeight: 500
-                    }}
-                >
-                    Mark All Read
-                </button>
-            </div>
-
-            {loading ? (
-                <div style={{ textAlign: 'center', padding: '2rem' }}>Loading...</div>
-            ) : (
-                <div className="history-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {notifications.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '3rem', color: '#94a3b8', background: 'white', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                            No notifications found.
+        <div className="notification-history-container">
+            {/* Header */}
+            <div className="notification-history-header">
+                <div className="notification-history-title-section">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <button
+                            onClick={() => onNavigate('analytics')}
+                            className="btn-back"
+                            title="Back to Dashboard"
+                        >
+                            <ArrowLeft size={20} />
+                        </button>
+                        <div>
+                            <h1 className="notification-history-title">Notification History</h1>
+                            <p className="notification-history-subtitle">
+                                {notifications.length} {notifications.length === 1 ? 'notification' : 'notifications'}
+                                {unreadCount > 0 && ` • ${unreadCount} unread`}
+                            </p>
                         </div>
-                    ) : (
-                        notifications.map(n => (
-                            <div
-                                key={n.id}
-                                style={{
-                                    background: n.isRead ? 'white' : '#f0f9ff',
-                                    border: '1px solid #e2e8f0',
-                                    borderRadius: '8px',
-                                    padding: '1rem',
-                                    display: 'flex',
-                                    gap: '1rem',
-                                    transition: 'transform 0.2s',
-                                    position: 'relative',
-                                    alignItems: 'center'
-                                }}
-                                onClick={() => {
-                                    if (!n.isRead) handleMarkAsRead(n.id);
-                                    setSelectedNotification(n);
-                                }}
-                            >
-                                <div style={{
-                                    fontSize: '1.5rem',
-                                    background: 'white',
-                                    width: '40px',
-                                    height: '40px',
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    border: '1px solid #e2e8f0',
-                                    flexShrink: 0
-                                }}>
-                                    {getIcon(n.type)}
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <h4 style={{ margin: '0 0 0.25rem', color: '#1e293b' }}>{n.title}</h4>
-                                    <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>
-                                        {n.message}
-                                    </p>
-                                    <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginTop: '4px' }}>
-                                        {n.timestamp?.toDate().toLocaleString()}
-                                    </span>
-                                </div>
-                                <button
-                                    onClick={(e) => handleDelete(n.id, e)}
-                                    title="Delete notification"
-                                    style={{
-                                        background: 'none',
-                                        border: 'none',
-                                        color: '#ef4444',
-                                        cursor: 'pointer',
-                                        padding: '8px',
-                                        marginLeft: '1rem',
-                                        opacity: 0.5,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        borderRadius: '4px',
-                                        transition: 'all 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.opacity = '1';
-                                        e.currentTarget.style.background = '#fef2f2';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.opacity = '0.5';
-                                        e.currentTarget.style.background = 'none';
-                                    }}
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            </div>
-                        ))
-                    )}
+                    </div>
                 </div>
-            )
-            }
-
-            {hasMore && !loading && (
-                <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-                    <button
-                        onClick={fetchMore}
-                        style={{
-                            padding: '0.75rem 2rem',
-                            background: '#f8fafc',
-                            border: '1px solid #cbd5e1',
-                            borderRadius: '6px',
-                            color: '#475569',
-                            cursor: 'pointer',
-                            fontWeight: 500
-                        }}
-                    >
-                        Load More
+                <div className="notification-history-actions">
+                    <button className="btn-mark-all" onClick={handleMarkAllRead}>
+                        Mark All As Read
                     </button>
                 </div>
-            )
-            }
+            </div>
+
+            {/* Filter Tabs */}
+            <div className="notification-filter-section">
+                <div className="notification-filter-tabs">
+                    <button
+                        className={`filter-tab ${filterType === 'all' ? 'active' : ''}`}
+                        onClick={() => setFilterType('all')}
+                    >
+                        All ({notifications.length})
+                    </button>
+                    <button
+                        className={`filter-tab ${filterType === 'unread' ? 'active' : ''}`}
+                        onClick={() => setFilterType('unread')}
+                    >
+                        Unread ({unreadCount})
+                    </button>
+                    <button
+                        className={`filter-tab ${filterType === 'booking' ? 'active' : ''}`}
+                        onClick={() => setFilterType('booking')}
+                    >
+                        Bookings ({bookingCount})
+                    </button>
+                    <button
+                        className={`filter-tab ${filterType === 'report' ? 'active' : ''}`}
+                        onClick={() => setFilterType('report')}
+                    >
+                        Reports ({reportCount})
+                    </button>
+                    <button
+                        className={`filter-tab ${filterType === 'system' ? 'active' : ''}`}
+                        onClick={() => setFilterType('system')}
+                    >
+                        System ({systemCount})
+                    </button>
+                </div>
+            </div>
+
+            {/* Notifications List */}
+            {loading ? (
+                <div className="notification-history-loading">
+                    <div className="notification-history-spinner"></div>
+                    Loading notifications...
+                </div>
+            ) : (
+                <>
+                    <div className="notification-history-list">
+                        {filteredNotifications.length === 0 ? (
+                            <div className="notification-history-empty">
+                                <div className="notification-history-empty-icon">
+                                    <Bell size={32} />
+                                </div>
+                                <h3 className="notification-history-empty-title">No notifications</h3>
+                                <p className="notification-history-empty-text">
+                                    {filterType === 'all'
+                                        ? "You don't have any notifications yet."
+                                        : `No ${filterType === 'unread' ? 'unread' : filterType} notifications.`
+                                    }
+                                </p>
+                            </div>
+                        ) : (
+                            filteredNotifications.map(n => (
+                                <div
+                                    key={n.id}
+                                    className={`notification-history-item ${!n.isRead ? 'unread' : ''}`}
+                                    onClick={() => {
+                                        if (!n.isRead) handleMarkAsRead(n.id);
+                                        setSelectedNotification(n);
+                                    }}
+                                >
+                                    <div className={`notification-history-icon ${n.type}`}>
+                                        {getIcon(n.type)}
+                                    </div>
+                                    <div className="notification-history-content">
+                                        <h3 className="notification-history-item-title">{n.title}</h3>
+                                        <p className="notification-history-item-message">{n.message}</p>
+                                        <span className="notification-history-item-time">
+                                            {formatTime(n.timestamp)}
+                                        </span>
+                                    </div>
+                                    <div className="notification-history-item-actions">
+                                        <button
+                                            className="notification-action-delete"
+                                            onClick={(e) => handleDelete(n.id, e)}
+                                            title="Delete notification"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                    {!n.isRead && <div className="notification-unread-badge" />}
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    {hasMore && !loading && filteredNotifications.length > 0 && (
+                        <div className="notification-history-load-more">
+                            <button className="btn-load-more" onClick={fetchMore}>
+                                Load More Notifications
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
 
             <NotificationDetailsModal
                 notification={selectedNotification}

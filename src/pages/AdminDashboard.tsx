@@ -1053,13 +1053,25 @@ const AdminDashboard = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                background: '#3b82f6',
+                                background: 'linear-gradient(135deg, #bf6a39 0%, #8b5e3b 100%)',
                                 color: 'white',
                                 border: 'none',
                                 padding: '8px 16px',
                                 borderRadius: '8px',
                                 cursor: 'pointer',
-                                fontWeight: 600
+                                fontWeight: 600,
+                                boxShadow: '0 4px 12px rgba(191, 106, 57, 0.3)',
+                                transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = 'linear-gradient(135deg, #8b5e3b 0%, #6d4a2f 100%)';
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 6px 16px rgba(191, 106, 57, 0.4)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'linear-gradient(135deg, #bf6a39 0%, #8b5e3b 100%)';
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(191, 106, 57, 0.3)';
                             }}
                         >
                             <UserPlus size={18} />

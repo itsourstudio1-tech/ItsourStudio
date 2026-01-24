@@ -105,12 +105,44 @@
     transform: rotate(90deg);
 }
 
+/* Header Content Layout */
+.walkin-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-right: 2rem;
+    /* Space for close button */
+}
+
+.ref-number-box {
+    background: #fff7ed;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #fed7aa;
+    text-align: right;
+    min-width: 140px;
+}
+
+.ref-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #ea580c;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.ref-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #9a3412;
+    font-family: monospace;
+}
+
 /* Landscape Layout for Desktop - Content Area */
 .walkin-content-row {
     display: flex;
     padding: 2rem;
     gap: 2rem;
-    /* Reduced gap */
 }
 
 /* LEFT: Form */
@@ -119,14 +151,12 @@
     display: flex;
     flex-direction: column;
     gap: 0;
-    /* Reduced from 1rem */
 }
 
 /* RIGHT: Summary */
 .walkin-summary-column {
     flex: 0.9;
     background: #f8fafc;
-    /* Subtle grey card */
     border-radius: 16px;
     padding: 1.25rem;
     border: 1px solid var(--walkin-border);
@@ -142,7 +172,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    /* Reduced from 0.4rem */
     margin-bottom: 0 !important;
 }
 
@@ -157,10 +186,8 @@
 .form-group input,
 .form-group select {
     padding: 0.6rem 0.75rem;
-    /* Reduced padding */
     border: 1px solid var(--walkin-border);
     border-radius: 8px;
-    /* Slightly tighter radius */
     font-size: 0.9rem;
     color: var(--walkin-text);
     background: var(--walkin-input-bg);
@@ -242,6 +269,59 @@
     color: var(--walkin-primary);
     font-size: 1.5rem;
     font-weight: 800;
+}
+
+/* Payment Method Styles */
+.payment-method-section {
+    margin-bottom: 1rem;
+}
+
+.payment-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.payment-buttons-grid {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.payment-btn {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.payment-btn:hover {
+    background: #f8fafc;
+}
+
+.payment-btn.cash.active {
+    border-color: var(--walkin-primary);
+    background: #fff7ed;
+    color: var(--walkin-primary);
+    box-shadow: 0 2px 4px rgba(234, 88, 12, 0.1);
+}
+
+.payment-btn.gcash.active {
+    border-color: #3b82f6;
+    background: #eff6ff;
+    color: #3b82f6;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
 }
 
 .conflict-warning {
@@ -373,7 +453,6 @@
     transform: translateY(-1px);
 }
 
-
 .timer-note {
     font-size: 0.85rem;
     color: var(--walkin-text-muted);
@@ -384,31 +463,120 @@
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+    .walkin-overlay {
+        align-items: flex-end;
+    }
+
     .walkin-modal {
         width: 100%;
-        height: 100%;
+        height: 100vh;
         max-width: none;
         border-radius: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .walkin-header {
+        padding: 1rem 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .walkin-header-content {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding-right: 2rem;
+    }
+
+    .ref-number-box {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+    }
+
+    .walkin-header h2 {
+        font-size: 1.1rem;
     }
 
     .walkin-content-row {
         flex-direction: column;
-        padding: 1.5rem;
+        padding: 1.25rem;
         gap: 1.5rem;
         overflow-y: auto;
+        flex: 1;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 2rem;
     }
 
-    .walkin-form-column,
+    .walkin-form-column {
+        flex: none;
+        gap: 1.25rem;
+    }
+
     .walkin-summary-column {
         flex: none;
-    }
-
-    .walkin-summary-column {
         order: 2;
+        margin-top: auto;
+        border: none;
+        background: #f8fafc;
+        margin: 0 -1.25rem -2rem -1.25rem;
+        padding: 1.5rem 1.25rem 2rem 1.25rem;
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
     }
 
     .walkin-close {
-        top: 1rem;
-        right: 1rem;
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 36px;
+        height: 36px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem !important;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 0.75rem;
+        font-size: 16px;
+    }
+
+    .summary-total strong {
+        font-size: 1.35rem;
+    }
+}
+
+/* Small Screens */
+@media (max-width: 375px) {
+    .walkin-header {
+        padding: 1rem;
+    }
+
+    .walkin-content-row {
+        padding: 1rem;
+    }
+
+    .walkin-summary-column {
+        margin: 0 -1rem -2rem -1rem;
+        padding: 1.25rem 1rem 2rem 1rem;
+        padding-bottom: 200px;
+        /* Extra bottom padding for scroll */
+    }
+
+    .btn-start-session {
+        font-size: 0.95rem;
+        padding: 0.875rem;
+    }
+
+    .timer-display {
+        font-size: 4rem;
+    }
+
+    .payment-btn {
+        padding: 0.6rem;
+        font-size: 0.85rem;
     }
 }
