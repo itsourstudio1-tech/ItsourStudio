@@ -2416,6 +2416,7 @@ p {
 }
 
 /* ===================================
+/* ===================================
    GALLERY CAROUSEL - MOBILE COMPACT
    =================================== */
 
@@ -2426,38 +2427,57 @@ p {
   }
 
   .gallery-section .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .gallery-carousel-container {
-    padding: var(--spacing-sm) 0;
+    padding: var(--spacing-md) 0;
+    /* Enhanced mask for smoother edge fade */
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    /* Improved scroll behavior for mobile */
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
 
   .gallery-track {
-    gap: 0.75rem;
+    gap: 1rem;
+    /* Smoother animation for mobile */
+    animation: scroll 100s linear infinite;
+    /* Better performance on mobile */
+    transform: translate3d(0, 0, 0);
   }
 
   .gallery-card {
-    flex: 0 0 180px;
-    height: 240px;
-    border-width: 6px;
-    border-radius: 3px;
+    /* Better sizing for mobile - portrait orientation */
+    flex: 0 0 200px;
+    height: 280px;
+    border-width: 8px;
+    border-radius: 6px;
+    /* Enhanced shadow for depth */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
+    /* Smoother transitions */
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   /* Remove rotation on mobile for cleaner look */
   .gallery-card:nth-child(odd),
   .gallery-card:nth-child(even) {
-    transform: rotate(0deg);
+    transform: rotate(0deg) translateZ(0);
     margin-top: 0;
   }
 
-  .gallery-card:hover {
-    transform: scale(1.02) !important;
+  /* Enhanced hover/tap effect for mobile */
+  .gallery-card:hover,
+  .gallery-card:active {
+    transform: scale(1.03) translateZ(0) !important;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2), 0 4px 10px rgba(0, 0, 0, 0.12);
   }
 
   .gallery-overlay {
-    --c-len: 12px;
+    --c-len: 15px;
+    --c-wid: 2px;
   }
 
   .gallery-info {
@@ -2465,48 +2485,96 @@ p {
   }
 
   .gallery-category {
-    font-size: 0.6rem;
-    letter-spacing: 1px;
-    margin-bottom: 0.25rem;
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.35rem;
+    font-weight: 700;
   }
 
   .gallery-title {
-    font-size: 1rem;
+    font-size: 1.1rem;
+    line-height: 1.2;
+    font-weight: 600;
+  }
+
+  /* Better image rendering on mobile */
+  .gallery-card img,
+  .gallery-card .lazy-image {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
   }
 }
 
-/* Gallery Carousel - Extra Small Screens (320px) */
-@media (max-width: 360px) {
+/* Gallery Carousel - Extra Small Screens (320px - 400px) */
+@media (max-width: 400px) {
   .gallery-section {
     padding: var(--spacing-lg) 0;
   }
 
   .gallery-section .container {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
+    padding-left: 0;
+    padding-right: 0;
   }
 
+  .gallery-carousel-container {
+    padding: 0.75rem 0;
+    /* Even softer mask on very small screens */
+    mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+  }
+
+  .gallery-track {
+    gap: 0.75rem;
+  }
+
+  .gallery-card {
+    /* Optimized sizing for small screens */
+    flex: 0 0 160px;
+    height: 220px;
+    border-width: 6px;
+    border-radius: 5px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12), 0 2px 5px rgba(0, 0, 0, 0.08);
+  }
+
+  .gallery-card:hover,
+  .gallery-card:active {
+    transform: scale(1.02) translateZ(0) !important;
+  }
+
+  .gallery-overlay {
+    --c-len: 10px;
+  }
+
+  .gallery-category {
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+  }
+
+  .gallery-title {
+    font-size: 0.95rem;
+  }
+}
+
+/* Super small screens optimization (320px) */
+@media (max-width: 360px) {
   .gallery-carousel-container {
     padding: 0.5rem 0;
   }
 
-  .gallery-track {
-    gap: 0.5rem;
-  }
-
   .gallery-card {
     flex: 0 0 140px;
-    height: 185px;
-    border-width: 4px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+    height: 195px;
+    border-width: 5px;
+    border-radius: 4px;
   }
 
-  .gallery-overlay {
-    --c-len: 8px;
+  .gallery-track {
+    gap: 0.6rem;
   }
 
   .gallery-category {
     font-size: 0.55rem;
+    margin-bottom: 0.25rem;
   }
 
   .gallery-title {

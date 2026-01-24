@@ -214,21 +214,14 @@ const WalkInModal = ({ isOpen, onClose, showToast, activeTimer, setActiveTimer }
                 {step === 'form' ? (
                     <>
                         <div className="walkin-header">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div className="walkin-header-content">
                                 <div>
                                     <h2>New Walk-In Session</h2>
                                     <p>Enter details below to start immediate session.</p>
                                 </div>
-                                <div style={{
-                                    background: '#fff7ed',
-                                    padding: '0.5rem 1rem',
-                                    borderRadius: '8px',
-                                    border: '1px solid #fed7aa',
-                                    textAlign: 'right',
-                                    marginRight: '2.5rem' // Make space for close button
-                                }}>
-                                    <span style={{ display: 'block', fontSize: '0.75rem', color: '#ea580c', fontWeight: 600, textTransform: 'uppercase' }}>Reference No.</span>
-                                    <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#9a3412', fontFamily: 'monospace' }}>{currentRef}</span>
+                                <div className="ref-number-box">
+                                    <span className="ref-label">Reference No.</span>
+                                    <span className="ref-value">{currentRef}</span>
                                 </div>
                             </div>
                         </div>
@@ -342,40 +335,20 @@ const WalkInModal = ({ isOpen, onClose, showToast, activeTimer, setActiveTimer }
                                     <strong>₱{totalPrice.toLocaleString()}</strong>
                                 </div>
 
-                                <div className="payment-method-selector" style={{ marginBottom: '1rem' }}>
-                                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b', marginBottom: '0.5rem', display: 'block' }}>Payment Method</span>
-                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <div className="payment-method-section">
+                                    <span className="payment-label">Payment Method</span>
+                                    <div className="payment-buttons-grid">
                                         <button
                                             type="button"
                                             onClick={() => setFormData({ ...formData, paymentMethod: 'cash' })}
-                                            style={{
-                                                flex: 1,
-                                                padding: '0.75rem',
-                                                borderRadius: '8px',
-                                                border: `1px solid ${formData.paymentMethod === 'cash' ? 'var(--walkin-primary)' : '#e2e8f0'}`,
-                                                background: formData.paymentMethod === 'cash' ? '#fff7ed' : 'white',
-                                                color: formData.paymentMethod === 'cash' ? 'var(--walkin-primary)' : '#64748b',
-                                                fontWeight: 600,
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s'
-                                            }}
+                                            className={`payment-btn cash ${formData.paymentMethod === 'cash' ? 'active' : ''}`}
                                         >
                                             💵 Cash
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setFormData({ ...formData, paymentMethod: 'gcash' })}
-                                            style={{
-                                                flex: 1,
-                                                padding: '0.75rem',
-                                                borderRadius: '8px',
-                                                border: `1px solid ${formData.paymentMethod === 'gcash' ? '#3b82f6' : '#e2e8f0'}`,
-                                                background: formData.paymentMethod === 'gcash' ? '#eff6ff' : 'white',
-                                                color: formData.paymentMethod === 'gcash' ? '#3b82f6' : '#64748b',
-                                                fontWeight: 600,
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s'
-                                            }}
+                                            className={`payment-btn gcash ${formData.paymentMethod === 'gcash' ? 'active' : ''}`}
                                         >
                                             📱 GCash
                                         </button>

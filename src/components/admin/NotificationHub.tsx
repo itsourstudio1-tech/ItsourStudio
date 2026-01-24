@@ -143,36 +143,41 @@ const NotificationHub = ({ onViewAll, onNavigate }: NotificationHubProps) => {
             </button>
 
             {isOpen && (
-                <div className="notification-dropdown">
-                    <div className="notification-header">
-                        <h3>Notifications</h3>
-                        <button className="mark-read-btn" onClick={handleMarkAllRead}>Mark all read</button>
-                    </div>
-                    <div className="notification-list">
-                        {notifications.length === 0 ? (
-                            <div className="empty-notifications">No notifications</div>
-                        ) : (
-                            notifications.map(n => (
-                                <div
-                                    key={n.id}
-                                    className={`notification-item ${!n.isRead ? 'unread' : ''}`}
-                                    onClick={() => handleNotificationClick(n)}
-                                >
-                                    <div className="notification-icon">{getIcon(n.type)}</div>
-                                    <div className="notification-content">
-                                        <div className="notification-title">{n.title}</div>
-                                        <div className="notification-message">{n.message}</div>
-                                        <div className="notification-time">{formatTime(n.timestamp)}</div>
+                <>
+                    {/* Mobile backdrop overlay */}
+                    <div className="notification-backdrop" onClick={() => setIsOpen(false)} />
+
+                    <div className="notification-dropdown">
+                        <div className="notification-header">
+                            <h3>Notifications</h3>
+                            <button className="mark-read-btn" onClick={handleMarkAllRead}>Mark all read</button>
+                        </div>
+                        <div className="notification-list">
+                            {notifications.length === 0 ? (
+                                <div className="empty-notifications">No notifications</div>
+                            ) : (
+                                notifications.map(n => (
+                                    <div
+                                        key={n.id}
+                                        className={`notification-item ${!n.isRead ? 'unread' : ''}`}
+                                        onClick={() => handleNotificationClick(n)}
+                                    >
+                                        <div className="notification-icon">{getIcon(n.type)}</div>
+                                        <div className="notification-content">
+                                            <div className="notification-title">{n.title}</div>
+                                            <div className="notification-message">{n.message}</div>
+                                            <div className="notification-time">{formatTime(n.timestamp)}</div>
+                                        </div>
+                                        {!n.isRead && <div className="unread-dot"></div>}
                                     </div>
-                                    {!n.isRead && <div className="unread-dot"></div>}
-                                </div>
-                            ))
-                        )}
+                                ))
+                            )}
+                        </div>
+                        <div className="notification-footer">
+                            <button onClick={() => { onViewAll(); setIsOpen(false); }}>See all notifications</button>
+                        </div>
                     </div>
-                    <div className="notification-footer">
-                        <button onClick={() => { onViewAll(); setIsOpen(false); }}>See all notifications</button>
-                    </div>
-                </div>
+                </>
             )}
 
             <NotificationDetailsModal
